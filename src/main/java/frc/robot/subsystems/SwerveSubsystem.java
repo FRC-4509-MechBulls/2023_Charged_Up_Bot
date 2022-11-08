@@ -51,8 +51,8 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
           DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-  private AHRS gyro = new AHRS(edu.wpi.first.wpilibj.SPI.Port.kMXP);
-  
+  //private AHRS gyro = new AHRS(edu.wpi.first.wpilibj.SPI.Port.kMXP);
+
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
         //put in thread so it doesn't stop the rest of our code from running

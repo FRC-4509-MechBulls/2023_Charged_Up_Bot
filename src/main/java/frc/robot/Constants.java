@@ -89,6 +89,7 @@ public final class Constants {
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
 
+        public static final int kMagEncoderMinPulseHz = 1;
     }
 
     public static final class OIConstants {

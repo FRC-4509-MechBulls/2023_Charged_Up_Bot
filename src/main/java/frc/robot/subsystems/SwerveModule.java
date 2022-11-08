@@ -11,17 +11,22 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule extends SubsystemBase {
-  private final TalonFX driveMotor; //why can't i make these private (sobbing emoji)
+  private final TalonFX driveMotor;
   private final TalonFX turningMotor;
 
-  private final AnalogInput absoluteEncoder;
+  private final DutyCycleEncoder absoluteEncoder;
+  //private final DigitalInput absoluteEncoder;
   private final boolean absoluteEncoderReversed;
   private final double absoluteEncoderOffsetRad;
 
@@ -33,7 +38,10 @@ public class SwerveModule extends SubsystemBase {
     //absolute encoder
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
-    absoluteEncoder = new AnalogInput(absoluteEncoderId);
+    absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
+    //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
+    //absoluteEncoder.setDutyCycleRange(1, 4096);
+    //absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
     
     //motors
     driveMotor = new TalonFX(driveMotorId);
@@ -43,7 +51,9 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.setInverted(turningMotorReversed);
 
     //set conversion constants
+    //??
     
+    //initialize pid controller
     turningPidController = new  PIDController(ModuleConstants.kPTurning, 0, 0); //proportional control is enough
     turningPidController.enableContinuousInput(-Math.PI, Math.PI); //tells PID that system is circular
 
@@ -68,7 +78,7 @@ public class SwerveModule extends SubsystemBase {
 
   public double getAbsoluteEncoderRad() {
     //divides voltage reading by amount of voltage we are supplying it -> gives us how many percent of a full rotation it is reading
-    double angle = absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
+    double angle = absoluteEncoder.getAbsolutePosition();//absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
     angle *= 2.0 * Math.PI; //converts to radians
     angle -= absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
     return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
@@ -97,7 +107,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
     turningMotor.set(TalonFXControlMode.PercentOutput, turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
     //^^^calculates output for the angle setpoint and current pos
-    SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", state.toString()); //debugging info
+    SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString()); //debugging info
   }
 
   public void stop() {
