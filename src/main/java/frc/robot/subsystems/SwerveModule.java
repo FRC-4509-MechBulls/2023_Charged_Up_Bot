@@ -41,8 +41,9 @@ public class SwerveModule extends SubsystemBase {
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
-    absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
-    absoluteEncoder.setDutyCycleRange(1/4096, 4095/4096);
+    //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
+    absoluteEncoder.setDistancePerRotation(1);
+  // absoluteEncoder.setDutyCycleRange(1/4096, 4095/4096);
     //absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
     
     //motors
@@ -82,6 +83,7 @@ public class SwerveModule extends SubsystemBase {
   public double getTurningVelocity() {
     return turningMotor.getSelectedSensorVelocity();
   }
+
 
   public double getAbsoluteEncoderRad() {
     //divides voltage reading by amount of voltage we are supplying it -> gives us how many percent of a full rotation it is reading
@@ -125,5 +127,9 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
+    SmartDashboard.putNumber("absPosNumber"+this.turningMotor.getDeviceID(), absoluteEncoder.getAbsolutePosition());
+
+    SmartDashboard.putNumber("swerveDrivePos"+this.turningMotor.getDeviceID(),getDrivePosition());
   }
 }
