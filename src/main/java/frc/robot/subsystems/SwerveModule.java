@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -49,6 +50,9 @@ public class SwerveModule extends SubsystemBase {
     turningMotor = new WPI_TalonFX(turningMotorId);
     driveMotor.configFactoryDefault();
     turningMotor.configFactoryDefault();
+    turningMotor.setNeutralMode(NeutralMode.Brake);
+    driveMotor.setNeutralMode(NeutralMode.Coast);
+    
 
     driveMotor.setInverted(driveMotorReversed);
     turningMotor.setInverted(turningMotorReversed);
