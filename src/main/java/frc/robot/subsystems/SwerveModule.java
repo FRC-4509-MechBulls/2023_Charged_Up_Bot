@@ -41,8 +41,8 @@ public class SwerveModule extends SubsystemBase {
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
-    //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
-    //absoluteEncoder.setDutyCycleRange(1, 4096);
+    absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
+    absoluteEncoder.setDutyCycleRange(1, 4096);
     //absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
     
     //motors
@@ -72,7 +72,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    return turningMotor.getSelectedSensorPosition();
+    return (turningMotor.getSelectedSensorPosition()/(2046/2))/Constants.ModuleConstants.kTurningMotorGearRatio;
   }
 
   public double getDriveVelocity() {
@@ -93,7 +93,7 @@ public class SwerveModule extends SubsystemBase {
 
   public void resetEncoders() {
     driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
-    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad()); //resets turning motor encoder to absolute encoder value
+    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * (2048/2)); //resets turning motor encoder to absolute encoder value
     //makes it so the turning motor wheels are in line with the actual angle
   }
 
@@ -111,7 +111,7 @@ public class SwerveModule extends SubsystemBase {
     state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
 
     //DO I USE VELOCITY OR PERCENT OUTPUT???
-    driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
+    driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
     turningMotor.set(TalonFXControlMode.PercentOutput, turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
     //^^^calculates output for the angle setpoint and current pos
     SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString()); //debugging info
