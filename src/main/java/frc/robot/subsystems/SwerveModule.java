@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,8 +23,8 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule extends SubsystemBase {
-  private final TalonFX driveMotor;
-  private final TalonFX turningMotor;
+  private final WPI_TalonFX driveMotor;
+  private final WPI_TalonFX turningMotor;
 
   private final DutyCycleEncoder absoluteEncoder;
   //private final DigitalInput absoluteEncoder;
@@ -44,8 +45,8 @@ public class SwerveModule extends SubsystemBase {
     //absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
     
     //motors
-    driveMotor = new TalonFX(driveMotorId);
-    turningMotor = new TalonFX(turningMotorId);
+    driveMotor = new WPI_TalonFX(driveMotorId);
+    turningMotor = new WPI_TalonFX(turningMotorId);
     driveMotor.configFactoryDefault();
     turningMotor.configFactoryDefault();
 
