@@ -43,7 +43,7 @@ public class SwerveModule extends SubsystemBase {
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
     absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
     absoluteEncoder.setDutyCycleRange(1/4096, 4095/4096);
-    absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
+    absoluteEncoder.setPositionOffset(0);
     
     //motors
     driveMotor = new WPI_TalonFX(driveMotorId);
