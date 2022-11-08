@@ -46,6 +46,8 @@ public class SwerveModule extends SubsystemBase {
     //motors
     driveMotor = new TalonFX(driveMotorId);
     turningMotor = new TalonFX(turningMotorId);
+    driveMotor.configFactoryDefault();
+    turningMotor.configFactoryDefault();
 
     driveMotor.setInverted(driveMotorReversed);
     turningMotor.setInverted(turningMotorReversed);
