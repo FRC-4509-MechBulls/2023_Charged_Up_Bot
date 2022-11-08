@@ -72,10 +72,10 @@ public final class Constants {
         public static final int kBackRightDriveAbsoluteEncoderPort = 3;
 
         //TBD
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = 0;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = 0;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = 0;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -2.833;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.54;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -0.105;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.715;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
