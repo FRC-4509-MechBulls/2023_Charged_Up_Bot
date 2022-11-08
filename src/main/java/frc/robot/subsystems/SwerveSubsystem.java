@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -51,8 +52,10 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
           DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-  private AHRS gyro = new AHRS(edu.wpi.first.wpilibj.SPI.Port.kMXP);
+  //private AHRS gyro = new AHRS(edu.wpi.first.wpilibj.SPI.Port.kMXP);
+  private Pigeon2 gyro= new Pigeon2(0);
   
+
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
         //put in thread so it doesn't stop the rest of our code from running
@@ -69,11 +72,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
   public void zeroHeading() {
-        gyro.reset();
+        gyro.zeroGyroBiasNow();
   }
 
   public double getHeading() {
-        return Math.IEEEremainder(gyro.getAngle(), 360); //clamps value between -/+ 180 deg
+        return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg
   }
 
   //since wpilib often wants heading in format of Rotation2d
