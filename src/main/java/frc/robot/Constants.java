@@ -43,16 +43,16 @@ public final class Constants {
         );
 
         //TBD
-        public static final int kFrontLeftDriveMotorPort = 0;
-        public static final int kFrontRightDriveMotorPort = 0;
-        public static final int kBackLeftDriveMotorPort = 0;
-        public static final int kBackRightDriveMotorPort = 0;
+        public static final int kFrontLeftDriveMotorPort = 1;
+        public static final int kFrontRightDriveMotorPort = 2;
+        public static final int kBackLeftDriveMotorPort = 3;
+        public static final int kBackRightDriveMotorPort = 4;
 
         //TBD
-        public static final int kFrontLeftTurningMotorPort = 0;
-        public static final int kFrontRightTurningMotorPort = 0;
-        public static final int kBackLeftTurningMotorPort = 0;
-        public static final int kBackRightTurningMotorPort = 0;
+        public static final int kFrontLeftTurningMotorPort = 5;
+        public static final int kFrontRightTurningMotorPort = 6;
+        public static final int kBackLeftTurningMotorPort = 7;
+        public static final int kBackRightTurningMotorPort = 8;
 
         public static final boolean kFrontLeftDriveEncoderReversed = true;
         public static final boolean kFrontRightDriveEncoderReversed = true;
@@ -61,14 +61,14 @@ public final class Constants {
 
         public static final boolean kFrontLeftTurningEncoderReversed = true;
         public static final boolean kFrontRightTurningEncoderReversed = true;
-        public static final boolean kBackLeftTurningEncoderReversed = false;
-        public static final boolean kBackRightTurningEncoderReversed = false;
+        public static final boolean kBackLeftTurningEncoderReversed = true;
+        public static final boolean kBackRightTurningEncoderReversed = true;
 
         //TBD
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 0;
-        public static final int kFrontRightDriveAbsoluteEncoderPort = 0;
-        public static final int kBackLeftDriveAbsoluteEncoderPort = 0;
-        public static final int kBackRightDriveAbsoluteEncoderPort = 0;
+        public static final int kFrontRightDriveAbsoluteEncoderPort = 1;
+        public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
+        public static final int kBackRightDriveAbsoluteEncoderPort = 3;
 
         //TBD
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = 0;
