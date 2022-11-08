@@ -72,7 +72,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    return (turningMotor.getSelectedSensorPosition()/(2046/2))/Constants.ModuleConstants.kTurningMotorGearRatio;
+    return (turningMotor.getSelectedSensorPosition()/(2046/(2*Math.PI)))/Constants.ModuleConstants.kTurningMotorGearRatio;
   }
 
   public double getDriveVelocity() {
@@ -93,7 +93,7 @@ public class SwerveModule extends SubsystemBase {
 
   public void resetEncoders() {
     driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
-    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * (2048/2)); //resets turning motor encoder to absolute encoder value
+    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * Constants.ModuleConstants.kTurningMotorGearRatio * (2048/(2*Math.PI))); //resets turning motor encoder to absolute encoder value
     //makes it so the turning motor wheels are in line with the actual angle
   }
 
