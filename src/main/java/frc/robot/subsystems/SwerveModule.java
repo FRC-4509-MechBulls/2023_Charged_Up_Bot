@@ -41,7 +41,7 @@ public class SwerveModule extends SubsystemBase {
     this.absoluteEncoderReversed = absoluteEncoderReversed;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
     absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
-    absoluteEncoder.setDutyCycleRange(1, 4096);
+    absoluteEncoder.setDutyCycleRange(1/4096, 4095/4096);
     //absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
     
     //motors
@@ -83,7 +83,7 @@ public class SwerveModule extends SubsystemBase {
     //divides voltage reading by amount of voltage we are supplying it -> gives us how many percent of a full rotation it is reading
     double angle = absoluteEncoder.getAbsolutePosition();//absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
     angle *= 2.0 * Math.PI; //converts to radians
-    angle -= absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
+    angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
     return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
 
