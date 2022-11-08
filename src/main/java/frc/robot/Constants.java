@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -81,27 +82,25 @@ public final class Constants {
         public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 5; //need to find
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;//i don't think it is used in the code
+        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(16.3); //need to find
+        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = Units.feetToMeters(16.3/((Math.PI*32)/2)); //i don't think it is used in the code
 
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3; //idk
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3; //idk
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
-        public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
+        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
+        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4; //???-josh
+        public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4; //???-josh
 
-        public static final int kMagEncoderMinPulseHz = 1;
+        //public static final int kMagEncoderMinPulseHz = 1;
     }
 
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
-
-        public static final int kDriverYAxis = 1;
-        public static final int kDriverXAxis = 0;
-        public static final int kDriverRotAxis = 4;
-        public static final int kDriverFieldOrientedButtonIdx = 1; //TBD??
+        public static final int kDriverYAxis = XboxController.Axis.kLeftY.value;
+        public static final int kDriverXAxis = XboxController.Axis.kLeftX.value;
+        public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;
+        public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value; //TBD??
 
         public static final double kDeadband = 0.05; //can be changed
-
     }
 
 
