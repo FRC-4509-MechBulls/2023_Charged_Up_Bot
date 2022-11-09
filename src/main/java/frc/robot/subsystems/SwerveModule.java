@@ -115,7 +115,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
     turningMotor.set(TalonFXControlMode.PercentOutput, turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
     //^^^calculates output for the angle setpoint and current pos
-    SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString()); //debugging info
+    //SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString()); //debugging info
   }
 
   public void stop() {
@@ -126,9 +126,9 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-    SmartDashboard.putNumber("absPosNumber"+this.turningMotor.getDeviceID(), absoluteEncoder.getAbsolutePosition());
+    //SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
+    //SmartDashboard.putNumber("absPosNumber"+this.turningMotor.getDeviceID(), absoluteEncoder.getAbsolutePosition());
 
-    SmartDashboard.putNumber("swerveDrivePos"+this.turningMotor.getDeviceID(),getDrivePosition());
+    //SmartDashboard.putNumber("swerveDrivePos"+this.turningMotor.getDeviceID(),getDrivePosition());
   }
 }

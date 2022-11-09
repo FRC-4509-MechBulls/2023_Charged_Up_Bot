@@ -83,7 +83,7 @@ public final class Constants {
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
         public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(16.3); //need to find
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = Units.feetToMeters(16.3/((Math.PI*32)/2)); //i don't think it is used in the code
+        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxSpeedMetersPerSecond/(Units.inchesToMeters(16)); //i don't think it is used in the code
 
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
