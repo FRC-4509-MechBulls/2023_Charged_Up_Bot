@@ -41,9 +41,9 @@ public class SwerveModule extends SubsystemBase {
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
-    //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
     absoluteEncoder.setDistancePerRotation(1);
-  // absoluteEncoder.setDutyCycleRange(1/4096, 4095/4096);
+    //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
+    // absoluteEncoder.setDutyCycleRange(1/4096, 4095/4096);
     //absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
     
     //motors
@@ -54,7 +54,6 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.setNeutralMode(NeutralMode.Brake);
     driveMotor.setNeutralMode(NeutralMode.Coast);
     
-
     driveMotor.setInverted(driveMotorReversed);
     turningMotor.setInverted(turningMotorReversed);
 
