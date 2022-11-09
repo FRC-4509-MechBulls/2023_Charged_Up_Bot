@@ -127,7 +127,7 @@ public class SwerveModule extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-    //SmartDashboard.putNumber("absPosNumber"+this.turningMotor.getDeviceID(), absoluteEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber("absPosNumber"+this.turningMotor.getDeviceID(), absoluteEncoder.getAbsolutePosition());
 
     //SmartDashboard.putNumber("swerveDrivePos"+this.turningMotor.getDeviceID(),getDrivePosition());
   }
