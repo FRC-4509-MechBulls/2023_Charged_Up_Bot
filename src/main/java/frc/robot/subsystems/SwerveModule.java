@@ -31,15 +31,17 @@ public class SwerveModule extends SubsystemBase {
   //private final DigitalInput absoluteEncoder;
   private final boolean absoluteEncoderReversed;
   private final double absoluteEncoderOffsetRad;
+  private final String name;
 
   private final PIDController turningPidController;
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
-          int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
+          int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed, String name) {
     //absolute encoder
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
+    this.name = name;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
     absoluteEncoder.setDistancePerRotation(1);
     //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
@@ -127,8 +129,7 @@ public class SwerveModule extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     //SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-    SmartDashboard.putNumber("absPosNumber"+this.turningMotor.getDeviceID(), absoluteEncoder.getAbsolutePosition());
-
-    //SmartDashboard.putNumber("swerveDrivePos"+this.turningMotor.getDeviceID(),getDrivePosition());
+    SmartDashboard.putNumber(this.name+".absPosNumber", absoluteEncoder.getAbsolutePosition());
+    SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
   }
 }
