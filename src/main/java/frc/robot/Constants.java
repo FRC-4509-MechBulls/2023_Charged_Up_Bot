@@ -71,7 +71,7 @@ public final class Constants {
         public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
         public static final int kBackRightDriveAbsoluteEncoderPort = 3;
 
-        //TBD
+        //sort of calculated
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.61 * Math.PI * 2;
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.026 * Math.PI * 2;
         public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -0.6 * Math.PI * 2;
