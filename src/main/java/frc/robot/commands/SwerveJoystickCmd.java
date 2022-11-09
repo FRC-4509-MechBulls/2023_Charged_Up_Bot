@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -44,18 +45,20 @@ public class SwerveJoystickCmd extends CommandBase {
   public void execute() {
     // 1. Get real-time joystick inputs
     double xSpeed = xSpdFunction.get();
-    double ySpeed = ySpdFunction.get();
-    double turningSpeed = turningSpdFunction.get();
+    double ySpeed = ySpdFunction.get()*-1;
+    double turningSpeed = turningSpdFunction.get()*-1;
 
     // 2. Apply deadband
     xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
-    ySpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
-    turningSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
+    ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
+    turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs
-    xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-    ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-    turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+    xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
+    //SmartDashboard.putNumber("xspeed", xSpeed);
+    //SmartDashboard.putNumber("turningspeed", turningSpeed);
 
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;

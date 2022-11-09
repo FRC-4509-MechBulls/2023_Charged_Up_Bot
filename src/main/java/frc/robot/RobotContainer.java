@@ -30,7 +30,7 @@ public class RobotContainer {
       () -> -driverController.getRawAxis(OIConstants.kDriverYAxis),
       () -> driverController.getRawAxis(OIConstants.kDriverXAxis),
       () -> driverController.getRawAxis(OIConstants.kDriverRotAxis),
-      () -> !driverController.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)
+      () -> driverController.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)
     ));
     // Configure the button bindings
     configureButtonBindings();

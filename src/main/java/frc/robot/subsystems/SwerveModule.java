@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,15 +32,17 @@ public class SwerveModule extends SubsystemBase {
   //private final DigitalInput absoluteEncoder;
   private final boolean absoluteEncoderReversed;
   private final double absoluteEncoderOffsetRad;
+  private final String name;
 
   private final PIDController turningPidController;
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
-          int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
+          int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed, String name) {
     //absolute encoder
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
+    this.name = name;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
     absoluteEncoder.setDistancePerRotation(1);
     //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
@@ -56,6 +59,7 @@ public class SwerveModule extends SubsystemBase {
     
     driveMotor.setInverted(driveMotorReversed);
     turningMotor.setInverted(turningMotorReversed);
+    turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
 
     //set conversion constants
     //??
@@ -64,7 +68,16 @@ public class SwerveModule extends SubsystemBase {
     turningPidController = new  PIDController(ModuleConstants.kPTurning, 0, 0); //proportional control is enough
     turningPidController.enableContinuousInput(-Math.PI, Math.PI); //tells PID that system is circular
 
-    resetEncoders(); //resets encoders when the robot boots up
+    new Thread(() -> {
+      try {
+              Thread.sleep(1000);
+              resetEncoders();
+      } catch (Exception e) {
+      }
+
+}).start();
+
+    //resetEncoders(); //resets encoders when the robot boots up
   }
 
   public double getDrivePosition() {
@@ -72,7 +85,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    return (turningMotor.getSelectedSensorPosition()/(2046/(2*Math.PI)))/Constants.ModuleConstants.kTurningMotorGearRatio;
+    return ((turningMotor.getSelectedSensorPosition() * (360 / (Constants.ModuleConstants.kTurningMotorGearRatio * 2048))) * 0.0174533);//*(Math.PI/1024))/Constants.ModuleConstants.kTurningMotorGearRatio;
   }
 
   public double getDriveVelocity() {
@@ -94,7 +107,7 @@ public class SwerveModule extends SubsystemBase {
 
   public void resetEncoders() {
     driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
-    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * Constants.ModuleConstants.kTurningMotorGearRatio * (2048/(2*Math.PI))); //resets turning motor encoder to absolute encoder value
+    turningMotor.setSelectedSensorPosition((getAbsoluteEncoderRad()*(360/(2*Math.PI))) / (360 / (Constants.ModuleConstants.kTurningMotorGearRatio * 2048)));// * Constants.ModuleConstants.kTurningMotorGearRatio * (2048/(2*Math.PI))); //resets turning motor encoder to absolute encoder value
     //makes it so the turning motor wheels are in line with the actual angle
   }
 
@@ -109,13 +122,15 @@ public class SwerveModule extends SubsystemBase {
       stop();
       return;
     }
+    SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
     state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
 
     //DO I USE VELOCITY OR PERCENT OUTPUT???
     driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
     turningMotor.set(TalonFXControlMode.PercentOutput, turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
     //^^^calculates output for the angle setpoint and current pos
-    SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString()); //debugging info
+    //SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString()); //debugging info
+    SmartDashboard.putNumber("setRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
   }
 
   public void stop() {
@@ -126,9 +141,10 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-    SmartDashboard.putNumber("absPosNumber"+this.turningMotor.getDeviceID(), absoluteEncoder.getAbsolutePosition());
-
-    SmartDashboard.putNumber("swerveDrivePos"+this.turningMotor.getDeviceID(),getDrivePosition());
+    //SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
+    SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition());
+    SmartDashboard.putNumber("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
+    //SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
   }
 }
