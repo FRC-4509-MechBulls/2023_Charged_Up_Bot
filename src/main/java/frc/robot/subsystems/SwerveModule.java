@@ -80,6 +80,7 @@ public class SwerveModule extends SubsystemBase {
     //resetEncoders(); //resets encoders when the robot boots up
   }
 
+  //is this even used?
   public double getDrivePosition() {
     return driveMotor.getSelectedSensorPosition();
   }
@@ -89,9 +90,12 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getDriveVelocity() {
-    return driveMotor.getSelectedSensorVelocity();
+    return driveMotor.getSelectedSensorVelocity() * (10.0 / 2048) * Math.sqrt(0.3032265);
+    //diameter = 3.8 inches
+    //circumference = 11.93805 inches = 0.3032265 meters
   }
 
+  //is this even used?
   public double getTurningVelocity() {
     return turningMotor.getSelectedSensorVelocity();
   }

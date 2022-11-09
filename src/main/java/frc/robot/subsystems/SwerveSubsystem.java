@@ -53,7 +53,7 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kBackRightDriveAbsoluteEncoderReversed,"RR");
 
   //private AHRS gyro = new AHRS(edu.wpi.first.wpilibj.SPI.Port.kMXP);
-  private Pigeon2 gyro= new Pigeon2(0);
+  private Pigeon2 gyro = new Pigeon2(0);
   
 
   /** Creates a new SwerveSubsystem. */
