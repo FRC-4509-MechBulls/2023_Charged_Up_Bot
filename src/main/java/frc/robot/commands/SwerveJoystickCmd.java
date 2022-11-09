@@ -45,8 +45,8 @@ public class SwerveJoystickCmd extends CommandBase {
   public void execute() {
     // 1. Get real-time joystick inputs
     double xSpeed = xSpdFunction.get();
-    double ySpeed = ySpdFunction.get();
-    double turningSpeed = turningSpdFunction.get();
+    double ySpeed = ySpdFunction.get()*-1;
+    double turningSpeed = turningSpdFunction.get()*-1;
 
     // 2. Apply deadband
     xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
