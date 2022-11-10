@@ -28,6 +28,16 @@ public final class Constants {
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
         public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
         public static final double kPTurning = 0.5; //idk
+
+        public static final double kFalconTicks = 2048;
+        public static final double kRadiansToFalcon = kFalconTicks / (2 * Math.PI);
+        public static final double kRadiansToTurning = kRadiansToFalcon * kTurningMotorGearRatio;
+
+        public static final double kWheelCircumference = kWheelDiameterMeters * Math.PI;
+        public static final double kMetersToRotations = (1 / kWheelCircumference);
+        public static final double kMetersToDrive = kMetersToRotations * kDriveMotorGearRatio * kFalconTicks;
+
+        public static final double kAbsToRadians = 2.0 * Math.PI;
     }
 
     public static final class DriveConstants {

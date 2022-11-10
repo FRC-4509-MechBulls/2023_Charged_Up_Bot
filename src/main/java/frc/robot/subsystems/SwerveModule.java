@@ -86,11 +86,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    return ((turningMotor.getSelectedSensorPosition() * (360 / (Constants.ModuleConstants.kTurningMotorGearRatio * 2048))) * 0.0174533);//*(Math.PI/1024))/Constants.ModuleConstants.kTurningMotorGearRatio;
+    return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
   }
 
   public double getDriveVelocity() {
-    return driveMotor.getSelectedSensorVelocity() * (10.0 / 2048) * Math.sqrt(0.3032265);
+    return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDrive;
     //diameter = 3.8 inches
     //circumference = 11.93805 inches = 0.3032265 meters
   }
@@ -104,14 +104,14 @@ public class SwerveModule extends SubsystemBase {
   public double getAbsoluteEncoderRad() {
     //divides voltage reading by amount of voltage we are supplying it -> gives us how many percent of a full rotation it is reading
     double angle = absoluteEncoder.getAbsolutePosition();//absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
-    angle *= 2.0 * Math.PI; //converts to radians
+    angle *= ModuleConstants.kAbsToRadians; //converts to radians
     angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
     return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
 
   public void resetEncoders() {
     driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
-    turningMotor.setSelectedSensorPosition((getAbsoluteEncoderRad()*(360/(2*Math.PI))) / (360 / (Constants.ModuleConstants.kTurningMotorGearRatio * 2048)));// * Constants.ModuleConstants.kTurningMotorGearRatio * (2048/(2*Math.PI))); //resets turning motor encoder to absolute encoder value
+    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * ModuleConstants.kRadiansToTurning); //resets turning motor encoder to absolute encoder value
     //makes it so the turning motor wheels are in line with the actual angle
   }
 
