@@ -5,8 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -52,9 +50,7 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
           DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
-  //private AHRS gyro = new AHRS(edu.wpi.first.wpilibj.SPI.Port.kMXP);
   private Pigeon2 gyro = new Pigeon2(0);
-  
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {

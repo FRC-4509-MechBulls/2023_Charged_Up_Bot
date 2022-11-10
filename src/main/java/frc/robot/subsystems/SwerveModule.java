@@ -25,14 +25,16 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule extends SubsystemBase {
+  //motors
   private final WPI_TalonFX driveMotor;
   private final WPI_TalonFX turningMotor;
 
+  //abs encoder
   private final DutyCycleEncoder absoluteEncoder;
-  //private final DigitalInput absoluteEncoder;
   private final boolean absoluteEncoderReversed;
   private final double absoluteEncoderOffsetRad;
 
+  //PID
   private final PIDController turningPidController;
 
   /** Creates a new SwerveModule. */
@@ -43,9 +45,6 @@ public class SwerveModule extends SubsystemBase {
     this.absoluteEncoderReversed = absoluteEncoderReversed;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
     absoluteEncoder.setDistancePerRotation(1);
-    //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);
-    // absoluteEncoder.setDutyCycleRange(1/4096, 4095/4096);
-    //absoluteEncoder.setPositionOffset(absoluteEncoderOffset);
     
     //motors
     driveMotor = new WPI_TalonFX(driveMotorId);
@@ -54,18 +53,15 @@ public class SwerveModule extends SubsystemBase {
     turningMotor.configFactoryDefault();
     turningMotor.setNeutralMode(NeutralMode.Brake);
     driveMotor.setNeutralMode(NeutralMode.Coast);
-    
     driveMotor.setInverted(driveMotorReversed);
     turningMotor.setInverted(turningMotorReversed);
     turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
-
-    //set conversion constants
-    //??
     
     //initialize pid controller
     turningPidController = new  PIDController(ModuleConstants.kPTurning, 0, 0); //proportional control is enough
     turningPidController.enableContinuousInput(-Math.PI, Math.PI); //tells PID that system is circular
 
+    //initialize encoders in thread so they don't timeout
     new Thread(() -> {
       try {
               Thread.sleep(1000);
@@ -75,8 +71,7 @@ public class SwerveModule extends SubsystemBase {
 
 }).start();
 
-    //resetEncoders(); //resets encoders when the robot boots up
-  }
+}
 
   //is this even used?
   public double getDrivePosition() {
@@ -89,8 +84,6 @@ public class SwerveModule extends SubsystemBase {
 
   public double getDriveVelocity() {
     return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDrive;
-    //diameter = 3.8 inches
-    //circumference = 11.93805 inches = 0.3032265 meters
   }
 
   //is this even used?
@@ -98,10 +91,8 @@ public class SwerveModule extends SubsystemBase {
     return turningMotor.getSelectedSensorVelocity();
   }
 
-
   public double getAbsoluteEncoderRad() {
-    //divides voltage reading by amount of voltage we are supplying it -> gives us how many percent of a full rotation it is reading
-    double angle = absoluteEncoder.getAbsolutePosition();//absoluteEncoder.getVoltage() / RobotController.getVoltage5V();
+    double angle = absoluteEncoder.getAbsolutePosition(); //range 0-1
     angle *= ModuleConstants.kAbsToRadians; //converts to radians
     angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
     return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
@@ -110,7 +101,6 @@ public class SwerveModule extends SubsystemBase {
   public void resetEncoders() {
     driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
     turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * ModuleConstants.kRadiansToTurning); //resets turning motor encoder to absolute encoder value
-    //makes it so the turning motor wheels are in line with the actual angle
   }
 
   //wpi lib requests info in form of swerve module state, so this method converts it
@@ -124,7 +114,7 @@ public class SwerveModule extends SubsystemBase {
       stop();
       return;
     }
-    SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
+    //Debug output: SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
     state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
 
     //DO I USE VELOCITY OR PERCENT OUTPUT???
@@ -143,10 +133,10 @@ public class SwerveModule extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-    SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition());
-    SmartDashboard.putNumber("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
-    //SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
+    //Debug output: SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
+    //Debug output: SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition());
+    //Debug output: SmartDashboard.putNumber("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
+    //Debug output: SmartDashboard.putNumber("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
+    //Debug output: SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
   }
 }
