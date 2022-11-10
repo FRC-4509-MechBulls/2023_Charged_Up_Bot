@@ -32,17 +32,15 @@ public class SwerveModule extends SubsystemBase {
   //private final DigitalInput absoluteEncoder;
   private final boolean absoluteEncoderReversed;
   private final double absoluteEncoderOffsetRad;
-  private final String name;
 
   private final PIDController turningPidController;
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
-          int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed, String name) {
+          int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
     //absolute encoder
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
-    this.name = name;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
     absoluteEncoder.setDistancePerRotation(1);
     //absoluteEncoder.setConnectedFrequencyThreshold(Constants.DriveConstants.kMagEncoderMinPulseHz);

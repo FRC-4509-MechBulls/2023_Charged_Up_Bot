@@ -22,7 +22,7 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kFrontLeftTurningEncoderReversed, 
           DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 
           DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
-          DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed,"FL");
+          DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
   
   private final SwerveModule frontRight = new SwerveModule(
           DriveConstants.kFrontRightDriveMotorPort, 
@@ -31,7 +31,7 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kFrontRightTurningEncoderReversed, 
           DriveConstants.kFrontRightDriveAbsoluteEncoderPort, 
           DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
-          DriveConstants.kFrontRightDriveAbsoluteEncoderReversed,"FR");
+          DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
 
   private final SwerveModule backLeft = new SwerveModule(
           DriveConstants.kBackLeftDriveMotorPort, 
@@ -40,7 +40,7 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kBackLeftTurningEncoderReversed, 
           DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 
           DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
-          DriveConstants.kBackLeftDriveAbsoluteEncoderReversed,"RL");
+          DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
 
 
   private final SwerveModule backRight = new SwerveModule(
@@ -50,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase {
           DriveConstants.kBackRightTurningEncoderReversed, 
           DriveConstants.kBackRightDriveAbsoluteEncoderPort, 
           DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
-          DriveConstants.kBackRightDriveAbsoluteEncoderReversed,"RR");
+          DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
 
   //private AHRS gyro = new AHRS(edu.wpi.first.wpilibj.SPI.Port.kMXP);
   private Pigeon2 gyro = new Pigeon2(0);
