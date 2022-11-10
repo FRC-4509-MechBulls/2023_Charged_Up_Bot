@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -58,6 +60,8 @@ public class SwerveSubsystem extends SubsystemBase {
         new Thread(() -> {
                 try {
                         Thread.sleep(1000);
+                        gyro.configFactoryDefault();
+                        gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
                         zeroHeading();
                 } catch (Exception e) {
                 }
