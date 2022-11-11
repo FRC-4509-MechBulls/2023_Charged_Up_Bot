@@ -73,6 +73,7 @@ public class SwerveSubsystem extends SubsystemBase {
   //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
   public void zeroHeading() {
         gyro.zeroGyroBiasNow();
+        gyro.setYaw(0);
   }
 
   public double getHeading() {
@@ -86,7 +87,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Robot Heading", getHeading());
+      SmartDashboard.putNumber("Robot Heading", getHeading());
+      SmartDashboard.putNumber("rawHeading", gyro.getYaw());
+
   }
 
   public void stopModules() {
