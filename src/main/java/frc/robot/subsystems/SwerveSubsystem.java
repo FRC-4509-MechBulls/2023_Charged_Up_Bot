@@ -76,8 +76,10 @@ public class SwerveSubsystem extends SubsystemBase {
         gyro.setYaw(0);
   }
 
+  //A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
+  //(if x / y falls halfway between two integers, the even integer is returned)
   public double getHeading() {
-        return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg
+        return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
 
   //since wpilib often wants heading in format of Rotation2d
@@ -87,9 +89,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-      SmartDashboard.putNumber("Robot Heading", getHeading());
-      SmartDashboard.putNumber("rawHeading", gyro.getYaw());
-
+      //debug output: SmartDashboard.putNumber("Robot Heading", getHeading());
   }
 
   public void stopModules() {
