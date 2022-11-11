@@ -20,9 +20,9 @@ import edu.wpi.first.wpilibj.XboxController;
 public final class Constants {
 
     public static final class ModuleConstants {
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(3.8); //needs to be changed
+        public static final double kWheelDiameterMeters = Units.inchesToMeters(3.8);
         public static final double kDriveMotorGearRatio = 6.75; 
-        public static final double kTurningMotorGearRatio = 21.4286; //needs to be changed
+        public static final double kTurningMotorGearRatio = 21.4286;
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
         public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
@@ -92,11 +92,11 @@ public final class Constants {
         public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(16.3); //need to find
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxSpeedMetersPerSecond/(Units.inchesToMeters(16)); //i don't think it is used in the code
+        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(16.3);
+        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxSpeedMetersPerSecond/(Units.inchesToMeters(16));
 
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(10);
+        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = Units.feetToMeters(10);
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond;
 
