@@ -119,9 +119,10 @@ public class SwerveModule extends SubsystemBase {
     state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
 		delta = state.angle.getRadians() - getTurningPosition(); //error
 		deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
-		setAngle = Math.abs(deltaConverted) < Math.PI / 2 ? getTurningPosition() + deltaConverted : getTurningPosition() + (Math.PI - deltaConverted); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
-    
-		arbitraryFF = getTurningPosition() < setAngle ? SmartDashboard.getNumber("aFFT", arbitraryFF) : -SmartDashboard.getNumber("aFFT", arbitraryFF);//ModuleConstants.kAFFTurning : -ModuleConstants.kAFFTurning; //sets feedforward constant positive or negative depending on direction
+		//setAngle = Math.abs(deltaConverted) < Math.PI / 2 ? getTurningPosition() + deltaConverted : getTurningPosition() + (Math.PI - deltaConverted); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
+    setAngle = getTurningPosition() + deltaConverted;
+
+		//arbitraryFF = getTurningPosition() < setAngle ? SmartDashboard.getNumber("aFFT", arbitraryFF) : -SmartDashboard.getNumber("aFFT", arbitraryFF);//ModuleConstants.kAFFTurning : -ModuleConstants.kAFFTurning; //sets feedforward constant positive or negative depending on direction
 
     driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
     turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning);//, DemandType.ArbitraryFeedForward, arbitraryFF); //Position Control w/ Arbitrary Feedforward
