@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -66,7 +67,7 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.setInverted(turningMotorReversed);
       turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
       turningMotor.config_kP(0, ModuleConstants.kPTurning);
-			driveMotor.configVoltageCompSaturation(12);
+			turningMotor.configVoltageCompSaturation(12);
       //both
       enableVoltageCompensation(true);
       //initialize encoders in thread so they don't timeout
