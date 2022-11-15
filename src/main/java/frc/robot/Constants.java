@@ -35,8 +35,8 @@ public final class Constants {
         public static final double kAbsToRadians = 2.0 * Math.PI;
 
         //Gains
-        public static final double kAFFTurning = 0.05; //unsure
-        public static final double kPTurning = 0.07; //unsure
+        public static final double kAFFTurning = 0.00; //unsure
+        public static final double kPTurning = 0.02; //unsure
     }
 
     public static final class DriveConstants {
@@ -109,7 +109,7 @@ public final class Constants {
         public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;
         public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value;
 
-        public static final double kDeadband = 0.05; //can be changed
+        public static final double kDeadband = 0.08; //can be changed
     }
 
 
