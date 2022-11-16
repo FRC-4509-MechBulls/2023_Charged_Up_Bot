@@ -78,7 +78,7 @@ public class SwerveModule extends SubsystemBase {
       }).start();
 		
 		//Values
-		//Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
+		SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
     //Debug output: SmartDashboard.putNumber("kDT", ModuleConstants.kDTurning);
   }
 
@@ -112,7 +112,7 @@ public class SwerveModule extends SubsystemBase {
   //Setters
   public void setDesiredState(SwerveModuleState state) {
     if (Math.abs(state.speedMetersPerSecond) < 0.001) { //prevents wheels from going to OG pos when joysticks are not moved
-      stop();
+      driveMotor.set(TalonFXControlMode.PercentOutput, 0);
       return;
     }
     //Debug output: SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
@@ -137,7 +137,7 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() { // This method will be called once per scheduler run
-		//Debug input: turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
+		turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
     //Debug input: turningMotor.config_kD(0, SmartDashboard.getNumber("kDT", ModuleConstants.kDTurning));
 		//Debug output: SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
     //Debug output: SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition() * ModuleConstants.kRadiansToTurning);
