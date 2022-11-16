@@ -38,7 +38,6 @@ public class SwerveModule extends SubsystemBase {
   private final double absoluteEncoderOffsetRad;
 
   //Values
-  private double arbitraryFF = ModuleConstants.kAFFTurning;
 	private double delta = 0;
 	private double deltaConverted = 0;
 	private double setAngle = 0;
@@ -66,6 +65,7 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.setInverted(turningMotorReversed);
       turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
       turningMotor.config_kP(0, ModuleConstants.kPTurning);
+      turningMotor.config_kD(0, ModuleConstants.kDTurning);
 			turningMotor.configVoltageCompSaturation(12);
       //both
       enableVoltageCompensation(true);
@@ -78,8 +78,8 @@ public class SwerveModule extends SubsystemBase {
       }).start();
 		
 		//Values
-		//ySmartDashboard.putNumber("aFFT", arbitraryFF);
-		SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
+		//Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
+    //Debug output: SmartDashboard.putNumber("kDT", ModuleConstants.kDTurning);
   }
 
   //Configuration
@@ -120,17 +120,14 @@ public class SwerveModule extends SubsystemBase {
 		delta = state.angle.getRadians() - getTurningPosition(); //error
 		deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
 		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((Math.abs(deltaConverted) * (Math.PI/deltaConverted)) * (1-Math.abs(deltaConverted/Math.PI))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
-    //setAngle = getTurningPosition() + deltaConverted;
-
-		//arbitraryFF = getTurningPosition() < setAngle ? SmartDashboard.getNumber("aFFT", arbitraryFF) : -SmartDashboard.getNumber("aFFT", arbitraryFF);//ModuleConstants.kAFFTurning : -ModuleConstants.kAFFTurning; //sets feedforward constant positive or negative depending on direction
 
     driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
     turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning);//, DemandType.ArbitraryFeedForward, arbitraryFF); //Position Control w/ Arbitrary Feedforward
-    SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
+    
+    //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
     //Debug output: SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString());
-    SmartDashboard.putNumber("setRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
+    //Debug output: SmartDashboard.putNumber("setRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
     //Debug output: SmartDashboard.putNumber("setT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopTarget());
-    //Debug output: SmartDashboard.putNumber("errorT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
     //Debug output: SmartDashboard.putNumber("voltageT" + absoluteEncoder.getSourceChannel(), turningMotor.getMotorOutputVoltage());
   }
   public void stop() { //sets both voltage outputs to 0
@@ -140,12 +137,14 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() { // This method will be called once per scheduler run
-		turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
+		//Debug input: turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
+    //Debug input: turningMotor.config_kD(0, SmartDashboard.getNumber("kDT", ModuleConstants.kDTurning));
 		//Debug output: SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-    SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition());
+    //Debug output: SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition() * ModuleConstants.kRadiansToTurning);
     //Debug output: SmartDashboard.putNumber("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
     //Debug output: SmartDashboard.putNumber("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
     //Debug output: SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
-    SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
+    //Debug output: SmartDashboard.putNumber("errorT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
+    //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
   }
 }
