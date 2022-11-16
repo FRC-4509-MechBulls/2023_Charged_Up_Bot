@@ -122,7 +122,7 @@ public class SwerveModule extends SubsystemBase {
 		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((Math.abs(deltaConverted) * (Math.PI/deltaConverted)) * (1-Math.abs(deltaConverted/Math.PI))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
 
     driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
-    turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning);//, DemandType.ArbitraryFeedForward, arbitraryFF); //Position Control w/ Arbitrary Feedforward
+    turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
     
     //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
     //Debug output: SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString());
