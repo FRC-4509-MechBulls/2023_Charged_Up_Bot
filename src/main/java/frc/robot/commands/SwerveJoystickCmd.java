@@ -50,8 +50,8 @@ public class SwerveJoystickCmd extends CommandBase {
 
     // 2. Apply deadband
     //debug output: SmartDashboard.putNumber("input", xSpeed);
-    xSpeed = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(xSpeed, 2)) > OIConstants.kDeadband ? xSpeed : 0.0;
-    ySpeed = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(xSpeed, 2)) > OIConstants.kDeadband ? ySpeed : 0.0;
+    xSpeed = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)) > OIConstants.kDeadband ? xSpeed : 0.0;
+    ySpeed = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)) > OIConstants.kDeadband ? ySpeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs

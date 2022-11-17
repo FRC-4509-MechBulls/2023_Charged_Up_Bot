@@ -78,7 +78,7 @@ public class SwerveModule extends SubsystemBase {
       }).start();
 		
 		//Values
-		SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
+		//Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
     //Debug output: SmartDashboard.putNumber("kDT", ModuleConstants.kDTurning);
   }
 
@@ -137,7 +137,7 @@ public class SwerveModule extends SubsystemBase {
 
   @Override
   public void periodic() { // This method will be called once per scheduler run
-		turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
+		//Debug output: turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
     //Debug input: turningMotor.config_kD(0, SmartDashboard.getNumber("kDT", ModuleConstants.kDTurning));
 		//Debug output: SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
     //Debug output: SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition() * ModuleConstants.kRadiansToTurning);
