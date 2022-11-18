@@ -109,7 +109,7 @@ public final class Constants {
         public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;
         public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value;
 
-        public static final double kDeadband = 0.05; //can be changed
+        public static final double kDeadband = 0.03; //0.0275-0.03
     }
 
 
