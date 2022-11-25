@@ -6,11 +6,13 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
@@ -27,6 +29,7 @@ public class SwerveJoystickCmd extends CommandBase {
   private double rawMagnitudeRotation = 0;
   private double scaledMagnitudeRotation = 0;
   private double directionRotation = 0;
+  private PIDController turningPID = new PIDController(Constants.DriveConstants.kPTurning, 0, 0);
 
   /** Creates a new SwerveJoystickCmd. */
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
@@ -85,6 +88,9 @@ public class SwerveJoystickCmd extends CommandBase {
     turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
     //debug output: SmartDashboard.putNumber("xspeed", xSpeed);
     //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
+
+    // 3.5. P loop on turning to create accurate outputs
+    turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
 
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;

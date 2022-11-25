@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,7 +46,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                           DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
                                                           DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
-  private Pigeon2 gyro = new Pigeon2(0);
+  private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
@@ -74,6 +75,11 @@ public class SwerveSubsystem extends SubsystemBase {
   public double getHeading() {
         return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
+
+  //get rotational velocity for closed loop
+  public double getAngularVelocity() {
+      return -gyro.getRate();
+}
 
   //since wpilib often wants heading in format of Rotation2d
   public Rotation2d getRotation2d() {
