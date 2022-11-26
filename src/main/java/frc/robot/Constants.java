@@ -38,6 +38,7 @@ public final class Constants {
             //Turn
             public static final double kPTurning = 0.21; //0.21 //works from 0.1-0.3 but 0.21 seems to offer low chattering and pretty quick alignment
             //Drive
+            public static final double kAFFDrive = 0.0; //unknown
             public static final double kFDrive = 0.0; //unknown
             public static final double kPDrive = 0.0; //unknown
     }
