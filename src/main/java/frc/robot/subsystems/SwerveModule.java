@@ -57,6 +57,8 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.configFactoryDefault();
       driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
+      driveMotor.config_kF(0, ModuleConstants.kFDrive);
+      driveMotor.config_kP(0, ModuleConstants.kPDrive);
 			driveMotor.configVoltageCompSaturation(12);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
@@ -65,7 +67,6 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.setInverted(turningMotorReversed);
       turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
       turningMotor.config_kP(0, ModuleConstants.kPTurning);
-      turningMotor.config_kD(0, ModuleConstants.kDTurning);
 			turningMotor.configVoltageCompSaturation(12);
       //both
       enableVoltageCompensation(true);
@@ -121,7 +122,7 @@ public class SwerveModule extends SubsystemBase {
 		deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
 		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((Math.abs(deltaConverted) * (Math.PI/deltaConverted)) * (1-Math.abs(deltaConverted/Math.PI))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
 
-    driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
+    driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDrive); //velocity control
     turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
     
     //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
