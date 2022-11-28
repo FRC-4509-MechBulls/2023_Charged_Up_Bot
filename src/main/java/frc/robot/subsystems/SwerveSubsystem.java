@@ -13,7 +13,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
@@ -78,7 +80,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //get rotational velocity for closed loop
   public double getAngularVelocity() {
-      return -gyro.getRate();
+      return -gyro.getRate() * DriveConstants.kDegreesToRadians;
 }
 
   //since wpilib often wants heading in format of Rotation2d
