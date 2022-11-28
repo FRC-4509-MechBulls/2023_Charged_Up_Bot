@@ -29,7 +29,7 @@ public class SwerveJoystickCmd extends CommandBase {
   private double rawMagnitudeRotation = 0;
   private double scaledMagnitudeRotation = 0;
   private double directionRotation = 0;
-  private PIDController turningPID = new PIDController(Constants.DriveConstants.kPTurning, 0, 0);
+  private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
 
   /** Creates a new SwerveJoystickCmd. */
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
@@ -44,10 +44,7 @@ public class SwerveJoystickCmd extends CommandBase {
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     addRequirements(swerveSubsystem);
-    
-    //dashboard
-    SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
-  }
+    }
 
   // Called when the command is initially scheduled.
   @Override
@@ -93,10 +90,7 @@ public class SwerveJoystickCmd extends CommandBase {
     //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
     // 3.5. P loop on turning to create accurate outputs
-    turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
-    SmartDashboard.putNumber("realVr", swerveSubsystem.getAngularVelocity());
-    SmartDashboard.putNumber("setVr", turningPID.getSetpoint());
 
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;
