@@ -60,6 +60,7 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.config_kF(0, ModuleConstants.kFDrive);
       driveMotor.config_kP(0, ModuleConstants.kPDrive);
 			driveMotor.configVoltageCompSaturation(12);
+      driveMotor.configNeutralDeadband(0.01);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
       turningMotor.configFactoryDefault();
@@ -113,10 +114,10 @@ public class SwerveModule extends SubsystemBase {
 
   //Setters
   public void setDesiredState(SwerveModuleState state) {
-    if (Math.abs(state.speedMetersPerSecond) < 0.001) { //prevents wheels from going to OG pos when joysticks are not moved
+    /*if (Math.abs(state.speedMetersPerSecond) < 0.001) { //prevents wheels from going to OG pos when joysticks are not moved
       driveMotor.set(TalonFXControlMode.PercentOutput, 0);
       return;
-    }
+    }*/
     //Debug output: SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
     state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
 		delta = state.angle.getRadians() - getTurningPosition(); //error
@@ -149,6 +150,7 @@ public class SwerveModule extends SubsystemBase {
     //Debug output: SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
     //Debug output: SmartDashboard.putNumber("errorT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
     //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
-    SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity());
+    SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
+    SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity() * ModuleConstants.kMetersToDrive);
   }
 }

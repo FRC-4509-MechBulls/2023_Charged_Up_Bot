@@ -38,7 +38,7 @@ public final class Constants {
             //Turn
             public static final double kPTurning = 0.21; //0.21 //works from 0.1-0.3 but 0.21 seems to offer low chattering and pretty quick alignment
             //Drive
-            public static final double kAFFDrive = 0.0; //unknown
+            public static final double kAFFDrive = 0.042; //unknown
             public static final double kFDrive = 0.0; //unknown
             public static final double kPDrive = 0.0; //unknown
     }
@@ -113,7 +113,7 @@ public final class Constants {
         public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;
         public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value;
 
-        public static final double kDeadband = 0.03; //0.0275-0.03
+        public static final double kDeadband = 0.06; //0.0275-0.03
     }
 
 
