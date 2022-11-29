@@ -82,7 +82,7 @@ public class SwerveModule extends SubsystemBase {
 		//Dashboard
 		//Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
     //Debug output: SmartDashboard.putNumber("kDT", ModuleConstants.kDTurning);
-    SmartDashboard.putNumber("kPDrive", ModuleConstants.kPDrive);
+    //Debug output: SmartDashboard.putNumber("kPDrive", ModuleConstants.kPDrive);
   }
 
   //Configuration
@@ -124,7 +124,7 @@ public class SwerveModule extends SubsystemBase {
 		deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
 		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
 
-    driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
+    //Debug intput: driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
     driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDrive, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
     turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
     
