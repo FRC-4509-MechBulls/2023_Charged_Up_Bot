@@ -44,6 +44,9 @@ public class SwerveJoystickCmd extends CommandBase {
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     addRequirements(swerveSubsystem);
+
+    //dashboard
+    //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
     }
 
   // Called when the command is initially scheduled.
@@ -78,7 +81,7 @@ public class SwerveJoystickCmd extends CommandBase {
     //raw inputs
     rawMagnitudeRotation = Math.abs(turningSpeed); //magnitude of joystick input
     directionRotation = turningSpeed/rawMagnitudeRotation; //conveys polarity +/-
-    SmartDashboard.putNumber("directionR", directionRotation);
+    //Debug output: SmartDashboard.putNumber("directionR", directionRotation);
     //scaling
     scaledMagnitudeRotation = (1/(1-OIConstants.kDeadband))*(rawMagnitudeRotation-OIConstants.kDeadband); //same algorithm as scaled magnitude above
     if (Math.abs(turningSpeed) > OIConstants.kDeadband) {
@@ -98,6 +101,7 @@ public class SwerveJoystickCmd extends CommandBase {
     //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
     // 3.5. P loop on turning to create accurate outputs
+    //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
 
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)

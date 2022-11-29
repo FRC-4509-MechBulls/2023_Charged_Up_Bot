@@ -40,7 +40,7 @@ public final class Constants {
             //Drive
             public static final double kAFFDrive = 0.0151; //0.0151
             public static final double kFDrive = 0.0439; //0.04390375
-            public static final double kPDrive = 0.08; //0.08 prob could be less, unsure
+            public static final double kPDrive = 0.02; //0.08 //0.02
     }
 
     public static final class DriveConstants {
@@ -107,7 +107,7 @@ public final class Constants {
 
         public static final double kDegreesToRadians = (2*Math.PI) / 360;
 
-        public static final double kPTurning = 0.4;
+        public static final double kPTurning = 0.003;
         public static final double kDTurning = 0.0;
     }
 
