@@ -56,7 +56,9 @@ public class SwerveJoystickCmd extends CommandBase {
     double turningSpeed = turningSpdFunction.get()*-1;
 
     // 2. Apply deadband
-    //debug output: SmartDashboard.putNumber("input", xSpeed);
+    //debug output: SmartDashboard.putNumber("inputX", xSpeed);
+    //debug output: SmartDashboard.putNumber("inputY", ySpeed);
+    //debug output: SmartDashboard.putNumber("inputT", turningSpeed);
     //raw inputs
     rawMagnitudeTranslation = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //magnitude of joystick input
     directionTranslation[0] = xSpeed/rawMagnitudeTranslation; //x component of raw input

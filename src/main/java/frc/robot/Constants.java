@@ -97,7 +97,7 @@ public final class Constants {
 
         public static final double kRadius = Units.inchesToMeters(32/2);
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(16.3);
+        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(13.3);
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxSpeedMetersPerSecond / kRadius;
 
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
@@ -113,7 +113,7 @@ public final class Constants {
         public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;
         public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value;
 
-        public static final double kDeadband = 0.06; //0.0275-0.03
+        public static final double kDeadband = 0.06; //0.0275-0.03 //0.06
     }
 
 

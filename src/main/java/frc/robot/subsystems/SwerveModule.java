@@ -150,7 +150,8 @@ public class SwerveModule extends SubsystemBase {
     //Debug output: SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
     //Debug output: SmartDashboard.putNumber("errorT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
     //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
-    SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
-    SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity() * ModuleConstants.kMetersToDrive);
+    //Debug output: SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
+    //Debug output: SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity() * ModuleConstants.kMetersToDrive);
+    //Debug output: SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopTarget());
   }
 }
