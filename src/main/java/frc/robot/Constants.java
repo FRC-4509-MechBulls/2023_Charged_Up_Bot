@@ -35,8 +35,12 @@ public final class Constants {
         public static final double kAbsToRadians = 2.0 * Math.PI;
 
         //Gains
-        public static final double kPTurning = 0.21; //0.21 //works from 0.1-0.3 but 0.21 seems to offer low chattering and pretty quick alignment
-        public static final double kDTurning = 0.0; //0.0
+            //Turn
+            public static final double kPTurning = 0.21; //0.21 //works from 0.1-0.3 but 0.21 seems to offer low chattering and pretty quick alignment
+            //Drive
+            public static final double kAFFDrive = 0.0151; //0.0151
+            public static final double kFDrive = 0.0439; //0.04390375
+            public static final double kPDrive = 0.08; //0.08 prob could be less, unsure
     }
 
     public static final class DriveConstants {
@@ -93,7 +97,7 @@ public final class Constants {
 
         public static final double kRadius = Units.inchesToMeters(32/2);
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(16.3);
+        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(13.3);
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxSpeedMetersPerSecond / kRadius;
 
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk

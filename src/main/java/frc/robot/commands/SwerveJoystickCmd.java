@@ -59,10 +59,12 @@ public class SwerveJoystickCmd extends CommandBase {
     double turningSpeed = turningSpdFunction.get()*-1;
 
     // 2. Apply deadband
-    //debug output: SmartDashboard.putNumber("input", xSpeed);
+    //debug output: SmartDashboard.putNumber("inputX", xSpeed);
+    //debug output: SmartDashboard.putNumber("inputY", ySpeed);
+    //debug output: SmartDashboard.putNumber("inputT", turningSpeed);
     //raw inputs
     rawMagnitudeTranslation = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //magnitude of joystick input
-    directionTranslation[0] = xSpeed/rawMagnitudeTranslation; //x component of raw input
+    directionTranslation[0] = xSpeed/rawMagnitudeTranslation; //x component of raw input (THESE ARE NOT 1/-1)
     directionTranslation[1] = ySpeed/rawMagnitudeTranslation;
     //scaling
     scaledMagnitudeTranslation = (1/(1-OIConstants.kDeadband))*(rawMagnitudeTranslation-OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
@@ -76,11 +78,17 @@ public class SwerveJoystickCmd extends CommandBase {
     //raw inputs
     rawMagnitudeRotation = Math.abs(turningSpeed); //magnitude of joystick input
     directionRotation = turningSpeed/rawMagnitudeRotation; //conveys polarity +/-
+    SmartDashboard.putNumber("directionR", directionRotation);
     //scaling
     scaledMagnitudeRotation = (1/(1-OIConstants.kDeadband))*(rawMagnitudeRotation-OIConstants.kDeadband); //same algorithm as scaled magnitude above
     if (Math.abs(turningSpeed) > OIConstants.kDeadband) {
       turningSpeed = directionRotation * scaledMagnitudeRotation; //same as above for translation
     } else turningSpeed = 0.0; //zero tiny inputs
+
+    // 2.5 square inputs
+    xSpeed = xSpeed * Math.abs(xSpeed);
+    ySpeed = ySpeed * Math.abs(ySpeed);
+    turningSpeed = turningSpeed * Math.abs(turningSpeed);
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs
     xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
