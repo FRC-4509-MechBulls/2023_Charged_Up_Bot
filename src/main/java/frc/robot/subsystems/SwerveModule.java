@@ -57,7 +57,10 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.configFactoryDefault();
       driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
+      driveMotor.config_kF(0, ModuleConstants.kFDrive);
+      driveMotor.config_kP(0, ModuleConstants.kPDrive);
 			driveMotor.configVoltageCompSaturation(12);
+      driveMotor.configNeutralDeadband(0.01);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
       turningMotor.configFactoryDefault();
@@ -65,7 +68,6 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.setInverted(turningMotorReversed);
       turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
       turningMotor.config_kP(0, ModuleConstants.kPTurning);
-      turningMotor.config_kD(0, ModuleConstants.kDTurning);
 			turningMotor.configVoltageCompSaturation(12);
       //both
       enableVoltageCompensation(true);
@@ -77,9 +79,10 @@ public class SwerveModule extends SubsystemBase {
         } catch (Exception e) {}
       }).start();
 		
-		//Values
+		//Dashboard
 		//Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
     //Debug output: SmartDashboard.putNumber("kDT", ModuleConstants.kDTurning);
+    SmartDashboard.putNumber("kPDrive", ModuleConstants.kPDrive);
   }
 
   //Configuration
@@ -112,7 +115,7 @@ public class SwerveModule extends SubsystemBase {
   //Setters
   public void setDesiredState(SwerveModuleState state) {
     if (Math.abs(state.speedMetersPerSecond) < 0.001) { //prevents wheels from going to OG pos when joysticks are not moved
-      driveMotor.set(TalonFXControlMode.PercentOutput, 0);
+      driveMotor.set(TalonFXControlMode.Velocity, 0);
       return;
     }
     //Debug output: SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
@@ -121,7 +124,8 @@ public class SwerveModule extends SubsystemBase {
 		deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
 		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
 
-    driveMotor.set(TalonFXControlMode.PercentOutput, state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //scales vel down using max speed
+    driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
+    driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDrive, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
     turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
     
     //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
@@ -146,5 +150,8 @@ public class SwerveModule extends SubsystemBase {
     //Debug output: SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
     //Debug output: SmartDashboard.putNumber("errorT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
     //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
+    //Debug output: SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
+    //Debug output: SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity() * ModuleConstants.kMetersToDrive);
+    //Debug output: SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopTarget());
   }
 }
