@@ -32,6 +32,7 @@ public final class Constants {
         public static final double kWheelCircumference = kWheelDiameterMeters * Math.PI;
         public static final double kMetersToRotations = (1 / kWheelCircumference);
         public static final double kMetersToDrive = kMetersToRotations * kDriveMotorGearRatio * kFalconTicks;
+        public static final double kMetersToDriveVelocity = kMetersToDrive / 10;
         public static final double kAbsToRadians = 2.0 * Math.PI;
 
         //Gains
@@ -39,7 +40,7 @@ public final class Constants {
             public static final double kPTurning = 0.21; //0.21 //works from 0.1-0.3 but 0.21 seems to offer low chattering and pretty quick alignment
             //Drive
             public static final double kAFFDrive = 0.015; //0.0151 //0.015
-            public static final double kFDrive = 0.03751; //0.04390375 //0.03751
+            public static final double kFDrive = .045012; //0.04390375 //0.03751 //.045012
             public static final double kPDrive = 0.02; //0.08 //0.02
     }
 
@@ -97,17 +98,17 @@ public final class Constants {
 
         public static final double kRadius = Units.inchesToMeters(32/2);
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = Units.feetToMeters(13.3);
+        public static final double kPhysicalMaxSpeedMetersPerSecond = 4.8; //13.3 adjusted, 16.4 free //empirical 4.8 meters when not on ground
         public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxSpeedMetersPerSecond / kRadius;
 
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(10); //idk
+        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(100); //10 //100 for testing
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond * 2 * Math.PI; //idk
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond;
 
         public static final double kDegreesToRadians = (2*Math.PI) / 360;
 
-        public static final double kPTurning = 0.003;
+        public static final double kPTurning = 0.0015;
         public static final double kDTurning = 0.0;
     }
 
