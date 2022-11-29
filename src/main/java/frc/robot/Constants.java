@@ -115,6 +115,4 @@ public final class Constants {
 
         public static final double kDeadband = 0.06; //0.0275-0.03 //0.06
     }
-
-
 }
