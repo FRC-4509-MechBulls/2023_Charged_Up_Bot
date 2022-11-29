@@ -101,10 +101,12 @@ public class SwerveJoystickCmd extends CommandBase {
     //debug output: SmartDashboard.putNumber("xspeed", xSpeed);
     //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
-    // 3.5. P loop on turning to create accurate outputs
-    //Debug intput: 
-    turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
-    turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
+    // 3.5. P loops on to create accurate outputs
+      //turning
+        //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
+        turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
+      //drive
+      
 
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;

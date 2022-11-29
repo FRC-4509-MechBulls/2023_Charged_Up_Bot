@@ -81,7 +81,14 @@ public class SwerveSubsystem extends SubsystemBase {
   //get rotational velocity for closed loop
   public double getAngularVelocity() {
       return -gyro.getRate() * DriveConstants.kDegreesToRadians;
+  }
+
+  //get x velocity
+  public double getXVelocity() {
+    return -gyro.getRate() * DriveConstants.kDegreesToRadians;
 }
+
+  //get y velocity
 
   //since wpilib often wants heading in format of Rotation2d
   public Rotation2d getRotation2d() {
