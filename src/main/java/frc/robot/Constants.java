@@ -40,7 +40,7 @@ public final class Constants {
             //Drive
             public static final double kAFFDrive = 0.0151; //0.0151
             public static final double kFDrive = 0.0439; //0.04390375
-            public static final double kPDrive = 0.0; //unknown
+            public static final double kPDrive = 0.08; //0.08 prob could be less, unsure
     }
 
     public static final class DriveConstants {

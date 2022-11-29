@@ -114,10 +114,10 @@ public class SwerveModule extends SubsystemBase {
 
   //Setters
   public void setDesiredState(SwerveModuleState state) {
-    /*if (Math.abs(state.speedMetersPerSecond) < 0.001) { //prevents wheels from going to OG pos when joysticks are not moved
-      driveMotor.set(TalonFXControlMode.PercentOutput, 0);
+    if (Math.abs(state.speedMetersPerSecond) < 0.001) { //prevents wheels from going to OG pos when joysticks are not moved
+      driveMotor.set(TalonFXControlMode.Velocity, 0);
       return;
-    }*/
+    }
     //Debug output: SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
     state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
 		delta = state.angle.getRadians() - getTurningPosition(); //error
