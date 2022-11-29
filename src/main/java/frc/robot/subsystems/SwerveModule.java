@@ -61,6 +61,10 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.config_kP(0, ModuleConstants.kPDrive);
 			driveMotor.configVoltageCompSaturation(12);
       driveMotor.configNeutralDeadband(0.01);
+      //debug output: 
+      driveMotor.config_kF(0, 0);
+      //debug output: 
+      driveMotor.config_kP(0, 0);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
       turningMotor.configFactoryDefault();
@@ -83,6 +87,8 @@ public class SwerveModule extends SubsystemBase {
 		//Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
     //Debug output: SmartDashboard.putNumber("kDT", ModuleConstants.kDTurning);
     //Debug output: SmartDashboard.putNumber("kPDrive", ModuleConstants.kPDrive);
+    //Debug output: 
+    SmartDashboard.putNumber("kAFFDrive", ModuleConstants.kAFFDrive);
   }
 
   //Configuration
@@ -125,7 +131,9 @@ public class SwerveModule extends SubsystemBase {
 		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
 
     //Debug intput: driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
-    driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDrive, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
+    //driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDrive, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
+    //Debug output: 
+    driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDrive, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * SmartDashboard.getNumber("kAFFDrive", ModuleConstants.kAFFDrive)); //velocity control
     turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
     
     //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
@@ -151,7 +159,9 @@ public class SwerveModule extends SubsystemBase {
     //Debug output: SmartDashboard.putNumber("errorT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
     //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
     //Debug output: SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
-    //Debug output: SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity() * ModuleConstants.kMetersToDrive);
-    //Debug output: SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopTarget());
+    //Debug output: 
+    SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), Math.floor(getDriveVelocity() * ModuleConstants.kMetersToDrive));
+    //Debug output: 
+    SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), Math.floor(driveMotor.getClosedLoopTarget()));
   }
 }
