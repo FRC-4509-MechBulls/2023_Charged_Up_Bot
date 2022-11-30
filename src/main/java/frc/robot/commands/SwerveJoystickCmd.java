@@ -88,10 +88,12 @@ public class SwerveJoystickCmd extends CommandBase {
       turningSpeed = directionRotation * scaledMagnitudeRotation; //same as above for translation
     } else turningSpeed = 0.0; //zero tiny inputs
 
-    // 2.5 square inputs
+    // 2.5 square inputs //not needed for now, only needed it when there was a bug elsewhere
+    /*
     xSpeed = xSpeed * Math.abs(xSpeed);
     ySpeed = ySpeed * Math.abs(ySpeed);
     turningSpeed = turningSpeed * Math.abs(turningSpeed);
+    */
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs
     xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
