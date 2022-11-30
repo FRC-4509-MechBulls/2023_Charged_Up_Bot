@@ -46,8 +46,7 @@ public class SwerveJoystickCmd extends CommandBase {
     addRequirements(swerveSubsystem);
 
     //dashboard
-    //Debug output: 
-    SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
+    //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
     }
 
   // Called when the command is initially scheduled.
@@ -89,10 +88,12 @@ public class SwerveJoystickCmd extends CommandBase {
       turningSpeed = directionRotation * scaledMagnitudeRotation; //same as above for translation
     } else turningSpeed = 0.0; //zero tiny inputs
 
-    // 2.5 square inputs
-    /*xSpeed = xSpeed * Math.abs(xSpeed);
+    // 2.5 square inputs //not needed for now, only needed it when there was a bug elsewhere
+    /*
+    xSpeed = xSpeed * Math.abs(xSpeed);
     ySpeed = ySpeed * Math.abs(ySpeed);
-    turningSpeed = turningSpeed * Math.abs(turningSpeed);*/
+    turningSpeed = turningSpeed * Math.abs(turningSpeed);
+    */
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs
     xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
@@ -102,8 +103,7 @@ public class SwerveJoystickCmd extends CommandBase {
     //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
     // 3.5. P loop on turning to create accurate outputs
-    //Debug intput: 
-    turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
+    //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
 
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
