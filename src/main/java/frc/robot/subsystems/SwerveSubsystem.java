@@ -130,7 +130,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     //update odometry
-      odometry.updateWithTime(Timer.getFPGATimestamp(), getRotation2d(), frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState());
+      odometry.updateWithTime(Timer.getFPGATimestamp(), getRotation2d(), getStates());
       //debug output: 
       SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
       //debug output: 
