@@ -68,6 +68,17 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
     initialPose = new Pose2d();
+    odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
+    initialPose, 
+    DriveConstants.kDriveKinematics, 
+    //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
+    //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
+    //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
+    VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians), 
+    VecBuilder.fill(1 * DriveConstants.kDegreesToRadians), 
+    VecBuilder.fill(1000000, 100000, 1000000), 
+    0.02);
+
         //put in thread so it doesn't stop the rest of our code from running
         new Thread(() -> {
                 try {
@@ -75,16 +86,6 @@ public class SwerveSubsystem extends SubsystemBase {
                         gyro.configFactoryDefault();
                         gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
                         zeroHeading();
-                        odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
-                                                                initialPose, 
-                                                                DriveConstants.kDriveKinematics, 
-                                                                //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
-                                                                //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
-                                                                //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
-                                                                VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians), 
-                                                                VecBuilder.fill(1 * DriveConstants.kDegreesToRadians), 
-                                                                VecBuilder.fill(1000000, 100000, 1000000), 
-                                                                0.02);
                 } catch (Exception e) {
                 }
         
