@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,13 +24,14 @@ public class SwerveJoystickCmd extends CommandBase {
   private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
   private final Supplier<Boolean> fieldOrientedFunction; //whether user wants command to be field oriented
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
-  private double rawMagnitudeTranslation = 0;
-  private double scaledMagnitudeTranslation = 0;
-  private double directionTranslation[] = {0, 0};
-  private double rawMagnitudeRotation = 0;
+  private double TranslationMagnitude;
+  private double TranslationMagnitudeScaled;
+  private double rotationMagnitude = 0;
   private double scaledMagnitudeRotation = 0;
-  private double directionRotation = 0;
   private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+
+  Rotation2d translationDirection;
+  Rotation2d rotationDirection;
 
   /** Creates a new SwerveJoystickCmd. */
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
@@ -46,8 +48,7 @@ public class SwerveJoystickCmd extends CommandBase {
     addRequirements(swerveSubsystem);
 
     //dashboard
-    //Debug output: 
-    SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
+    //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
     }
 
   // Called when the command is initially scheduled.
@@ -61,38 +62,47 @@ public class SwerveJoystickCmd extends CommandBase {
     double xSpeed = xSpdFunction.get();
     double ySpeed = ySpdFunction.get()*-1;
     double turningSpeed = turningSpdFunction.get()*-1;
-
-    // 2. Apply deadband
     //debug output: SmartDashboard.putNumber("inputX", xSpeed);
     //debug output: SmartDashboard.putNumber("inputY", ySpeed);
     //debug output: SmartDashboard.putNumber("inputT", turningSpeed);
-    //raw inputs
-    rawMagnitudeTranslation = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //magnitude of joystick input
-    directionTranslation[0] = xSpeed/rawMagnitudeTranslation; //x component of raw input (THESE ARE NOT 1/-1)
-    directionTranslation[1] = ySpeed/rawMagnitudeTranslation;
-    //scaling
-    scaledMagnitudeTranslation = (1/(1-OIConstants.kDeadband))*(rawMagnitudeTranslation-OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
-    if (rawMagnitudeTranslation > OIConstants.kDeadband) {
-      xSpeed = directionTranslation[0] * scaledMagnitudeTranslation; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
-      ySpeed = directionTranslation[1] * scaledMagnitudeTranslation;
-    } else {
-      xSpeed = 0.0;
-      ySpeed = 0.0; //zero tiny inputs
-    }
-    //raw inputs
-    rawMagnitudeRotation = Math.abs(turningSpeed); //magnitude of joystick input
-    directionRotation = turningSpeed/rawMagnitudeRotation; //conveys polarity +/-
-    //Debug output: SmartDashboard.putNumber("directionR", directionRotation);
-    //scaling
-    scaledMagnitudeRotation = (1/(1-OIConstants.kDeadband))*(rawMagnitudeRotation-OIConstants.kDeadband); //same algorithm as scaled magnitude above
-    if (Math.abs(turningSpeed) > OIConstants.kDeadband) {
-      turningSpeed = directionRotation * scaledMagnitudeRotation; //same as above for translation
-    } else turningSpeed = 0.0; //zero tiny inputs
+    
+    //1.5 interpret joystick data
+      //translation
+        TranslationMagnitude = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //x and y vectors to polar magnitude
+        translationDirection = new Rotation2d(ySpeed, xSpeed); //creates Rotation2D representing the direction of the input vectors using yspeed/xspeed as the cos/sin of the direction
+      //Rotation
+        rotationMagnitude = Math.abs(turningSpeed); //magnitude of joystick input
+        rotationDirection = new Rotation2d(turningSpeed, 0); //conveys polarity +/-
+        //Debug output: SmartDashboard.putNumber("directionR", rotationDirection.getCos());
 
-    // 2.5 square inputs
-    /*xSpeed = xSpeed * Math.abs(xSpeed);
+    //1.55 scale magnitudes to reflect deadzone
+      //Translation
+        TranslationMagnitudeScaled = (1/(1-OIConstants.kDeadband))*(TranslationMagnitude-OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
+      //Rotation
+        scaledMagnitudeRotation = (1/(1-OIConstants.kDeadband))*(rotationMagnitude-OIConstants.kDeadband); //same algorithm as scaled magnitude translation
+
+    //2.0 deadzone and construct outputs
+      //Translation
+        if (TranslationMagnitude > OIConstants.kDeadband) {
+          ySpeed = translationDirection.getCos() * TranslationMagnitudeScaled; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
+          xSpeed = translationDirection.getSin() * TranslationMagnitudeScaled;
+        } else {
+          xSpeed = 0.0;
+          ySpeed = 0.0; //zero inputs < deadzone
+        }
+      //Rotation
+        if (rotationMagnitude > OIConstants.kDeadband) {
+          turningSpeed = rotationDirection.getCos() * scaledMagnitudeRotation; //same as above for translation
+        } else {
+          turningSpeed = 0.0; //zero inputs < deadzone
+        }
+
+    // 2.5 square inputs //not needed for now, only needed it when there was a bug elsewhere
+    /*
+    xSpeed = xSpeed * Math.abs(xSpeed);
     ySpeed = ySpeed * Math.abs(ySpeed);
-    turningSpeed = turningSpeed * Math.abs(turningSpeed);*/
+    turningSpeed = turningSpeed * Math.abs(turningSpeed);
+    */
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs
     xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
@@ -107,7 +117,7 @@ public class SwerveJoystickCmd extends CommandBase {
         turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
       //drive
       
-
+      
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;
     if (fieldOrientedFunction.get()) {
