@@ -13,9 +13,11 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -98,6 +100,16 @@ public class SwerveSubsystem extends SubsystemBase {
         return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
 
+  //module speeds
+  public SwerveModuleState[] getStates() {
+    return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
+  }
+
+  //chassis speeds
+  public ChassisSpeeds getChassisSpeeds() {
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
+  }
+
   //get rotational velocity for closed loop
   public double getAngularVelocity() {
       return -gyro.getRate() * DriveConstants.kDegreesToRadians;
@@ -111,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     //update odometry
-      odometry.update(getRotation2d(), frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState());
+      odometry.updateWithTime(Timer.getFPGATimestamp(), getRotation2d(), frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState());
       //debug output: 
       SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
       //debug output: 
