@@ -83,13 +83,6 @@ public class SwerveSubsystem extends SubsystemBase {
       return -gyro.getRate() * DriveConstants.kDegreesToRadians;
   }
 
-  //get x velocity
-  public double getXVelocity() {
-    return -gyro.getRate() * DriveConstants.kDegreesToRadians;
-}
-
-  //get y velocity
-
   //since wpilib often wants heading in format of Rotation2d
   public Rotation2d getRotation2d() {
         return Rotation2d.fromDegrees(getHeading());
