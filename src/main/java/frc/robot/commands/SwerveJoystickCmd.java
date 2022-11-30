@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,13 +24,16 @@ public class SwerveJoystickCmd extends CommandBase {
   private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
   private final Supplier<Boolean> fieldOrientedFunction; //whether user wants command to be field oriented
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
-  private double rawMagnitudeTranslation = 0;
+  private double leftStickMagnitude = 0;
   private double scaledMagnitudeTranslation = 0;
   private double directionTranslation[] = {0, 0};
   private double rawMagnitudeRotation = 0;
   private double scaledMagnitudeRotation = 0;
   private double directionRotation = 0;
   private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+
+  Rotation2d leftStickDirection;
+  Rotation2d rightStickDirection;
 
   /** Creates a new SwerveJoystickCmd. */
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
@@ -66,12 +70,12 @@ public class SwerveJoystickCmd extends CommandBase {
     //debug output: SmartDashboard.putNumber("inputY", ySpeed);
     //debug output: SmartDashboard.putNumber("inputT", turningSpeed);
     //raw inputs
-    rawMagnitudeTranslation = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //magnitude of joystick input
-    directionTranslation[0] = xSpeed/rawMagnitudeTranslation; //x component of raw input (THESE ARE NOT 1/-1)
-    directionTranslation[1] = ySpeed/rawMagnitudeTranslation;
+    leftStickMagnitude = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //magnitude of joystick input
+    directionTranslation[0] = xSpeed/leftStickMagnitude; //x component of raw input (THESE ARE NOT 1/-1)
+    directionTranslation[1] = ySpeed/leftStickMagnitude;
     //scaling
-    scaledMagnitudeTranslation = (1/(1-OIConstants.kDeadband))*(rawMagnitudeTranslation-OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
-    if (rawMagnitudeTranslation > OIConstants.kDeadband) {
+    scaledMagnitudeTranslation = (1/(1-OIConstants.kDeadband))*(leftStickMagnitude-OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
+    if (leftStickMagnitude > OIConstants.kDeadband) {
       xSpeed = directionTranslation[0] * scaledMagnitudeTranslation; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
       ySpeed = directionTranslation[1] * scaledMagnitudeTranslation;
     } else {
@@ -87,6 +91,34 @@ public class SwerveJoystickCmd extends CommandBase {
     if (Math.abs(turningSpeed) > OIConstants.kDeadband) {
       turningSpeed = directionRotation * scaledMagnitudeRotation; //same as above for translation
     } else turningSpeed = 0.0; //zero tiny inputs
+
+    //1.5 interpret joystick data
+      leftStickMagnitude = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //magnitude of joystick input
+      leftStickDirection = new Rotation2d(ySpeed, xSpeed);
+    
+    //1.55 scale magnitudes to reflect deadzone
+      leftStickMagnitude = (1/(1-OIConstants.kDeadband))*(leftStickMagnitude-OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
+
+    //scaling
+    if (leftStickMagnitude > OIConstants.kDeadband) {
+      xSpeed = directionTranslation[0] * scaledMagnitudeTranslation; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
+      ySpeed = directionTranslation[1] * scaledMagnitudeTranslation;
+    } else {
+      xSpeed = 0.0;
+      ySpeed = 0.0; //zero tiny inputs
+    }
+    //raw inputs
+    rawMagnitudeRotation = Math.abs(turningSpeed); //magnitude of joystick input
+    directionRotation = turningSpeed/rawMagnitudeRotation; //conveys polarity +/-
+    //Debug output: SmartDashboard.putNumber("directionR", directionRotation);
+    //scaling
+    scaledMagnitudeRotation = (1/(1-OIConstants.kDeadband))*(rawMagnitudeRotation-OIConstants.kDeadband); //same algorithm as scaled magnitude above
+    if (Math.abs(turningSpeed) > OIConstants.kDeadband) {
+      turningSpeed = directionRotation * scaledMagnitudeRotation; //same as above for translation
+    } else turningSpeed = 0.0; //zero tiny inputs
+
+
+
 
     // 2.5 square inputs //not needed for now, only needed it when there was a bug elsewhere
     /*
