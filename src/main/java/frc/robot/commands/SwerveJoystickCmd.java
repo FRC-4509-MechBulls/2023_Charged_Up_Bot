@@ -49,8 +49,7 @@ public class SwerveJoystickCmd extends CommandBase {
 
     //dashboard
     //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
-    //Debug output: 
-    SmartDashboard.putNumber("kPFudge", DriveConstants.kPFudge);
+    //Debug output: SmartDashboard.putNumber("kPFudge", DriveConstants.kPFudge);
     }
 
   // Called when the command is initially scheduled.
@@ -113,13 +112,11 @@ public class SwerveJoystickCmd extends CommandBase {
       //debug output: SmartDashboard.putNumber("xspeed", xSpeed);
       //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
-    //3.5. Fudge Factor to eliminate uncommanded turning when translating and rotating simultaneously
-    //ySpeed += turningSpeed * (-xSpeed) * DriveConstants.kPFudge;
-    //debug output: 
-    ySpeed += turningSpeed * (-xSpeed) * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
-    //xSpeed += turningSpeed * ySpeed * DriveConstants.kPFudge;
-    //debug output: 
-    ySpeed += turningSpeed * (-xSpeed) * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
+    //3.5. Fudge Factor to eliminate uncommanded change in direction when translating and rotating simultaneously
+      ySpeed += turningSpeed * (-xSpeed) * DriveConstants.kPFudge;
+      //debug output: ySpeed += turningSpeed * (-xSpeed) * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
+      xSpeed += turningSpeed * ySpeed * DriveConstants.kPFudge;
+      //debug output: xSpeed += turningSpeed * ySpeed * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
 
     // 3.55. P loops to create accurate outputs
       //turning
