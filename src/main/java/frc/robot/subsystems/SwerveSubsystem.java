@@ -60,6 +60,7 @@ public class SwerveSubsystem extends SubsystemBase {
   //Odometry
     private SwerveDrivePoseEstimator odometry;
     private Pose2d initialPose;
+    private ChassisSpeeds chassisSpeeds;
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
@@ -100,14 +101,17 @@ public class SwerveSubsystem extends SubsystemBase {
         return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
 
-  //module speeds
+  //module states
   public SwerveModuleState[] getStates() {
     return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
   }
 
   //chassis speeds
-  public ChassisSpeeds getChassisSpeeds() {
-    return DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
+  public ChassisSpeeds getChassisSpeeds(boolean fieldRelative) {
+    chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
+    return fieldRelative ? 
+    ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
+    chassisSpeeds;
   }
 
   //get rotational velocity for closed loop
