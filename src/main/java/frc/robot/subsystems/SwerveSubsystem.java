@@ -62,6 +62,9 @@ public class SwerveSubsystem extends SubsystemBase {
     private Pose2d initialPose;
     private ChassisSpeeds chassisSpeeds;
 
+  //Values
+    static boolean fieldOriented;
+
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
     initialPose = new Pose2d();
@@ -107,9 +110,9 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   //chassis speeds
-  public ChassisSpeeds getChassisSpeeds(boolean fieldRelative) {
+  public ChassisSpeeds getChassisSpeeds() {
     chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
-    return fieldRelative ? 
+    return fieldOriented ? 
     ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
     chassisSpeeds;
   }
@@ -136,6 +139,9 @@ public class SwerveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
       //debug output: 
       SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));
+    SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
+    SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
+    SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
   }
 
   public void stopModules() {
@@ -143,6 +149,10 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.stop();
         backLeft.stop();
         backRight.stop();
+  }
+
+  public void fieldOriented(boolean isFieldOriented) {
+    fieldOriented = isFieldOriented;
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
