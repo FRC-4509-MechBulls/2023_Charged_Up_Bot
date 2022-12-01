@@ -52,7 +52,6 @@ public class SwerveModule extends SubsystemBase {
     this.absoluteEncoderReversed = absoluteEncoderReversed;
     absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
     absoluteEncoder.setDistancePerRotation(1);
-    
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
@@ -74,7 +73,6 @@ public class SwerveModule extends SubsystemBase {
               resetEncoders();
         } catch (Exception e) {}
       }).start();
-		
 		//Dashboard
       debugOutputsInit();
   }
@@ -112,17 +110,12 @@ public class SwerveModule extends SubsystemBase {
         driveMotor.set(TalonFXControlMode.Velocity, 0);
         return;
       }
-      //Debug output: SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
       state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
       delta = state.angle.getRadians() - getTurningPosition(); //error
       deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
       setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
-
-      //Debug intput: driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
       driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
-      //Debug output: driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * SmartDashboard.getNumber("kAFFDrive", ModuleConstants.kAFFDrive)); //velocity control
       turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
-      
       //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
       //Debug output: SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString());
       //Debug output: SmartDashboard.putNumber("setRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
@@ -146,6 +139,15 @@ public class SwerveModule extends SubsystemBase {
     public void debugDriveDisablekFkP() {
       driveMotor.config_kF(0, 0);
       driveMotor.config_kP(0, 0);
+    }
+    public void debugOutputStatePreOp (SwerveModuleState state) {
+      SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
+    }
+    public void debugDriveSetkPDashboard() {
+      driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
+    }
+    public void debugDriveSetVelocityDashboard(SwerveModuleState state) {
+      driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * SmartDashboard.getNumber("kAFFDrive", ModuleConstants.kAFFDrive)); //velocity control
     }
     public void debugOutputsPeriodic() {
       //Debug output: turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
