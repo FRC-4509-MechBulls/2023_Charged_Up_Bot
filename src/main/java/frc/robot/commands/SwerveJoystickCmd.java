@@ -49,6 +49,7 @@ public class SwerveJoystickCmd extends CommandBase {
 
     //dashboard
     //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
+    //Debug output: SmartDashboard.putNumber("kPFudge", DriveConstants.kPFudge);
     }
 
   // Called when the command is initially scheduled.
@@ -59,12 +60,12 @@ public class SwerveJoystickCmd extends CommandBase {
   @Override
   public void execute() {
     // 1. Get real-time joystick inputs
-    double xSpeed = xSpdFunction.get();
-    double ySpeed = ySpdFunction.get()*-1;
-    double turningSpeed = turningSpdFunction.get()*-1;
-    //debug output: SmartDashboard.putNumber("inputX", xSpeed);
-    //debug output: SmartDashboard.putNumber("inputY", ySpeed);
-    //debug output: SmartDashboard.putNumber("inputT", turningSpeed);
+      double xSpeed = xSpdFunction.get();
+      double ySpeed = ySpdFunction.get()*-1;
+      double turningSpeed = turningSpdFunction.get()*-1;
+      //debug output: SmartDashboard.putNumber("inputX", xSpeed);
+      //debug output: SmartDashboard.putNumber("inputY", ySpeed);
+      //debug output: SmartDashboard.putNumber("inputT", turningSpeed);
     
     //1.5 interpret joystick data
       //translation
@@ -97,31 +98,43 @@ public class SwerveJoystickCmd extends CommandBase {
           turningSpeed = 0.0; //zero inputs < deadzone
         }
 
-    // 2.5 square inputs //not needed for now, only needed it when there was a bug elsewhere
     /*
+    // 2.5 square inputs //not needed for now, only needed it when there was a bug elsewhere
     xSpeed = xSpeed * Math.abs(xSpeed);
     ySpeed = ySpeed * Math.abs(ySpeed);
     turningSpeed = turningSpeed * Math.abs(turningSpeed);
     */
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs
-    xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-    ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-    turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
-    //debug output: SmartDashboard.putNumber("xspeed", xSpeed);
-    //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
+      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
+      //debug output: SmartDashboard.putNumber("xspeed", xSpeed);
+      //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
-    // 3.5. P loop on turning to create accurate outputs
-    //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
-    turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
+    //3.5. Fudge Factor to eliminate uncommanded change in direction when translating and rotating simultaneously
+      ySpeed += turningSpeed * (-xSpeed) * DriveConstants.kPFudge;
+      //debug output: ySpeed += turningSpeed * (-xSpeed) * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
+      xSpeed += turningSpeed * ySpeed * DriveConstants.kPFudge;
+      //debug output: xSpeed += turningSpeed * ySpeed * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
 
+    // 3.55. P loops to create accurate outputs
+      //turning
+        //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
+        turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
+      //drive
+        
+      
+      
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;
     if (fieldOrientedFunction.get()) {
+      swerveSubsystem.fieldOriented(true);
       // Relative to field
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
           xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
     } else {
+      swerveSubsystem.fieldOriented(false);
       // Relative to robot
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
     }

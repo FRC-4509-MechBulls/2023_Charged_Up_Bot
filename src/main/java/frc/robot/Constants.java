@@ -108,8 +108,10 @@ public final class Constants {
 
         public static final double kDegreesToRadians = (2*Math.PI) / 360;
 
-        public static final double kPTurning = 0.0015;
-        public static final double kDTurning = 0.0;
+        public static final double kPTurning = 0.0015; //0.0015 low-no oscillation
+        public static final double kDTurning = 0.0; //0.0 unnecissary
+
+        public static final double kPFudge = 0.02; //0.2 seems pretty close
     }
 
     public static final class OIConstants {
