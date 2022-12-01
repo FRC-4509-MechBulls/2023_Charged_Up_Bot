@@ -77,7 +77,7 @@ public class SwerveSubsystem extends SubsystemBase {
                         gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
                         zeroHeading();
                         Thread.sleep(1000);
-                        constructOdometry();
+                        constructOdometry(); //custructs odometry with newly corrct gyro values
                 } catch (Exception e) {
                 }
         
