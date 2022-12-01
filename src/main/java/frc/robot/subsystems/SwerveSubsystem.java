@@ -68,17 +68,7 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
     initialPose = new Pose2d();
-    odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
-    initialPose, 
-    DriveConstants.kDriveKinematics, 
-    //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
-    //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
-    //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
-    VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians), 
-    VecBuilder.fill(1 * DriveConstants.kDegreesToRadians), 
-    VecBuilder.fill(1000000, 100000, 1000000), 
-    0.02);
-
+    constructOdometry();
         //put in thread so it doesn't stop the rest of our code from running
         new Thread(() -> {
                 try {
@@ -86,6 +76,8 @@ public class SwerveSubsystem extends SubsystemBase {
                         gyro.configFactoryDefault();
                         gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
                         zeroHeading();
+                        Thread.sleep(1000);
+                        constructOdometry();
                 } catch (Exception e) {
                 }
         
@@ -93,44 +85,77 @@ public class SwerveSubsystem extends SubsystemBase {
         //allows gyro to calibrate for 1 sec before requesting to reset^^
   }
 
-  //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-  public void zeroHeading() {
-        gyro.zeroGyroBiasNow();
-        gyro.setYaw(0);
-  }
+  //Configuration
+    public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
+          gyro.zeroGyroBiasNow();
+          gyro.setYaw(0);
+    }
 
-  //A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
-  //(if x / y falls halfway between two integers, the even integer is returned)
-  public double getHeading() {
-        return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
-  }
+    public void constructOdometry() { //constructs odometry object
+      odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
+      initialPose, 
+      DriveConstants.kDriveKinematics, 
+      //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
+      //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
+      //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
+      VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians), 
+      VecBuilder.fill(1 * DriveConstants.kDegreesToRadians), 
+      VecBuilder.fill(1000000, 100000, 1000000), 
+      0.02);  
+    }
+  
+  //Getters
+    //A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
+    //(if x / y falls halfway between two integers, the even integer is returned)
+    public double getHeading() {
+          return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
+    }
 
-  //module states
-  public SwerveModuleState[] getStates() {
-    return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
-  }
+    //module states
+    public SwerveModuleState[] getStates() {
+      return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
+    }
 
-  //chassis speeds
-  public ChassisSpeeds getChassisSpeeds() {
-    chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
-    return fieldOriented ? 
-    ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
-    chassisSpeeds;
-  }
+    //chassis speeds
+    public ChassisSpeeds getChassisSpeeds() {
+      chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
+      return fieldOriented ? 
+      ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
+      chassisSpeeds;
+    }
 
-  //get rotational velocity for closed loop
-  public double getAngularVelocity() {
-      return -gyro.getRate() * DriveConstants.kDegreesToRadians;
-  }
+    //get rotational velocity for closed loop
+    public double getAngularVelocity() {
+        return -gyro.getRate() * DriveConstants.kDegreesToRadians;
+    }
 
-  //since wpilib often wants heading in format of Rotation2d
-  public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(getHeading());
-  }
+    //since wpilib often wants heading in format of Rotation2d
+    public Rotation2d getRotation2d() {
+      return Rotation2d.fromDegrees(getHeading());
+    }
 
-  @Override
-  public void periodic() {
-    //update odometry
+  //Setters 
+    public void fieldOriented(boolean isFieldOriented) {
+      fieldOriented = isFieldOriented;
+    }
+
+    public void setModuleStates(SwerveModuleState[] desiredStates) {
+      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+      //normalizes wheel speeds in case max speed reached^^
+      frontLeft.setDesiredState(desiredStates[0]);
+      frontRight.setDesiredState(desiredStates[1]);
+      backLeft.setDesiredState(desiredStates[2]);
+      backRight.setDesiredState(desiredStates[3]);
+    }
+
+    public void stopModules() {
+      frontLeft.stop();
+      frontRight.stop();
+      backLeft.stop();
+      backRight.stop();
+    }
+
+    public void updateOdometry() {
       odometry.updateWithTime(Timer.getFPGATimestamp(), getRotation2d(), getStates());
       //debug output: 
       SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
@@ -139,30 +164,16 @@ public class SwerveSubsystem extends SubsystemBase {
       //debug output: 
       SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
       //debug output: 
-      SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));
-    SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
-    SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
-    SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
-  }
+      SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
+    }
 
-  public void stopModules() {
-        frontLeft.stop();
-        frontRight.stop();
-        backLeft.stop();
-        backRight.stop();
-  }
-
-  public void fieldOriented(boolean isFieldOriented) {
-    fieldOriented = isFieldOriented;
-  }
-
-  public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        //normalizes wheel speeds in case max speed reached^^
-        frontLeft.setDesiredState(desiredStates[0]);
-        frontRight.setDesiredState(desiredStates[1]);
-        backLeft.setDesiredState(desiredStates[2]);
-        backRight.setDesiredState(desiredStates[3]);
-  }
-        
+  //Periodic
+    @Override
+    public void periodic() {
+      //update odometry
+        updateOdometry();
+      SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
+      SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
+      SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
+    }        
 }
