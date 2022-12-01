@@ -157,14 +157,16 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void updateOdometry() {
       odometry.updateWithTime(Timer.getFPGATimestamp(), getRotation2d(), getStates());
-      //debug output: 
-      SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
-      //debug output: 
-      SmartDashboard.putNumber("gyroH", getHeading());
-      //debug output: 
-      SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
-      //debug output: 
-      SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
+      //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
+      //debug output: SmartDashboard.putNumber("gyroH", getHeading());
+      //debug output: SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
+      //debug output: SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
+    }
+    
+    public void debugOutputs() {
+      //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
+      //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
+      //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
     }
 
   //Periodic
@@ -172,8 +174,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
       //update odometry
         updateOdometry();
-      SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
-      SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
-      SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
+      //dashboard outputs
+        debugOutputs();
     }        
 }
