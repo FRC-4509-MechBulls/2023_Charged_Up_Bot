@@ -10,12 +10,14 @@ import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -95,13 +97,10 @@ public class SwerveSubsystem extends SubsystemBase {
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
       initialPose, 
       DriveConstants.kDriveKinematics, 
-      //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
-      //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
-      //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(1 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(1000000, 100000, 1000000), 
-      0.02);  
+      DriveConstants.kSDOdo, 
+      DriveConstants.kSDState, 
+      DriveConstants.kSDVision, 
+      DriveConstants.kMainLoopPeriod);  
     }
   
   //Getters
@@ -162,6 +161,11 @@ public class SwerveSubsystem extends SubsystemBase {
       //debug output: SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
       //debug output: SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
     }
+
+    public void updateOdometryVision(Pose2d visionRobotPoseMeters, double timestampSeconds, Vector<N3> visionMeasurementStdDevs) {
+      odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
+
     
     public void debugOutputs() {
       //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);

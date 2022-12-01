@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -112,6 +116,14 @@ public final class Constants {
         public static final double kDTurning = 0.0; //0.0 unnecissary
 
         public static final double kPFudge = 0.02; //0.2 seems pretty close
+
+        public static final Vector<N3> kSDOdo = VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians);
+        //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
+        public static final Vector<N1> kSDState = VecBuilder.fill(1 * DriveConstants.kDegreesToRadians);
+        //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
+        public static final Vector<N3> kSDVision = VecBuilder.fill(0.05, 100000, 1000000);
+        //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
+        public static double kMainLoopPeriod = 0.02;
     }
 
     public static final class OIConstants {
