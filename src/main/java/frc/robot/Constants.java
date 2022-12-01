@@ -123,7 +123,11 @@ public final class Constants {
         //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
         public static final Vector<N3> kSDVision = VecBuilder.fill(0.05, 100000, 1000000);
         //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
+    }
+
+    public static final class RobotConstants {
         public static double kMainLoopPeriod = 0.02;
+        public static double kRobotNominalVoltage = 12;
     }
 
     public static final class OIConstants {

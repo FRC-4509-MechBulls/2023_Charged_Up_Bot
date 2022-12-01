@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.RobotConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
@@ -100,7 +101,7 @@ public class SwerveSubsystem extends SubsystemBase {
       DriveConstants.kSDOdo, 
       DriveConstants.kSDState, 
       DriveConstants.kSDVision, 
-      DriveConstants.kMainLoopPeriod);  
+      RobotConstants.kMainLoopPeriod);  
     }
   
   //Getters
@@ -109,27 +110,19 @@ public class SwerveSubsystem extends SubsystemBase {
     public double getHeading() {
           return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
     }
-
-    //module states
-    public SwerveModuleState[] getStates() {
+    public SwerveModuleState[] getStates() { //module states
       return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
     }
-
-    //chassis speeds
-    public ChassisSpeeds getChassisSpeeds() {
+    public ChassisSpeeds getChassisSpeeds() { //chassis speeds
       chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
       return fieldOriented ? 
       ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
       chassisSpeeds;
     }
-
-    //get rotational velocity for closed loop
-    public double getAngularVelocity() {
+    public double getAngularVelocity() {//since wpilib often wants heading in format of Rotation2d//get rotational velocity for closed loop
         return -gyro.getRate() * DriveConstants.kDegreesToRadians;
     }
-
-    //since wpilib often wants heading in format of Rotation2d
-    public Rotation2d getRotation2d() {
+    public Rotation2d getRotation2d() { //since wpilib often wants heading in format of Rotation2d
       return Rotation2d.fromDegrees(getHeading());
     }
 
@@ -137,7 +130,6 @@ public class SwerveSubsystem extends SubsystemBase {
     public void fieldOriented(boolean isFieldOriented) {
       fieldOriented = isFieldOriented;
     }
-
     public void setModuleStates(SwerveModuleState[] desiredStates) {
       SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
       //normalizes wheel speeds in case max speed reached^^
@@ -166,14 +158,13 @@ public class SwerveSubsystem extends SubsystemBase {
       odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
 
-    
+    //Dashboard
     public void debugOutputs() {
       //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
       //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
       //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
     }
 
-  //Periodic
     @Override
     public void periodic() {
       //update odometry
