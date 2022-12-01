@@ -4,15 +4,16 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -22,7 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants;
+import frc.robot.lib.FieldTag;
+import frc.robot.lib.MathThings;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
@@ -64,6 +66,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Values
     static boolean fieldOriented;
+  private double translationMagnitude;
+
+  private double translationMagnitudeScaled;
+  private double rotationMagnitude = 0;
+  private double scaledMagnitudeRotation = 0;
+  Rotation2d translationDirection;
+  Rotation2d rotationDirection;
+
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
@@ -85,11 +95,102 @@ public class SwerveSubsystem extends SubsystemBase {
         //allows gyro to calibrate for 1 sec before requesting to reset^^
   }
 
+  SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+  SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+  SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+  PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+
+
+  public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean limited, boolean fieldOriented){
+    //  Make the driving smoother, no sudden acceleration from sudden inputs
+    if(limited) {
+      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
+    }
+    // Construct desired chassis speeds (convert to appropriate reference frames)
+    ChassisSpeeds chassisSpeeds;
+
+    SmartDashboard.putBoolean("fieldOriented", fieldOriented);
+
+    //3.5. Fudge Factor to eliminate uncommanded change in direction when translating and rotating simultaneously
+    ySpeed += turningSpeed * (-xSpeed) * DriveConstants.kPFudge;
+    //debug output: ySpeed += turningSpeed * (-xSpeed) * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
+    xSpeed += turningSpeed * ySpeed * DriveConstants.kPFudge;
+    //debug output: xSpeed += turningSpeed * ySpeed * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
+
+    // 3.55. P loops to create accurate outputs
+    //turning
+    //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
+    turningSpeed += turningPID.calculate(getAngularVelocity(), turningSpeed);
+
+//4 - Convert and send chasis speeds
+    if(fieldOriented)
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, getRotation2d());
+    else
+      chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+
+    SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+
+    setModuleStates(moduleStates);
+  }
+  public void toggleFieldOriented(){fieldOriented = !fieldOriented;}
+  public boolean getFieldOriented(){return fieldOriented;}
+  public void setFieldOriented(boolean set){fieldOriented = set;}
+  public void resetPose(){
+    odometry.resetPosition(new Pose2d(), new Rotation2d(Math.toRadians(getHeading())));
+  }
+
+  public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
+    //1.5 interpret joystick data
+    //translation
+    translationMagnitude = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2)); //x and y vectors to polar magnitude
+    translationDirection = new Rotation2d(ySpeed, xSpeed); //creates Rotation2D representing the direction of the input vectors using yspeed/xspeed as the cos/sin of the direction
+    //Rotation
+    rotationMagnitude = Math.abs(turningSpeed); //magnitude of joystick input
+    rotationDirection = new Rotation2d(turningSpeed, 0); //conveys polarity +/-
+    //Debug output: SmartDashboard.putNumber("directionR", rotationDirection.getCos());
+
+    //1.55 scale magnitudes to reflect deadzone
+    //Translation
+    translationMagnitudeScaled = (1/(1- Constants.OIConstants.kDeadband))*(translationMagnitude - Constants.OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
+    //Rotation
+    scaledMagnitudeRotation = (1/(1- Constants.OIConstants.kDeadband))*(rotationMagnitude- Constants.OIConstants.kDeadband); //same algorithm as scaled magnitude translation
+
+    //2.0 deadzone and construct outputs
+    //Translation
+    if (translationMagnitude > Constants.OIConstants.kDeadband) {
+      ySpeed = translationDirection.getCos() * translationMagnitudeScaled; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
+      xSpeed = translationDirection.getSin() * translationMagnitudeScaled;
+    } else {
+      xSpeed = 0.0;
+      ySpeed = 0.0; //zero inputs < deadzone
+    }
+    //Rotation
+    if (rotationMagnitude > Constants.OIConstants.kDeadband) {
+      turningSpeed = rotationDirection.getCos() * scaledMagnitudeRotation; //same as above for translation
+    } else {
+      turningSpeed = 0.0; //zero inputs < deadzone
+    }
+
+    /*
+    // 2.5 square inputs //not needed for now, only needed it when there was a bug elsewhere
+    xSpeed = xSpeed * Math.abs(xSpeed);
+    ySpeed = ySpeed * Math.abs(ySpeed);
+    turningSpeed = turningSpeed * Math.abs(turningSpeed);
+    */
+    drive(xSpeed, ySpeed, turningSpeed, true, this.fieldOriented);
+  }
+
   //Configuration
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
           gyro.zeroGyroBiasNow();
           gyro.setYaw(0);
     }
+  public void zeroHeading(double yaw) {
+    gyro.zeroGyroBiasNow();
+    gyro.setYaw(yaw);
+  }
 
     public void constructOdometry() { //constructs odometry object
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
@@ -176,5 +277,67 @@ public class SwerveSubsystem extends SubsystemBase {
         updateOdometry();
       //dashboard outputs
         debugOutputs();
-    }        
+    }
+
+
+
+    // Vision stuff
+
+  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform){
+
+
+    Rotation2d newRotation = new Rotation2d(Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI));
+
+    double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getY() ) ;
+    double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getX() ) ;
+
+    Pose2d newPose = new Pose2d(newX,newY, newRotation); //kil
+
+    double cam_x = transform.getX();
+    double cam_y = transform.getY();
+    double cam_theta = newRotation.getDegrees();
+
+    // SmartDashboard.putNumber("cam_x",cam_x);
+    // SmartDashboard.putNumber("cam_y",cam_y);
+    SmartDashboard.putNumber("cam_theta",(cam_theta));
+
+    SmartDashboard.putNumber("new_x", newX);
+    SmartDashboard.putNumber("new_y", newY);
+
+
+    Pose2d poseToWheels = new Pose2d(newX/6.75*0.66,newY/6.75*0.66,newRotation);
+
+
+    odometry.resetPosition(poseToWheels,newRotation);
+    zeroHeading(newRotation.getDegrees());
+
+  }
+
+  public double[] getDesiredSpeeds(Pose2d pose){
+    double[] out = new double[3];
+    double rotationDiff = (pose.getRotation().getRadians() - odometry.getEstimatedPosition().getRotation().getRadians());
+    double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX());
+    double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY());
+    double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
+
+    double dirToPose = Math.atan2(yDiff,xDiff);
+
+    out[0] = dist * Math.cos(dirToPose +rotationDiff) *0.5;
+    out[1] = dist * Math.sin(dirToPose+rotationDiff) * 0.5;
+    out[2] = rotationDiff * 0.5;
+    return out;
+  }
+
+  public void driveToPose(Pose2d pose){
+    double[] speeds = getDesiredSpeeds(pose);
+
+    speeds[0] = MathThings.absMax(speeds[0],0.3);
+    speeds[1] = MathThings.absMax(speeds[1],0.3);
+    speeds[2] = MathThings.absMax(speeds[2],0.1);
+
+    drive(speeds[0],speeds[1],speeds[2],true,false);
+  }
+
+
+
 }
