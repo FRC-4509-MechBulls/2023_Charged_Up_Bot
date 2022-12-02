@@ -13,6 +13,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
+import org.ejml.dense.row.decomposition.svd.SafeSvd_DDRM;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -33,17 +35,16 @@ public class SwerveModule extends SubsystemBase {
   //motors
     private final WPI_TalonFX driveMotor;
     private final WPI_TalonFX turningMotor;
-
   //abs encoder
     private final DutyCycleEncoder absoluteEncoder;
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
-
   //Values
     private double delta = 0;
     private double deltaConverted = 0;
     private double setAngle = 0;
     private SwerveModuleState state;
+  //Dashboard Tabs
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
@@ -75,7 +76,8 @@ public class SwerveModule extends SubsystemBase {
         } catch (Exception e) {}
       }).start();
 		//Dashboard
-      debugOutputsInit();
+      //Debug
+        debugInit();
   }
 
   //Configuration
@@ -111,7 +113,8 @@ public class SwerveModule extends SubsystemBase {
         return;
       }
       calculateFalconRelativeState();
-      driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
+      driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, 
+                     DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
       turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
       //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
       //Debug output: SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString());
@@ -132,46 +135,46 @@ public class SwerveModule extends SubsystemBase {
     }
   //Dashboard
   //Debugging
-    public void debugOutputsInit() {
-      //Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
-      //Debug output: SmartDashboard.putNumber("kDT", ModuleConstants.kDTurning);
-      //Debug output: SmartDashboard.putNumber("kPDrive", ModuleConstants.kPDrive);
-      //Debug output: SmartDashboard.putNumber("kAFFDrive", ModuleConstants.kAFFDrive);
-    }
-    public void debugDriveDisablekFkP() {
-      driveMotor.config_kF(0, 0);
-      driveMotor.config_kP(0, 0);
-    }
-    public void debugOutputStatePreOp (SwerveModuleState state) {
-      SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
-    }
-    public void debugDriveSetkPDashboard() {
-      driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
-    }
-    public void debugDriveSetVelocityDashboard(SwerveModuleState state) {
-      driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * SmartDashboard.getNumber("kAFFDrive", ModuleConstants.kAFFDrive)); //velocity control
-    }
-    public void debugOutputsPeriodic() {
-      //Debug output: turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
-      //Debug output: SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-      //Debug output: SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition() * ModuleConstants.kRadiansToTurning);
-      //Debug output: SmartDashboard.putNumber("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
-      //Debug output: SmartDashboard.putNumber("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
-      //Debug output: SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
-      //Debug output: SmartDashboard.putNumber("errorT" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
-      //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
-      //Debug output: SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
-      //Debug output: SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity());
-      //Debug output: SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopTarget() / ModuleConstants.kMetersToDriveVelocity);
-    }
-    public void debugInputsPeriodic() {
-      //Debug input: turningMotor.config_kD(0, SmartDashboard.getNumber("kDT", ModuleConstants.kDTurning));
-    }
+    //PID
+      public void debugTuneModulePIDInit() { //call from debugInit()
+        //Drive
+          SmartDashboard.putNumber("kAFFDrive", ModuleConstants.kAFFDrive);
+          SmartDashboard.putNumber("kFDrive", ModuleConstants.kFDrive);
+          SmartDashboard.putNumber("kPDrive", ModuleConstants.kPDrive);
+        //Turn
+        SmartDashboard.putNumber("kPTurn", ModuleConstants.kPTurning);
+      }
+      public void debugTuneModulePIDSetDesiredState() { //call from setDesiredState()
+        //Drive
+          SmartDashboard.putNumber("Ed" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopError());
+          SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopTarget() / ModuleConstants.kMetersToDriveVelocity);
+          driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
+          driveMotor.config_kF(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
+          turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
+        //Turn
+          SmartDashboard.putNumber("Et" + absoluteEncoder.getSourceChannel(), turningMotor.getClosedLoopError());
+          turningMotor.config_kP(0, SmartDashboard.getNumber("kPTurn", ModuleConstants.kPTurning));
+          turningMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, 
+                           DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * SmartDashboard.getNumber("kAFFDrive", ModuleConstants.kAFFDrive));
+      }
+    //Other
+      public void debugInit() {
+        //debugTuneModulePIDInit();
+      }
+      public void debugPeriodic() {
+        //Encoders
+          //Debug output: SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
+          //Debug output: SmartDashboard.putNumber("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
+          //Debug output: SmartDashboard.putNumber("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
+        //Math
+          //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
+        //Output
+          //Debug output: SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
+      }
 
     @Override
   public void periodic() { // This method will be called once per scheduler run
-    //Dashboard outputs
-      debugOutputsPeriodic();
-      debugInputsPeriodic();
+    //Debug
+      debugPeriodic();
   }
 }
