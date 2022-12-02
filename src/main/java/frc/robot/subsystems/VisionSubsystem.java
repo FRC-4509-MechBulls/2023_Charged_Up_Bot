@@ -45,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
             for(int i = 0; i<fieldTags.length; i++){
                 if(fieldTags[i].getID() != id) continue;
                 Transform3d sentTransform = new Transform3d(new Translation3d(transform.getX()*-1,transform.getY()*-1,transform.getZ()),transform.getRotation());
-                swerveSubsystem.fieldTagSpotted(fieldTags[i], transform);
+                swerveSubsystem.fieldTagSpotted(fieldTags[i], transform, camera.getLatestResult().getLatencyMillis());
 
             }
 

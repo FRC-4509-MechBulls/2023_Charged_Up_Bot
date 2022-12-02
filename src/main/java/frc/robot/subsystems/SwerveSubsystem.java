@@ -138,7 +138,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public boolean getFieldOriented(){return fieldOriented;}
   public void setFieldOriented(boolean set){fieldOriented = set;}
   public void resetPose(){
-    odometry.resetPosition(new Pose2d(), new Rotation2d(Math.toRadians(getHeading())));
+    odometry.resetPosition(new Pose2d(), new Rotation2d());
   }
 
   public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
@@ -201,7 +201,7 @@ public class SwerveSubsystem extends SubsystemBase {
       //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
       VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians), 
       VecBuilder.fill(1 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(1000000, 100000, 1000000), 
+      VecBuilder.fill(0.01,0.01,0.01),
       0.02);  
     }
   
@@ -257,7 +257,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public void updateOdometry() {
-      odometry.updateWithTime(Timer.getFPGATimestamp(), getRotation2d(), getStates());
+      //odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates()); //make rotation difference work!!!
+      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates());
+
       //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
       //debug output: SmartDashboard.putNumber("gyroH", getHeading());
       //debug output: SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
@@ -275,6 +277,10 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
       //update odometry
         updateOdometry();
+      SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
+      SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
+      SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
+
       //dashboard outputs
         debugOutputs();
     }
@@ -283,37 +289,26 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // Vision stuff
 
-  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform){
+  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency){
 
-
-    Rotation2d newRotation = new Rotation2d(Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI));
-
+  //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
+    Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
     double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getY() ) ;
     double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getX() ) ;
-
-    Pose2d newPose = new Pose2d(newX,newY, newRotation); //kil
-
-    double cam_x = transform.getX();
-    double cam_y = transform.getY();
-    double cam_theta = newRotation.getDegrees();
-
-    // SmartDashboard.putNumber("cam_x",cam_x);
-    // SmartDashboard.putNumber("cam_y",cam_y);
-    SmartDashboard.putNumber("cam_theta",(cam_theta));
+    Pose2d newPose = new Pose2d(newX,newY, newRotation);
 
     SmartDashboard.putNumber("new_x", newX);
     SmartDashboard.putNumber("new_y", newY);
 
-
-    Pose2d poseToWheels = new Pose2d(newX/6.75*0.66,newY/6.75*0.66,newRotation);
-
-
-    odometry.resetPosition(poseToWheels,newRotation);
-    zeroHeading(newRotation.getDegrees());
+    //2. Pass vision measurement to odometry
+    SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
+    odometry.addVisionMeasurement(new Pose2d(0,0,newRotation),latency);
+  //  zeroHeading(newRotation.getDegrees());
 
   }
 
   public double[] getDesiredSpeeds(Pose2d pose){
+    //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
     double rotationDiff = (pose.getRotation().getRadians() - odometry.getEstimatedPosition().getRotation().getRadians());
     double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX());
@@ -322,18 +317,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
     double dirToPose = Math.atan2(yDiff,xDiff);
 
-    out[0] = dist * Math.cos(dirToPose +rotationDiff) *0.5;
+    out[0] = dist * Math.cos(dirToPose +rotationDiff) * 0.5;
     out[1] = dist * Math.sin(dirToPose+rotationDiff) * 0.5;
-    out[2] = rotationDiff * 0.5;
+    out[2] = rotationDiff * 0.7;
     return out;
   }
 
   public void driveToPose(Pose2d pose){
     double[] speeds = getDesiredSpeeds(pose);
 
-    speeds[0] = MathThings.absMax(speeds[0],0.3);
-    speeds[1] = MathThings.absMax(speeds[1],0.3);
-    speeds[2] = MathThings.absMax(speeds[2],0.1);
+    speeds[0] = MathThings.absMax(speeds[0],0.2);
+    speeds[1] = MathThings.absMax(speeds[1],0.2);
+    speeds[2] = MathThings.absMax(speeds[2],0.2);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
   }
