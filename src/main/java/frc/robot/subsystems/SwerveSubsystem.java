@@ -83,7 +83,6 @@ public class SwerveSubsystem extends SubsystemBase {
                         constructOdometry(); //custructs odometry with newly corrct gyro values
                 } catch (Exception e) {
                 }
-        
         }).start();
         //allows gyro to calibrate for 1 sec before requesting to reset^^
   }

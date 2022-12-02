@@ -43,6 +43,7 @@ public class SwerveModule extends SubsystemBase {
     private double delta = 0;
     private double deltaConverted = 0;
     private double setAngle = 0;
+    private SwerveModuleState state;
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
@@ -86,7 +87,6 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.enableVoltageCompensation(onOff);
       turningMotor.enableVoltageCompensation(onOff);
     } 
-
   //Getters
     public double getTurningPosition() {
       return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
@@ -103,17 +103,14 @@ public class SwerveModule extends SubsystemBase {
     public SwerveModuleState getState() { //wpi lib requests info in form of swerve module state, so this method converts it
       return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
-
   //Setters
     public void setDesiredState(SwerveModuleState state) {
-      if (Math.abs(state.speedMetersPerSecond) < 0.001) { //prevents wheels from going to OG pos when joysticks are not moved
+      this.state = state;
+      if (Math.abs(state.speedMetersPerSecond) < 0.0001) { //prevents wheels from going to OG pos when joysticks are not moved
         driveMotor.set(TalonFXControlMode.Velocity, 0);
         return;
       }
-      state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
-      delta = state.angle.getRadians() - getTurningPosition(); //error
-      deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
-      setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
+      calculateFalconRelativeState();
       driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
       turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
       //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
@@ -126,9 +123,14 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.set(TalonFXControlMode.PercentOutput, 0);
       turningMotor.set(TalonFXControlMode.PercentOutput, 0);
     }
-
+  //Utility
+    public void calculateFalconRelativeState() { //converts absolute state to falcon-encoder-relative state
+      state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
+      delta = state.angle.getRadians() - getTurningPosition(); //turn error
+      deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
+      setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
+    }
   //Dashboard
-
   //Debugging
     public void debugOutputsInit() {
       //Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);
@@ -165,8 +167,8 @@ public class SwerveModule extends SubsystemBase {
     public void debugInputsPeriodic() {
       //Debug input: turningMotor.config_kD(0, SmartDashboard.getNumber("kDT", ModuleConstants.kDTurning));
     }
-  
-  @Override
+
+    @Override
   public void periodic() { // This method will be called once per scheduler run
     //Dashboard outputs
       debugOutputsPeriodic();
