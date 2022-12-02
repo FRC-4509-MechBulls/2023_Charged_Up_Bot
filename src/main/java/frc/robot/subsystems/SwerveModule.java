@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CTREConfigs;
@@ -45,7 +47,8 @@ public class SwerveModule extends SubsystemBase {
     private double setAngle = 0;
     private SwerveModuleState state;
   //Dashboard Tabs
-
+    private static ShuffleboardTab tabModules = Shuffleboard.getTab("Modules");
+    private static ShuffleboardTab tabModulePID = Shuffleboard.getTab("ModulePID");
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
                       int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
