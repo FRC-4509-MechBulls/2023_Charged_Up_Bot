@@ -20,6 +20,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -67,6 +69,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Values
     static boolean fieldOriented;
+    
+  //Dashboard Tabs
+    private ShuffleboardTab tabSwerveSubsystem = Shuffleboard.getTab("SwerveSubsystem");
+
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
