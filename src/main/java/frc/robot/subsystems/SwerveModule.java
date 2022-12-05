@@ -18,6 +18,7 @@ import org.ejml.dense.row.decomposition.svd.SafeSvd_DDRM;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -141,6 +142,7 @@ public class SwerveModule extends SubsystemBase {
     //PID
       public void debugTuneModulePIDInit() { //call from debugInit()
         //Drive
+          NetworkTableEntry dashboardkAFF = tabModulePID.add("Distance to target", 0).getEntry();
           SmartDashboard.putNumber("kAFFDrive", ModuleConstants.kAFFDrive);
           SmartDashboard.putNumber("kFDrive", ModuleConstants.kFDrive);
           SmartDashboard.putNumber("kPDrive", ModuleConstants.kPDrive);
