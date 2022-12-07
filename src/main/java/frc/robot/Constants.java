@@ -115,7 +115,7 @@ public final class Constants {
         public static final double kPTurning = 0.0015; //0.0015 low-no oscillation
         public static final double kDTurning = 0.0; //0.0 unnecissary
 
-        public static final double kPTranslation = 0.00; //unknown
+        public static final double kPTranslation = 0.0007; //0.0007; 0.0005 has low jiggle when stopping but lower strength, 0.001 is stronger but jiggles
 
         public static final double kPFudge = 0.02; //0.2 seems pretty close
 
