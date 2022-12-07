@@ -122,11 +122,10 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     public ChassisSpeeds getChassisSpeeds() { //chassis speeds
       chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
-      return fieldOriented ? 
-      ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
-      chassisSpeeds;
+      return fieldOriented ? ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
+                             chassisSpeeds;
     }
-    public double getAngularVelocity() {//since wpilib often wants heading in format of Rotation2d//get rotational velocity for closed loop
+    public double getAngularVelocity() { //get rotational velocity for closed loop
         return -gyro.getRate() * DriveConstants.kDegreesToRadians;
     }
     public Rotation2d getRotation2d() { //since wpilib often wants heading in format of Rotation2d
