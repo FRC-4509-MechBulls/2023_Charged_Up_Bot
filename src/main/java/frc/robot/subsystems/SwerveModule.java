@@ -86,6 +86,7 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.configFactoryDefault();
       turningMotor.setNeutralMode(NeutralMode.Coast);
       turningMotor.setInverted(turningMotorReversed);
+      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor);
       //both
       enableVoltageCompensation(true);
       //initialize encoders in thread so they don't timeout
@@ -128,13 +129,13 @@ public class SwerveModule extends SubsystemBase {
   //Setters
     public void setDesiredState(SwerveModuleState state) {
       this.state = state;
-      if (Math.abs(state.speedMetersPerSecond) < 0.0001) { //prevents wheels from going to OG pos when joysticks are not moved
+      if (Math.abs(this.state.speedMetersPerSecond) < 0.0001) { //prevents wheels from going to OG pos when joysticks are not moved
         driveMotor.set(TalonFXControlMode.Velocity, 0);
         return;
       }
       calculateFalconRelativeState();
-      driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, 
-                     DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
+      driveMotor.set(TalonFXControlMode.Velocity, this.state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, 
+                     DemandType.ArbitraryFeedForward, (this.state.speedMetersPerSecond/Math.abs(this.state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
       turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
     }
     public void stop() { //sets both voltage outputs to 0
@@ -146,12 +147,13 @@ public class SwerveModule extends SubsystemBase {
       state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
       delta = state.angle.getRadians() - getTurningPosition(); //turn error
       deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
-      setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
+      setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : 
+                                                            getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
     }
   //Dashboard
   //Debugging
     //PID
-      private void debugTuneModulePIDInit() { //call from debugInit()
+      public void debugTuneModulePIDInit() { //call from debugInit()
         //Drive
           dashboardkAFF = tabModulePID.add("kAFFDrive", ModuleConstants.kAFFDrive).getEntry();
           dashboardkFDrive = tabModulePID.add("kFDrive", ModuleConstants.kFDrive).getEntry();
