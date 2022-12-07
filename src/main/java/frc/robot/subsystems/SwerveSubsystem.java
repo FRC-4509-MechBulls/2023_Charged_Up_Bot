@@ -78,8 +78,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
-    //dashboard
-      debugInit(); //initialize debug outputs
     //Odometry
       initialPose = new Pose2d();
       constructOdometry(); //constructs odometry without zeroing sensors to keep odometry happy
@@ -94,6 +92,9 @@ public class SwerveSubsystem extends SubsystemBase {
                   } catch (Exception e) {
                   }
           }).start();
+    //dashboard
+      debugInit(); //initialize debug outputs
+
   }
 
   //Configuration
