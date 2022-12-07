@@ -19,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -61,36 +62,38 @@ public class SwerveSubsystem extends SubsystemBase {
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
     private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
-
   //Odometry
     private SwerveDrivePoseEstimator odometry;
     private Pose2d initialPose;
     private ChassisSpeeds chassisSpeeds;
-
   //Values
     static boolean fieldOriented;
-    
-  //Dashboard Tabs
-    private ShuffleboardTab tabSwerveSubsystem = Shuffleboard.getTab("SwerveSubsystem");
-
+  //Dashboard
+    //Tabs
+      private ShuffleboardTab tabSwerveSubsystem = Shuffleboard.getTab("SwerveSubsystem");
+    //Entries
+    private NetworkTableEntry dashboardOdometryHeading;
+    private NetworkTableEntry dashboardOdometryY;
+    private NetworkTableEntry dashboardOdometryX;
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
-    initialPose = new Pose2d();
-    constructOdometry();
-        //put in thread so it doesn't stop the rest of our code from running
-        new Thread(() -> {
-                try {
-                        Thread.sleep(1000);
-                        gyro.configFactoryDefault();
-                        gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
-                        zeroHeading();
-                        Thread.sleep(1000);
-                        constructOdometry(); //custructs odometry with newly corrct gyro values
-                } catch (Exception e) {
-                }
-        }).start();
-        //allows gyro to calibrate for 1 sec before requesting to reset^^
+    //dashboard
+      debugInit(); //initialize debug outputs
+    //Odometry
+      initialPose = new Pose2d();
+      constructOdometry(); //constructs odometry without zeroing sensors to keep odometry happy
+          new Thread(() -> { //lets gyro calibrate and sequentially constructs odometry without pausing code
+                  try {
+                          Thread.sleep(1000); //wait 1 second
+                          gyro.configFactoryDefault();
+                          gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
+                          zeroHeading();
+                          Thread.sleep(1000); //wait 1 second for gyro initialization
+                          constructOdometry(); //custructs odometry with newly corrct gyro values
+                  } catch (Exception e) {
+                  }
+          }).start();
   }
 
   //Configuration
@@ -98,7 +101,6 @@ public class SwerveSubsystem extends SubsystemBase {
           gyro.zeroGyroBiasNow();
           gyro.setYaw(0);
     }
-
     public void constructOdometry() { //constructs odometry object
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
       initialPose, 
@@ -108,7 +110,6 @@ public class SwerveSubsystem extends SubsystemBase {
       DriveConstants.kSDVision, 
       RobotConstants.kMainLoopPeriod);  
     }
-  
   //Getters
     //A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
     //(if x / y falls halfway between two integers, the even integer is returned)
@@ -130,51 +131,65 @@ public class SwerveSubsystem extends SubsystemBase {
     public Rotation2d getRotation2d() { //since wpilib often wants heading in format of Rotation2d
       return Rotation2d.fromDegrees(getHeading());
     }
-
   //Setters 
     public void fieldOriented(boolean isFieldOriented) {
       fieldOriented = isFieldOriented;
     }
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-      //normalizes wheel speeds in case max speed reached^^
+      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond); //normalizes wheel speeds in case max speed reached
       frontLeft.setDesiredState(desiredStates[0]);
       frontRight.setDesiredState(desiredStates[1]);
       backLeft.setDesiredState(desiredStates[2]);
       backRight.setDesiredState(desiredStates[3]);
     }
-
     public void stopModules() {
       frontLeft.stop();
       frontRight.stop();
       backLeft.stop();
       backRight.stop();
     }
-
     public void updateOdometry() {
       odometry.updateWithTime(Timer.getFPGATimestamp(), getRotation2d(), getStates());
-      //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
-      //debug output: SmartDashboard.putNumber("gyroH", getHeading());
-      //debug output: SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
-      //debug output: SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
     }
-
     public void updateOdometryVision(Pose2d visionRobotPoseMeters, double timestampSeconds, Vector<N3> visionMeasurementStdDevs) {
       odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     }
-
     //Dashboard
-    public void debugOutputs() {
-      //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
-      //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
-      //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
-    }
+    //Debugging
+      //Odometry
+        public void debugOdometryInit () {
+          //Odometry
+            dashboardOdometryHeading = tabSwerveSubsystem.add("OdometryHeading", odometry.getEstimatedPosition().getRotation().getDegrees()).getEntry();
+            dashboardOdometryY = tabSwerveSubsystem.add("OdometryY", odometry.getEstimatedPosition().getY()).getEntry();
+            dashboardOdometryX = tabSwerveSubsystem.add("OdometryX", odometry.getEstimatedPosition().getX()).getEntry();
+        }
+        public void debugOdometryPeriodic () {
+          //Odometry
+            dashboardOdometryHeading.setDouble(odometry.getEstimatedPosition().getRotation().getDegrees());
+            dashboardOdometryY.setDouble(odometry.getEstimatedPosition().getY());
+            dashboardOdometryX.setDouble(odometry.getEstimatedPosition().getX());
+        }
+      //Other
+        public void debugInit() {
+          //Odometry
+            debugOdometryInit();
+        }
+        public void debugPeriodic() {
+          //Chassis Speeds
+            //debug output: tabSwerveSubsystem.add("CSH", getChassisSpeeds().omegaRadiansPerSecond);
+            //debug output: tabSwerveSubsystem.add("CSY", getChassisSpeeds().vyMetersPerSecond);
+            //debug output: tabSwerveSubsystem.add("CSX", getChassisSpeeds().vxMetersPerSecond);
+          //Odometry
+            debugOdometryPeriodic();
+          //Gryo
+            //debug output: tabSwerveSubsystem.add("gyroH", getHeading()); 
+        }
 
     @Override
     public void periodic() {
       //update odometry
         updateOdometry();
       //dashboard outputs
-        debugOutputs();
+        debugPeriodic();
     }        
 }

@@ -47,11 +47,14 @@ public class SwerveModule extends SubsystemBase {
     private double deltaConverted = 0;
     private double setAngle = 0;
     private SwerveModuleState state;
-  //Dashboard Tabs
-    private ShuffleboardTab tabModules = Shuffleboard.getTab("Modules");
-    private ShuffleboardTab tabModulePID = Shuffleboard.getTab("ModulePID");
+  //Dashboard
+    //Tabs
+      private ShuffleboardTab tabModules = Shuffleboard.getTab("Modules");
+      private ShuffleboardTab tabModulePID = Shuffleboard.getTab("ModulePID");
+    //Entries
       //Status
-      private NetworkTableEntry dashboardAbsConnected;
+        //abs encoders
+          private NetworkTableEntry dashboardAbsConnected;
       //PID
         //drive
           private NetworkTableEntry dashboardkAFF;
