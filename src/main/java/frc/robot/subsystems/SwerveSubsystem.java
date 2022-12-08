@@ -84,9 +84,9 @@ public class SwerveSubsystem extends SubsystemBase {
           new Thread(() -> { //lets gyro calibrate and sequentially constructs odometry without pausing code
                   try {
                           Thread.sleep(1000); //wait 1 second
-                          gyro.configFactoryDefault();
-                          gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
-                          gyro.configZAxisGyroError(0.76);
+                          gyro.configFactoryDefault(50);
+                          gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 50);
+                          gyro.configZAxisGyroError(0.674, 50);
                           zeroHeading();
                           Thread.sleep(1000); //wait 1 second for gyro initialization
                           constructOdometry(); //custructs odometry with newly corrct gyro values
@@ -95,13 +95,12 @@ public class SwerveSubsystem extends SubsystemBase {
           }).start();
     //dashboard
       debugInit(); //initialize debug outputs
-
   }
 
   //Configuration
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-          gyro.zeroGyroBiasNow();
-          gyro.setYaw(0);
+          gyro.zeroGyroBiasNow(50);
+          gyro.setYaw(0, 50);
     }
     public void constructOdometry() { //constructs odometry object
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
@@ -183,7 +182,8 @@ public class SwerveSubsystem extends SubsystemBase {
           //Odometry
             debugOdometryPeriodic();
           //Gryo
-            //debug output: tabSwerveSubsystem.add("gyroH", getHeading()); 
+            //debug output: tabSwerveSubsystem.add("gyroH", getHeading());
+            //gyro.get; 
         }
 
     @Override
