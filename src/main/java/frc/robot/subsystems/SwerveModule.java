@@ -52,6 +52,9 @@ public class SwerveModule extends SubsystemBase {
       private ShuffleboardTab tabModules = Shuffleboard.getTab("Modules");
       private ShuffleboardTab tabModulePID = Shuffleboard.getTab("ModulePID");
     //Entries
+      //Values
+        //abs encoders
+          private NetworkTableEntry dashboardAbsRaw01;
       //Status
         //abs encoders
           private NetworkTableEntry dashboardAbsConnected;
@@ -180,14 +183,16 @@ public class SwerveModule extends SubsystemBase {
       }
     //Other
       public void debugInit() {
-        dashboardAbsConnected = tabModules.add("absConnected" + this.turningMotor.getDeviceID(), absoluteEncoder.isConnected()).getEntry();
+        //Encoders
+          dashboardAbsConnected = tabModules.add("absConnected" + this.turningMotor.getDeviceID(), absoluteEncoder.isConnected()).getEntry();
+          //Debug output: dashboardAbsRaw01 = tabModules.add("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition()).getEntry();
         //debugTuneModulePIDInit();
       }
       public void debugPeriodic() {
         //Encoders
           dashboardAbsConnected.setBoolean(absoluteEncoder.isConnected());
           //Debug output: tabModules.add("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
-          //Debug output: tabModules.add("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
+          //Debug output: dashboardAbsRaw01.setDouble(absoluteEncoder.getAbsolutePosition());
         //Math
           //Debug output: tabModules.add("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
         //Output

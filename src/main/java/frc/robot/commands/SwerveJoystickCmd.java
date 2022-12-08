@@ -51,8 +51,7 @@ public class SwerveJoystickCmd extends CommandBase {
 
     //dashboard
     //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
-    //Debug output: 
-    SmartDashboard.putNumber("kPTranslation", DriveConstants.kPTranslation);
+    //Debug output: SmartDashboard.putNumber("kPTranslation", DriveConstants.kPTranslation);
     //Debug output: SmartDashboard.putNumber("kPFudge", DriveConstants.kPFudge);
     }
 
@@ -128,12 +127,10 @@ public class SwerveJoystickCmd extends CommandBase {
         turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
       //drive
         //y
-          //Debug intput: 
-          yPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
+          //Debug intput: yPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
           ySpeed += yPID.calculate(swerveSubsystem.getChassisSpeeds().vyMetersPerSecond + swerveSubsystem.getAngularVelocity() * -swerveSubsystem.getChassisSpeeds().vxMetersPerSecond * DriveConstants.kPFudge, ySpeed);
         //x
-          //Debug intput: 
-          xPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
+          //Debug intput: xPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
           xSpeed += xPID.calculate(swerveSubsystem.getChassisSpeeds().vxMetersPerSecond + swerveSubsystem.getAngularVelocity() * swerveSubsystem.getChassisSpeeds().vyMetersPerSecond * DriveConstants.kPFudge, xSpeed);
 
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
@@ -148,6 +145,7 @@ public class SwerveJoystickCmd extends CommandBase {
         // Relative to robot
         chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
       }
+      //SmartDashboard.putNumber("turningspeed", turningSpeed);
 
     // 5. Convert chassis speeds to individual module states
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);

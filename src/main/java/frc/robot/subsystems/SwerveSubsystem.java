@@ -183,7 +183,6 @@ public class SwerveSubsystem extends SubsystemBase {
             debugOdometryPeriodic();
           //Gryo
             //debug output: tabSwerveSubsystem.add("gyroH", getHeading());
-            //gyro.get; 
         }
 
     @Override
