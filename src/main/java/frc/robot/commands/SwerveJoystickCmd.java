@@ -123,8 +123,8 @@ public class SwerveJoystickCmd extends CommandBase {
 
     // 3.55. P loops to create accurate outputs
       //turning
-        //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
-        turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
+          //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
+          turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
       //drive
         //y
           //Debug intput: yPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
@@ -145,7 +145,7 @@ public class SwerveJoystickCmd extends CommandBase {
         // Relative to robot
         chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
       }
-      //SmartDashboard.putNumber("turningspeed", turningSpeed);
+      //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
     // 5. Convert chassis speeds to individual module states
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);

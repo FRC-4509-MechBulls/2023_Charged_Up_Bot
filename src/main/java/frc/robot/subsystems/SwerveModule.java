@@ -80,16 +80,16 @@ public class SwerveModule extends SubsystemBase {
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.configFactoryDefault();
+      driveMotor.configFactoryDefault(100);
       driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
-      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor);
+      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 50);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
-      turningMotor.configFactoryDefault();
+      turningMotor.configFactoryDefault(100);
       turningMotor.setNeutralMode(NeutralMode.Coast);
       turningMotor.setInverted(turningMotorReversed);
-      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor);
+      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 50);
       //both
       enableVoltageCompensation(true);
       //initialize encoders in thread so they don't timeout
