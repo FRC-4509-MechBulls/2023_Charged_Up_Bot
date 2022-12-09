@@ -61,13 +61,11 @@ public final class Constants {
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
         );
 
-        //TBD
         public static final int kFrontLeftDriveMotorPort = 1;
         public static final int kFrontRightDriveMotorPort = 2;
         public static final int kBackLeftDriveMotorPort = 3;
         public static final int kBackRightDriveMotorPort = 4;
 
-        //TBD
         public static final int kFrontLeftTurningMotorPort = 5;
         public static final int kFrontRightTurningMotorPort = 6;
         public static final int kBackLeftTurningMotorPort = 7;
@@ -83,13 +81,11 @@ public final class Constants {
         public static final boolean kBackLeftTurningEncoderReversed = true;
         public static final boolean kBackRightTurningEncoderReversed = true;
 
-        //TBD
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 0;
         public static final int kFrontRightDriveAbsoluteEncoderPort = 1;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
         public static final int kBackRightDriveAbsoluteEncoderPort = 3;
 
-        //sort of calculated
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.607281 * Math.PI * 2;
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.534903 * Math.PI * 2;
         public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -0.612127 * Math.PI * 2;
@@ -125,11 +121,13 @@ public final class Constants {
         //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
         public static final Vector<N3> kSDVision = VecBuilder.fill(0.05, 100000, 1000000);
         //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
+
+        public static final double kGyroZError = 0.674; //.674
     }
 
     public static final class RobotConstants {
         public static double kMainLoopPeriod = 0.02;
-        public static double kRobotNominalVoltage = 12;
+        public static double kRobotNominalVoltage = 12.0;
     }
 
     public static final class OIConstants {

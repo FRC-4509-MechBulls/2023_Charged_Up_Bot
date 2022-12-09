@@ -73,23 +73,23 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
                       int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
     //absolute encoder
-    this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-    this.absoluteEncoderReversed = absoluteEncoderReversed;
-    absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
-    absoluteEncoder.setDistancePerRotation(1);
+      this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
+      this.absoluteEncoderReversed = absoluteEncoderReversed;
+      absoluteEncoder = new DutyCycleEncoder(absoluteEncoderId);
+      absoluteEncoder.setDistancePerRotation(1);
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.configFactoryDefault(100);
+      driveMotor.configFactoryDefault(10);
       driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
-      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 50);
+      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 10);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
-      turningMotor.configFactoryDefault(100);
+      turningMotor.configFactoryDefault(10);
       turningMotor.setNeutralMode(NeutralMode.Coast);
       turningMotor.setInverted(turningMotorReversed);
-      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 50);
+      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 10);
       //both
       enableVoltageCompensation(true);
       //initialize encoders in thread so they don't timeout
@@ -112,7 +112,7 @@ public class SwerveModule extends SubsystemBase {
     public void enableVoltageCompensation(boolean onOff) {
       driveMotor.enableVoltageCompensation(onOff);
       turningMotor.enableVoltageCompensation(onOff);
-    } 
+    }
   //Getters
     public double getTurningPosition() {
       return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
@@ -184,7 +184,7 @@ public class SwerveModule extends SubsystemBase {
     //Other
       public void debugInit() {
         //Encoders
-          dashboardAbsConnected = tabModules.add("absConnected" + this.turningMotor.getDeviceID(), absoluteEncoder.isConnected()).getEntry();
+          dashboardAbsConnected = tabModules.add("absConnected" + absoluteEncoder.getSourceChannel(), absoluteEncoder.isConnected()).getEntry();
           //Debug output: dashboardAbsRaw01 = tabModules.add("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition()).getEntry();
         //debugTuneModulePIDInit();
       }

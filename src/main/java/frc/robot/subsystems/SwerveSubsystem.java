@@ -25,7 +25,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CTREConfigs;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.RobotConstants;
@@ -83,12 +85,12 @@ public class SwerveSubsystem extends SubsystemBase {
       constructOdometry(); //constructs odometry without zeroing sensors to keep odometry happy
           new Thread(() -> { //lets gyro calibrate and sequentially constructs odometry without pausing code
                   try {
-                          Thread.sleep(1000); //wait 1 second
-                          gyro.configFactoryDefault(50);
-                          gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 50);
-                          gyro.configZAxisGyroError(0.674, 50);
+                          //Thread.sleep(1000); //wait 1 second
+                          gyro.configFactoryDefault(10);
+                          gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 10);
+                          gyro.configAllSettings(Robot.ctreConfigs.gyro, 10);
                           zeroHeading();
-                          Thread.sleep(1000); //wait 1 second for gyro initialization
+                          //Thread.sleep(1000); //wait 1 second for gyro initialization
                           constructOdometry(); //custructs odometry with newly corrct gyro values
                   } catch (Exception e) {
                   }
@@ -99,8 +101,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Configuration
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-          gyro.zeroGyroBiasNow(50);
-          gyro.setYaw(0, 50);
+          gyro.zeroGyroBiasNow(10);
+          gyro.setYaw(0, 10);
     }
     public void constructOdometry() { //constructs odometry object
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 

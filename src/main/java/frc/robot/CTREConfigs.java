@@ -5,8 +5,10 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.RobotConstants;
 
@@ -14,13 +16,16 @@ import frc.robot.Constants.RobotConstants;
 public class CTREConfigs {
   public TalonFXConfiguration swerveDriveMotor;
   public TalonFXConfiguration swerveTurnMotor;
+  public Pigeon2Configuration gyro;
 
   public CTREConfigs() {
     swerveDriveMotor = new TalonFXConfiguration();
     swerveTurnMotor = new TalonFXConfiguration();
+    gyro = new Pigeon2Configuration();
 
     configSwerveDriveMotor();
     configSwerveTurnMotor();
+    configGyro();
   }
 
   //Setters
@@ -34,5 +39,8 @@ public class CTREConfigs {
     swerveTurnMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveTurnMotor.slot0.kP = ModuleConstants.kPTurning;
     swerveTurnMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
+  }
+  public void configGyro() {
+    gyro.ZAxisGyroError = DriveConstants.kGyroZError;
   }
 }
