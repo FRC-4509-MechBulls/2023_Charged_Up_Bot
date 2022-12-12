@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -63,7 +64,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
-    private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
+    private WPI_Pigeon2 gyro;
   //Odometry
     private SwerveDrivePoseEstimator odometry;
     private Pose2d initialPose;
@@ -82,7 +83,14 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem() {
     //Odometry
       initialPose = new Pose2d();
-      constructOdometry(); //constructs odometry without zeroing sensors to keep odometry happy
+    //gyro
+      gyro = new WPI_Pigeon2(0);
+      gyro.configFactoryDefault(10);
+      gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 10);
+      gyro.configAllSettings(Robot.ctreConfigs.gyro, 10);
+      zeroHeading();
+      constructOdometry(); //custructs odometry with newly corrct gyro values      
+      /*
           new Thread(() -> { //lets gyro calibrate and sequentially constructs odometry without pausing code
                   try {
                           //Thread.sleep(1000); //wait 1 second
@@ -95,6 +103,7 @@ public class SwerveSubsystem extends SubsystemBase {
                   } catch (Exception e) {
                   }
           }).start();
+      */
     //dashboard
       debugInit(); //initialize debug outputs
   }

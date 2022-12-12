@@ -92,6 +92,8 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 10);
       //both
       enableVoltageCompensation(true);
+      resetEncoders();
+      /*
       //initialize encoders in thread so they don't timeout
       new Thread(() -> {
         try {
@@ -99,6 +101,7 @@ public class SwerveModule extends SubsystemBase {
               resetEncoders();
         } catch (Exception e) {}
       }).start();
+      */
 		//Dashboard
       //Debug
         debugInit();
