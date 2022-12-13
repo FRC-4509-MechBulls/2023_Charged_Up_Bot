@@ -83,18 +83,18 @@ public class SwerveModule extends SubsystemBase {
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
-      //driveMotor.configFactoryDefault(10);removed
-      //driveMotor.setNeutralMode(NeutralMode.Coast);removed
-      //driveMotor.setInverted(driveMotorReversed);removed
-      //driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 10);removed
+      driveMotor.configFactoryDefault(10);
+      driveMotor.setNeutralMode(NeutralMode.Coast);
+      driveMotor.setInverted(driveMotorReversed);
+      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 10);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
-      //turningMotor.configFactoryDefault(10);removed
-      //turningMotor.setNeutralMode(NeutralMode.Coast);removed
-      //turningMotor.setInverted(turningMotorReversed);removed
-      //turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 10);removed
+      //turningMotor.configFactoryDefault(10);
+      //turningMotor.setNeutralMode(NeutralMode.Coast);
+      //turningMotor.setInverted(turningMotorReversed);
+      //turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 10);
       //both
-      //enableVoltageCompensation(true);removed
+      enableVoltageCompensation(true);
       resetEncoders();
     //Debug
       debugInit();
