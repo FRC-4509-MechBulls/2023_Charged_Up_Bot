@@ -88,10 +88,10 @@ public class SwerveSubsystem extends SubsystemBase {
                                    DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
     //gyro
       gyro = new WPI_Pigeon2(0);
-      gyro.configFactoryDefault(10);
-      gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 10);
-      gyro.configAllSettings(Robot.ctreConfigs.gyro, 10);
-      zeroHeading();
+      //gyro.configFactoryDefault(10);removed
+      //gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 10);removed
+      //gyro.configAllSettings(Robot.ctreConfigs.gyro, 10);removed
+      //zeroHeading();removed
     //Odometry
       initialPose = new Pose2d();
       constructOdometry(); //custructs odometry with newly corrct gyro values
@@ -119,7 +119,13 @@ public class SwerveSubsystem extends SubsystemBase {
     //A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
     //(if x / y falls halfway between two integers, the even integer is returned)
     public double getHeading() {
-          return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
+          return 0;//Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward removed
+    }
+    public Rotation2d getRotation2d() { //since wpilib often wants heading in format of Rotation2d
+      return Rotation2d.fromDegrees(getHeading());
+    }
+    public double getAngularVelocity() { //get rotational velocity for closed loop
+        return 0;//-gyro.getRate() * DriveConstants.kDegreesToRadians;removed
     }
     public SwerveModuleState[] getStates() { //module states
       return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
@@ -128,12 +134,6 @@ public class SwerveSubsystem extends SubsystemBase {
       chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
       return fieldOriented ? ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
                              chassisSpeeds;
-    }
-    public double getAngularVelocity() { //get rotational velocity for closed loop
-        return -gyro.getRate() * DriveConstants.kDegreesToRadians;
-    }
-    public Rotation2d getRotation2d() { //since wpilib often wants heading in format of Rotation2d
-      return Rotation2d.fromDegrees(getHeading());
     }
   //Setters 
     public void fieldOriented(boolean isFieldOriented) {

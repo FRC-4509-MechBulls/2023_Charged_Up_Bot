@@ -83,18 +83,18 @@ public class SwerveModule extends SubsystemBase {
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.configFactoryDefault(10);
-      driveMotor.setNeutralMode(NeutralMode.Coast);
-      driveMotor.setInverted(driveMotorReversed);
-      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 10);
+      //driveMotor.configFactoryDefault(10);removed
+      //driveMotor.setNeutralMode(NeutralMode.Coast);removed
+      //driveMotor.setInverted(driveMotorReversed);removed
+      //driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 10);removed
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
-      turningMotor.configFactoryDefault(10);
-      turningMotor.setNeutralMode(NeutralMode.Coast);
-      turningMotor.setInverted(turningMotorReversed);
-      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 10);
+      //turningMotor.configFactoryDefault(10);removed
+      //turningMotor.setNeutralMode(NeutralMode.Coast);removed
+      //turningMotor.setInverted(turningMotorReversed);removed
+      //turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 10);removed
       //both
-      enableVoltageCompensation(true);
+      //enableVoltageCompensation(true);removed
       resetEncoders();
     //Debug
       debugInit();
@@ -111,10 +111,10 @@ public class SwerveModule extends SubsystemBase {
     }
   //Getters
     public double getTurningPosition() {
-      return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
+      return 0;//turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning; removed
     }
     public double getDriveVelocity() {
-      return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s
+      return 0;//driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s removed
     }
     public double getAbsoluteEncoderRad() {
       double angle = absoluteEncoder.getAbsolutePosition(); //range 0-1
@@ -133,13 +133,19 @@ public class SwerveModule extends SubsystemBase {
         return;
       }
       calculateFalconRelativeState();
+      /*
       driveMotor.set(TalonFXControlMode.Velocity, this.state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, 
                      DemandType.ArbitraryFeedForward, (this.state.speedMetersPerSecond/Math.abs(this.state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
       turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
+      removed
+      */
     }
     public void stop() { //sets both voltage outputs to 0
+      /*
       driveMotor.set(TalonFXControlMode.PercentOutput, 0);
       turningMotor.set(TalonFXControlMode.PercentOutput, 0);
+      removed
+      */
     }
   //Utility
     private void calculateFalconRelativeState() { //converts absolute state to falcon-encoder-relative state
