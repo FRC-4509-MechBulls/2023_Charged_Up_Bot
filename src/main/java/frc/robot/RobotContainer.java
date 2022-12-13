@@ -19,12 +19,13 @@ import frc.robot.subsystems.SwerveSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-
-  private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private final SwerveSubsystem swerveSubsystem;
+  private final XboxController driverController;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    swerveSubsystem = new SwerveSubsystem();
+    driverController = new XboxController(OIConstants.kDriverControllerPort);
     swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
       swerveSubsystem,
       () -> -driverController.getRawAxis(OIConstants.kDriverYAxis),

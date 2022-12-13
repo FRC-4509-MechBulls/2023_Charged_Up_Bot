@@ -49,8 +49,8 @@ public class SwerveModule extends SubsystemBase {
     private SwerveModuleState state;
   //Dashboard
     //Tabs
-      private ShuffleboardTab tabModules = Shuffleboard.getTab("Modules");
-      private ShuffleboardTab tabModulePID = Shuffleboard.getTab("ModulePID");
+      private ShuffleboardTab tabModules;
+      private ShuffleboardTab tabModulePID;
     //Entries
       //Values
         //abs encoders
@@ -72,6 +72,9 @@ public class SwerveModule extends SubsystemBase {
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
                       int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
+    //Dashboard
+      tabModules = Shuffleboard.getTab("Modules");
+      tabModulePID = Shuffleboard.getTab("ModulePID");
     //absolute encoder
       this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
       this.absoluteEncoderReversed = absoluteEncoderReversed;
@@ -93,18 +96,8 @@ public class SwerveModule extends SubsystemBase {
       //both
       enableVoltageCompensation(true);
       resetEncoders();
-      /*
-      //initialize encoders in thread so they don't timeout
-      new Thread(() -> {
-        try {
-              Thread.sleep(1000);
-              resetEncoders();
-        } catch (Exception e) {}
-      }).start();
-      */
-		//Dashboard
-      //Debug
-        debugInit();
+    //Debug
+      debugInit();
   }
 
   //Configuration

@@ -26,11 +26,11 @@ public class SwerveJoystickCmd extends CommandBase {
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   private double TranslationMagnitude;
   private double TranslationMagnitudeScaled;
-  private double rotationMagnitude = 0;
-  private double scaledMagnitudeRotation = 0;
-  private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
-  private PIDController xPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
-  private PIDController yPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
+  private double rotationMagnitude;
+  private double scaledMagnitudeRotation;
+  private PIDController turningPID;
+  private PIDController xPID;
+  private PIDController yPID;
 
   Rotation2d translationDirection;
   Rotation2d rotationDirection;
@@ -48,7 +48,10 @@ public class SwerveJoystickCmd extends CommandBase {
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     addRequirements(swerveSubsystem);
-
+    //PID
+      turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+      xPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
+      yPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
     //dashboard
     //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
     //Debug output: SmartDashboard.putNumber("kPTranslation", DriveConstants.kPTranslation);
