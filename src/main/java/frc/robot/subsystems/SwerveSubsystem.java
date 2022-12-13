@@ -57,6 +57,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
+    //Pose
+      initialPose = new Pose2d();
     //Modules
       frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, 
                                    DriveConstants.kFrontLeftTurningMotorPort, 
@@ -93,7 +95,6 @@ public class SwerveSubsystem extends SubsystemBase {
       gyro.configAllSettings(Robot.ctreConfigs.gyro, 10);
       zeroHeading();
     //Odometry
-      initialPose = new Pose2d();
       constructOdometry(); //custructs odometry with newly corrct gyro values
     //Dashboard
       tabSwerveSubsystem = Shuffleboard.getTab("SwerveSubsystem");
