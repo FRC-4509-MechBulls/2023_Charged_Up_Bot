@@ -102,6 +102,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean limited, boolean fieldOriented){
+    SmartDashboard.putNumber("dr_xSpeed",xSpeed);
+    SmartDashboard.putNumber("dr_ySpeed",ySpeed);
+    SmartDashboard.putNumber("dr_rSpeed",turningSpeed);
+
     //  Make the driving smoother, no sudden acceleration from sudden inputs
     if(limited) {
       xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
@@ -199,8 +203,8 @@ public class SwerveSubsystem extends SubsystemBase {
       //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
       //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
       //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(1 * DriveConstants.kDegreesToRadians), 
+      VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 1 * DriveConstants.kDegreesToRadians),
+      VecBuilder.fill(5 * DriveConstants.kDegreesToRadians),
       VecBuilder.fill(0.01,0.01,0.01),
       0.02);  
     }
@@ -302,7 +306,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //2. Pass vision measurement to odometry
     SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
-    odometry.addVisionMeasurement(new Pose2d(0,0,newRotation),latency);
+    odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
   //  zeroHeading(newRotation.getDegrees());
 
   }
