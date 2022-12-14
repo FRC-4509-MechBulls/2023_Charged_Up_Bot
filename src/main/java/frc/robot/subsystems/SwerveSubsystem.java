@@ -324,6 +324,11 @@ public class SwerveSubsystem extends SubsystemBase {
     out[0] = dist * Math.cos(dirToPose +rotationDiff) * 0.5;
     out[1] = dist * Math.sin(dirToPose+rotationDiff) * 0.5;
     out[2] = rotationDiff * 0.7;
+
+    if(Math.abs(rotationDiff)<Math.toRadians(2)) out[2] = 0;
+    if(Math.abs(out[0])<0.005) out[0] = 0;
+    if(Math.abs(out[1])<0.005) out[1] = 0;
+
     return out;
   }
 
