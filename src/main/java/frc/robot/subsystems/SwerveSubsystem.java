@@ -92,6 +92,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                    DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
     //gyro
       gyro = new WPI_Pigeon2(DriveConstants.kPigeonPort);
+      /*
       gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 3001, 1000);
       gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 3003, 1000);
       gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 3007, 1000);
@@ -99,10 +100,12 @@ public class SwerveSubsystem extends SubsystemBase {
       gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 3017, 1000);
       gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 3021, 1000);
       gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 3023, 1000);
-      //gyro.configFactoryDefault(1000);removed
-      //gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);removed
-      //gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 1000);removed
-      //zeroHeading();removed
+      */
+      gyro.configFactoryDefault(1000);
+      gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);
+      gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 1000);
+      zeroHeading();
+      
     //Odometry
       constructOdometry(); //custructs odometry with newly corrct gyro values
     //Dashboard
@@ -113,7 +116,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Configuration
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-      gyro.zeroGyroBiasNow(1000);
       gyro.setYaw(initialPose.getRotation().getDegrees(), 1000);
     }
     public void constructOdometry() { //constructs odometry object

@@ -87,6 +87,7 @@ public class SwerveModule extends SubsystemBase {
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
       driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+      
       driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
       driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
       driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
@@ -98,8 +99,10 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 1000);
       driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
+      
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
+      
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
@@ -108,14 +111,17 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
-      //turningMotor.configFactoryDefault(1000);
-      //turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 1000);
-      //turningMotor.setNeutralMode(NeutralMode.Coast);
-      //turningMotor.setInverted(turningMotorReversed);
+      turningMotor.configFactoryDefault(1000);
+      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 1000);
+      turningMotor.setNeutralMode(NeutralMode.Coast);
+      turningMotor.setInverted(turningMotorReversed);
+      
       //both
+      
       enableVoltageCompensation(true);
       enableOverrideLimitSwitches(true);
-      resetEncoders();
+      
+      //resetEncoders();
     //Debug
       debugInit();
   }
