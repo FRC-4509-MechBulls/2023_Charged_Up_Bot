@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
@@ -28,36 +29,12 @@ import frc.robot.lib.MathThings;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
-    private final SwerveModule frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, 
-                                                            DriveConstants.kFrontLeftTurningMotorPort, 
-                                                            DriveConstants.kFrontLeftDriveEncoderReversed, 
-                                                            DriveConstants.kFrontLeftTurningEncoderReversed, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
-    private final SwerveModule frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort, 
-                                                            DriveConstants.kFrontRightTurningMotorPort, 
-                                                            DriveConstants.kFrontRightDriveEncoderReversed, 
-                                                            DriveConstants.kFrontRightTurningEncoderReversed, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
-    private final SwerveModule backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort, 
-                                                          DriveConstants.kBackLeftTurningMotorPort, 
-                                                          DriveConstants.kBackLeftDriveEncoderReversed, 
-                                                          DriveConstants.kBackLeftTurningEncoderReversed, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
-    private final SwerveModule backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort, 
-                                                            DriveConstants.kBackRightTurningMotorPort, 
-                                                            DriveConstants.kBackRightDriveEncoderReversed, 
-                                                            DriveConstants.kBackRightTurningEncoderReversed, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
-  //Gyro
-    private WPI_Pigeon2 gyro = new WPI_Pigeon2(9);
+    private final SwerveModule frontLeft;
+    private final SwerveModule frontRight;
+    private final SwerveModule backLeft;
+    private final SwerveModule backRight;
+      //Gyro
+    private WPI_Pigeon2 gyro;
 
   //Odometry
     private SwerveDrivePoseEstimator odometry;
@@ -77,6 +54,35 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
+frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, 
+    DriveConstants.kFrontLeftTurningMotorPort, 
+    DriveConstants.kFrontLeftDriveEncoderReversed, 
+    DriveConstants.kFrontLeftTurningEncoderReversed, 
+    DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 
+    DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
+    DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort, 
+    DriveConstants.kFrontRightTurningMotorPort, 
+    DriveConstants.kFrontRightDriveEncoderReversed, 
+    DriveConstants.kFrontRightTurningEncoderReversed, 
+    DriveConstants.kFrontRightDriveAbsoluteEncoderPort, 
+    DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
+    DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort, 
+  DriveConstants.kBackLeftTurningMotorPort, 
+  DriveConstants.kBackLeftDriveEncoderReversed, 
+  DriveConstants.kBackLeftTurningEncoderReversed, 
+  DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 
+  DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
+  DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort, 
+    DriveConstants.kBackRightTurningMotorPort, 
+    DriveConstants.kBackRightDriveEncoderReversed, 
+    DriveConstants.kBackRightTurningEncoderReversed, 
+    DriveConstants.kBackRightDriveAbsoluteEncoderPort, 
+    DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
+    DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+    gyro = new WPI_Pigeon2(DriveConstants.kPigeonPort);
     initialPose = new Pose2d();
     constructOdometry();
         //put in thread so it doesn't stop the rest of our code from running

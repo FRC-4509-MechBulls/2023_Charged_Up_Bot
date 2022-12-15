@@ -23,20 +23,29 @@ import frc.robot.subsystems.VisionSubsystem;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
+  private final SwerveSubsystem swerveSubsystem;
+  private final VisionSubsystem visionSubsystem;
 
-
-  private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
-  private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
-  private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
-  private final Command rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
-  private final Command rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
-  private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
+  private final XboxController driverController;
+  private final Command rc_drive;
+  private final Command swerve_toggleFieldOriented;
+  private final Command rc_goToTag;
+  private final Command rc_goToPose;
+  private final Command swerve_resetPose;
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    swerveSubsystem = new SwerveSubsystem();
+    visionSubsystem = new VisionSubsystem(swerveSubsystem);
+
+    driverController = new XboxController(OIConstants.kDriverControllerPort);
+    
+    rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
+    swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
+    rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
+    rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
+    swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
     swerveSubsystem.setDefaultCommand(rc_drive);
 
     // Configure the button bindings
