@@ -54,32 +54,27 @@ public class SwerveModule extends SubsystemBase {
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.configFactoryDefault();
+      driveMotor.configFactoryDefault(1000);
       driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
-      driveMotor.config_kF(0, ModuleConstants.kFDrive);
-      driveMotor.config_kP(0, ModuleConstants.kPDrive);
-			driveMotor.configVoltageCompSaturation(12);
-      driveMotor.configNeutralDeadband(0.01);
+      driveMotor.config_kF(0, ModuleConstants.kFDrive, 1000);
+      driveMotor.config_kP(0, ModuleConstants.kPDrive, 1000);
+			driveMotor.configVoltageCompSaturation(12, 1000);
+      driveMotor.configNeutralDeadband(0.01, 1000);
       //debug output: driveMotor.config_kF(0, 0);
       //debug output: driveMotor.config_kP(0, 0);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
-      turningMotor.configFactoryDefault();
+      turningMotor.configFactoryDefault(1000);
       turningMotor.setNeutralMode(NeutralMode.Coast);
       turningMotor.setInverted(turningMotorReversed);
-      turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
-      turningMotor.config_kP(0, ModuleConstants.kPTurning);
+      turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero, 1000);
+      turningMotor.config_kP(0, ModuleConstants.kPTurning, 1000);
 			turningMotor.configVoltageCompSaturation(12);
       //both
       enableVoltageCompensation(true);
       //initialize encoders in thread so they don't timeout
-      new Thread(() -> {
-        try {
-              Thread.sleep(1000);
               resetEncoders();
-        } catch (Exception e) {}
-      }).start();
 		
 		//Dashboard
 		//Debug output: SmartDashboard.putNumber("kPT", ModuleConstants.kPTurning);

@@ -80,19 +80,10 @@ public class SwerveSubsystem extends SubsystemBase {
     initialPose = new Pose2d();
     constructOdometry();
         //put in thread so it doesn't stop the rest of our code from running
-        new Thread(() -> {
-                try {
-                        Thread.sleep(1000);
-                        gyro.configFactoryDefault();
-                        gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
+                        gyro.configFactoryDefault(1000);
+                        gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 1000);
                         zeroHeading();
-                        Thread.sleep(1000);
                         constructOdometry(); //custructs odometry with newly corrct gyro values
-                } catch (Exception e) {
-                }
-        
-        }).start();
-        //allows gyro to calibrate for 1 sec before requesting to reset^^
   }
 
   SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
@@ -188,12 +179,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Configuration
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-          gyro.zeroGyroBiasNow();
-          gyro.setYaw(0);
+          gyro.zeroGyroBiasNow(1000);
+          gyro.setYaw(0, 1000);
     }
   public void zeroHeading(double yaw) {
-    gyro.zeroGyroBiasNow();
-    gyro.setYaw(yaw);
+    gyro.zeroGyroBiasNow(1000);
+    gyro.setYaw(yaw, 1000);
   }
 
     public void constructOdometry() { //constructs odometry object
