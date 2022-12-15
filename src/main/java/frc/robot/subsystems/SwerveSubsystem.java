@@ -202,7 +202,7 @@ public class SwerveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
       //update odometry
-        updateOdometry();
+        //updateOdometry();
       //dashboard outputs
         debugPeriodic();
     }        

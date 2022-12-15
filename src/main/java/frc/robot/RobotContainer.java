@@ -26,6 +26,7 @@ public class RobotContainer {
   public RobotContainer() {
     swerveSubsystem = new SwerveSubsystem();
     driverController = new XboxController(OIConstants.kDriverControllerPort);
+    /*
     swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
       swerveSubsystem,
       () -> -driverController.getRawAxis(OIConstants.kDriverYAxis),
@@ -33,6 +34,7 @@ public class RobotContainer {
       () -> driverController.getRawAxis(OIConstants.kDriverRotAxis),
       () -> driverController.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)
     ));
+    */
     // Configure the button bindings
     configureButtonBindings();
   }
