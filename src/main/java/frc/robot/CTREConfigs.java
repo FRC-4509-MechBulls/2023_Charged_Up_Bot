@@ -4,6 +4,11 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.MotorCommutation;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.BaseTalonPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.Pigeon2Configuration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
@@ -33,12 +38,20 @@ public class CTREConfigs {
     swerveDriveMotor.slot0.kF = ModuleConstants.kFDrive;
     swerveDriveMotor.slot0.kP = ModuleConstants.kPDrive;
     swerveDriveMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
+    swerveDriveMotor.primaryPID = new BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor);
+    swerveDriveMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
+    swerveDriveMotor.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 40, 40, 0);
+    swerveDriveMotor.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 40, 40, 0);
     swerveDriveMotor.neutralDeadband = 0.01;
   }
   public void configSwerveTurnMotor() {
+    swerveDriveMotor.primaryPID = new BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor);
     swerveTurnMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveTurnMotor.slot0.kP = ModuleConstants.kPTurning;
     swerveTurnMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
+    swerveTurnMotor.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 40, 40, 0);
+    swerveTurnMotor.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 40, 40, 0);
+    swerveTurnMotor.neutralDeadband = 0.01;
   }
   public void configGyro() {
     gyro.ZAxisGyroError = DriveConstants.kGyroZError;

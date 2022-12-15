@@ -4,7 +4,9 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
@@ -90,9 +92,16 @@ public class SwerveSubsystem extends SubsystemBase {
                                    DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
     //gyro
       gyro = new WPI_Pigeon2(0);
-      //gyro.configFactoryDefault(10);removed
-      //gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 10);removed
-      //gyro.configAllSettings(Robot.ctreConfigs.gyro, 10);removed
+      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 3001, 1000);
+      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 3003, 1000);
+      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 3007, 1000);
+      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 3011, 1000);
+      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 3017, 1000);
+      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 3021, 1000);
+      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 3023, 1000);
+      //gyro.configFactoryDefault(1000);removed
+      //gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);removed
+      //gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 1000);removed
       //zeroHeading();removed
     //Odometry
       constructOdometry(); //custructs odometry with newly corrct gyro values
@@ -104,8 +113,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Configuration
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-          gyro.zeroGyroBiasNow(10);
-          gyro.setYaw(initialPose.getRotation().getDegrees(), 10);
+      gyro.zeroGyroBiasNow(1000);
+      gyro.setYaw(initialPose.getRotation().getDegrees(), 1000);
     }
     public void constructOdometry() { //constructs odometry object
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 

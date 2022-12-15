@@ -126,8 +126,8 @@ public final class Constants {
     }
 
     public static final class RobotConstants {
-        public static double kMainLoopPeriod = 0.02;
-        public static double kRobotNominalVoltage = 12.0;
+        public static final double kMainLoopPeriod = 0.02;
+        public static final double kRobotNominalVoltage = 12.0;
     }
 
     public static final class OIConstants {

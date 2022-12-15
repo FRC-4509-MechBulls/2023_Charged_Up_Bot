@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -83,18 +86,35 @@ public class SwerveModule extends SubsystemBase {
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.configFactoryDefault(10);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
+      driveMotor.configFactoryDefault(1000);
+      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 1000);
       driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
-      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 10);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
-      //turningMotor.configFactoryDefault(10);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
+      //turningMotor.configFactoryDefault(1000);
+      //turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 1000);
       //turningMotor.setNeutralMode(NeutralMode.Coast);
       //turningMotor.setInverted(turningMotorReversed);
-      //turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 10);
       //both
       enableVoltageCompensation(true);
+      enableOverrideLimitSwitches(true);
       resetEncoders();
     //Debug
       debugInit();
@@ -109,6 +129,12 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.enableVoltageCompensation(onOff);
       turningMotor.enableVoltageCompensation(onOff);
     }
+    public void enableOverrideLimitSwitches(boolean onOff) {
+      driveMotor.overrideLimitSwitchesEnable(onOff);
+      driveMotor.overrideSoftLimitsEnable(onOff);
+      turningMotor.overrideLimitSwitchesEnable(onOff);
+      turningMotor.overrideSoftLimitsEnable(onOff);
+    }
   //Getters
     public double getTurningPosition() {
       return 0;//turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning; removed
@@ -118,6 +144,8 @@ public class SwerveModule extends SubsystemBase {
     }
     public double getAbsoluteEncoderRad() {
       double angle = absoluteEncoder.getAbsolutePosition(); //range 0-1
+      //Debug output: 
+      tabModules.add("absRadians" + absoluteEncoder.getSourceChannel(), angle);
       angle *= ModuleConstants.kAbsToRadians; //converts to radians
       angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
       return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
