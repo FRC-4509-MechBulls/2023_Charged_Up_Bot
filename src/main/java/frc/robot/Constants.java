@@ -70,6 +70,7 @@ public final class Constants {
         public static final int kFrontRightTurningMotorPort = 6;
         public static final int kBackLeftTurningMotorPort = 7;
         public static final int kBackRightTurningMotorPort = 8;
+        public static final int kPigeonPort = 9;
 
         public static final boolean kFrontLeftDriveEncoderReversed = false;
         public static final boolean kFrontRightDriveEncoderReversed = true;
