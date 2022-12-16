@@ -38,6 +38,9 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule extends SubsystemBase {
+  //CAN Config Variables
+    private static int configIndex;
+    private static boolean configDone;
   //motors
     private final WPI_TalonFX driveMotor;
     private final WPI_TalonFX turningMotor;
@@ -75,6 +78,9 @@ public class SwerveModule extends SubsystemBase {
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
                       int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
+    //Config Index
+      configIndex = 0;
+      configDone = false;
     //Dashboard
       tabModules = Shuffleboard.getTab("Modules");
       tabModulePID = Shuffleboard.getTab("ModulePID");
@@ -86,47 +92,45 @@ public class SwerveModule extends SubsystemBase {
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
-      
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
-      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
-      driveMotor.configFactoryDefault(1000);
-      driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 1000);
-      driveMotor.setNeutralMode(NeutralMode.Coast);
       driveMotor.setInverted(driveMotorReversed);
-      
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
-      
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
-      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
-      turningMotor.configFactoryDefault(1000);
-      turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 1000);
-      turningMotor.setNeutralMode(NeutralMode.Coast);
       turningMotor.setInverted(turningMotorReversed);
-      
       //both
-      
-      enableVoltageCompensation(true);
-      enableOverrideLimitSwitches(true);
-      
-      //resetEncoders();
     //Debug
       debugInit();
   }
 
   //Configuration
+    public void config (int index) {
+      if (index==0){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 5);return;}
+      if (index==1){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 5);return;}
+      if (index==2){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 5);return;}
+      if (index==3){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 5);return;}
+      if (index==4){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 5);return;}
+      if (index==5){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 5);return;}
+      if (index==6){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 5);return;}
+      if (index==7){driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 5);return;}
+      if (index==8){driveMotor.configFactoryDefault(5);return;}
+      if (index==9){driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 5);return;}
+      if (index==10){driveMotor.setNeutralMode(NeutralMode.Coast);return;}
+
+      if (index==11){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 5);return;}
+      if (index==12){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 5);return;}
+      if (index==13){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 5);return;}
+      if (index==14){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 5);return;}
+      if (index==15){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 5);return;}
+      if (index==16){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 5);return;}
+      if (index==17){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 5);return;}
+      if (index==18){turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 5);return;}
+      if (index==19){turningMotor.configFactoryDefault(5);return;}
+      if (index==20){turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 5);return;}
+      if (index==21){turningMotor.setNeutralMode(NeutralMode.Coast);return;}
+      
+      if (index==22){enableVoltageCompensation(true);return;}
+      if (index==23){enableOverrideLimitSwitches(true);return;}
+      if (index==24){resetEncoders();configDone=true;return;}
+    }
     public void resetEncoders() {
       driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
       turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * ModuleConstants.kRadiansToTurning); //resets turning motor encoder to absolute encoder value
@@ -240,6 +244,10 @@ public class SwerveModule extends SubsystemBase {
 
     @Override
   public void periodic() { // This method will be called once per scheduler run
+    if (!configDone) {
+      config(configIndex);
+      configIndex++;
+    } 
     //Debug
       debugPeriodic();
   }

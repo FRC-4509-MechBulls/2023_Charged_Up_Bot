@@ -36,6 +36,10 @@ import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
+  //CAN config
+    private static int configIndex;
+    private static boolean configDone;
+
   //Modules
     private final SwerveModule frontLeft;
     private final SwerveModule frontRight;
@@ -59,6 +63,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
+    //Config Index
+      configIndex = 0;
+      configDone = false;
     //pose
       initialPose = new Pose2d();
     //Modules
@@ -91,21 +98,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                    DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
                                    DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
     //gyro
-      gyro = new WPI_Pigeon2(DriveConstants.kPigeonPort);
-      /*
-      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 3001, 1000);
-      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 3003, 1000);
-      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 3007, 1000);
-      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 3011, 1000);
-      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 3017, 1000);
-      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 3021, 1000);
-      gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 3023, 1000);
-      */
-      gyro.configFactoryDefault(1000);
-      gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);
-      gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 1000);
-      zeroHeading();
-      
+      gyro = new WPI_Pigeon2(DriveConstants.kPigeonPort);      
     //Odometry
       constructOdometry(); //custructs odometry with newly corrct gyro values
     //Dashboard
@@ -115,8 +108,23 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   //Configuration
+    public void config(int index) {
+      if (index==0){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 3001, 5);return;}
+      if (index==1){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 3003, 5);return;}
+      if (index==2){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 3007, 5);return;}
+      if (index==3){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 3011, 5);return;}
+      if (index==4){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 3017, 5);return;}
+      if (index==5){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 3021, 5);return;}
+      if (index==6){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 3023, 5);return;}
+      if (index==7){gyro.configFactoryDefault(5);return;}
+      if (index==8){gyro.configAllSettings(Robot.ctreConfigs.gyro, 5);return;}
+      if (index==9){gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 5);return;}
+      if (index==10){zeroHeading();return;}
+
+      if (index==11){constructOdometry();configDone=true;return;}
+    }
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-      gyro.setYaw(initialPose.getRotation().getDegrees(), 1000);
+      gyro.setYaw(initialPose.getRotation().getDegrees(), 5);
     }
     public void constructOdometry() { //constructs odometry object
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
@@ -203,6 +211,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+      //CAN config
+        if (!configDone) {
+          config(configIndex);
+          configIndex++;
+        }
       //update odometry
         //updateOdometry();
       //dashboard outputs
