@@ -109,19 +109,21 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Configuration
     public void config(int index) {
-      if (index==0){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 3001, 5);return;}
-      if (index==1){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 3003, 5);return;}
-      if (index==2){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 3007, 5);return;}
-      if (index==3){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 3011, 5);return;}
-      if (index==4){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 3017, 5);return;}
-      if (index==5){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 3021, 5);return;}
-      if (index==6){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 3023, 5);return;}
-      if (index==7){gyro.configFactoryDefault(5);return;}
-      if (index==8){gyro.configAllSettings(Robot.ctreConfigs.gyro, 5);return;}
-      if (index==9){gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 5);return;}
-      if (index==10){zeroHeading();return;}
+      /*
+      if (index==30){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 3001, 5);return;}
+      if (index==31){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 3003, 5);return;}
+      if (index==32){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 3007, 5);return;}
+      if (index==33){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 3011, 5);return;}
+      if (index==34){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 3017, 5);return;}
+      if (index==35){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 3021, 5);return;}
+      if (index==36){gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 3023, 5);return;}
+      */
+      if (index==37){gyro.configFactoryDefault(5);return;}
+      //if (index==38){gyro.configAllSettings(Robot.ctreConfigs.gyro, 5);return;}
+      if (index==39){gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 5);return;}
+      if (index==40){zeroHeading();return;}
 
-      if (index==11){constructOdometry();configDone=true;return;}
+      if (index==41){constructOdometry();configDone=true;return;}
     }
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
       gyro.setYaw(initialPose.getRotation().getDegrees(), 5);
