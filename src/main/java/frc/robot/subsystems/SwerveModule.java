@@ -5,7 +5,11 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -29,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.RobotConstants;
 
 public class SwerveModule extends SubsystemBase {
   //motors
@@ -82,20 +87,30 @@ public class SwerveModule extends SubsystemBase {
     //motors
       //drive
       driveMotor = new WPI_TalonFX(driveMotorId);
+      driveMotor.setInverted(driveMotorReversed);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+      driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
       driveMotor.configFactoryDefault(1000);
       driveMotor.setNeutralMode(NeutralMode.Coast);
-      driveMotor.setInverted(driveMotorReversed);
       driveMotor.config_kF(0, ModuleConstants.kFDrive, 1000);
       driveMotor.config_kP(0, ModuleConstants.kPDrive, 1000);
-			driveMotor.configVoltageCompSaturation(12, 1000);
+			driveMotor.configVoltageCompSaturation(RobotConstants.kRobotNominalVoltage, 1000);
+      driveMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 1000);
+      driveMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero, 1000);
+      driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 0), 1000);
+      driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 40, 40, 0), 1000);
       driveMotor.configNeutralDeadband(0.01, 1000);
-      //debug output: driveMotor.config_kF(0, 0);
-      //debug output: driveMotor.config_kP(0, 0);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
+      turningMotor.setInverted(turningMotorReversed);
       turningMotor.configFactoryDefault(1000);
       turningMotor.setNeutralMode(NeutralMode.Coast);
-      turningMotor.setInverted(turningMotorReversed);
       turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero, 1000);
       turningMotor.config_kP(0, ModuleConstants.kPTurning, 1000);
 			turningMotor.configVoltageCompSaturation(12);
