@@ -19,11 +19,15 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.MathThings;
 
@@ -43,6 +47,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Values
     static boolean fieldOriented;
+    
+  //Dashboard
+    //Tabs
+    private ShuffleboardTab tabSwerveSubsystem;
+    //Entries
+    private NetworkTableEntry dashboardOdometryHeading;
+    private NetworkTableEntry dashboardOdometryY;
+    private NetworkTableEntry dashboardOdometryX;
+
   private double translationMagnitude;
 
   private double translationMagnitudeScaled;
@@ -54,42 +67,47 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
-frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, 
-    DriveConstants.kFrontLeftTurningMotorPort, 
-    DriveConstants.kFrontLeftDriveEncoderReversed, 
-    DriveConstants.kFrontLeftTurningEncoderReversed, 
-    DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 
-    DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
-    DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
-frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort, 
-    DriveConstants.kFrontRightTurningMotorPort, 
-    DriveConstants.kFrontRightDriveEncoderReversed, 
-    DriveConstants.kFrontRightTurningEncoderReversed, 
-    DriveConstants.kFrontRightDriveAbsoluteEncoderPort, 
-    DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
-    DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
-backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort, 
-  DriveConstants.kBackLeftTurningMotorPort, 
-  DriveConstants.kBackLeftDriveEncoderReversed, 
-  DriveConstants.kBackLeftTurningEncoderReversed, 
-  DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 
-  DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
-  DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
-backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort, 
-    DriveConstants.kBackRightTurningMotorPort, 
-    DriveConstants.kBackRightDriveEncoderReversed, 
-    DriveConstants.kBackRightTurningEncoderReversed, 
-    DriveConstants.kBackRightDriveAbsoluteEncoderPort, 
-    DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
-    DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
-    gyro = new WPI_Pigeon2(DriveConstants.kPigeonPort);
-    initialPose = new Pose2d();
-    constructOdometry();
-        //put in thread so it doesn't stop the rest of our code from running
-                        gyro.configFactoryDefault(1000);
-                        gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 1000);
-                        zeroHeading();
-                        constructOdometry(); //custructs odometry with newly corrct gyro values
+    //modules
+     frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, 
+         DriveConstants.kFrontLeftTurningMotorPort, 
+         DriveConstants.kFrontLeftDriveEncoderReversed, 
+         DriveConstants.kFrontLeftTurningEncoderReversed, 
+         DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 
+         DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
+         DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
+     frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort, 
+         DriveConstants.kFrontRightTurningMotorPort, 
+         DriveConstants.kFrontRightDriveEncoderReversed, 
+         DriveConstants.kFrontRightTurningEncoderReversed, 
+         DriveConstants.kFrontRightDriveAbsoluteEncoderPort, 
+         DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
+         DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
+     backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort, 
+       DriveConstants.kBackLeftTurningMotorPort, 
+       DriveConstants.kBackLeftDriveEncoderReversed, 
+       DriveConstants.kBackLeftTurningEncoderReversed, 
+       DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 
+       DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
+       DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
+     backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort, 
+         DriveConstants.kBackRightTurningMotorPort, 
+         DriveConstants.kBackRightDriveEncoderReversed, 
+         DriveConstants.kBackRightTurningEncoderReversed, 
+         DriveConstants.kBackRightDriveAbsoluteEncoderPort, 
+         DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
+         DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+    //gyro
+      gyro = new WPI_Pigeon2(DriveConstants.kPigeonPort);
+      initialPose = new Pose2d();
+      constructOdometry();
+      gyro.configFactoryDefault(1000);
+      gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ, 1000);
+      zeroHeading();
+      constructOdometry(); //custructs odometry with newly corrct gyro values
+    //Dashboard
+      tabSwerveSubsystem = Shuffleboard.getTab("SwerveSubsystem");
+    //dashboard
+      debugInit(); //initialize debug outputs
   }
 
   SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
@@ -194,7 +212,7 @@ backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
   //Configuration
     public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
           gyro.zeroGyroBiasNow(1000);
-          gyro.setYaw(0, 1000);
+          gyro.setYaw(initialPose.getRotation().getDegrees(), 1000);
     }
   public void zeroHeading(double yaw) {
     gyro.zeroGyroBiasNow(1000);
@@ -205,13 +223,10 @@ backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
       odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
       initialPose, 
       DriveConstants.kDriveKinematics, 
-      //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
-      //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
-      //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 1 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(5 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(0.01,0.01,0.01),
-      0.02);  
+      DriveConstants.kSDOdo, 
+      DriveConstants.kSDState, 
+      DriveConstants.kSDVision, 
+      RobotConstants.kMainLoopPeriod);  
     }
   
   //Getters
@@ -275,23 +290,44 @@ backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
       //debug output: SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
     }
     
-    public void debugOutputs() {
-      //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
-      //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
-      //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
-    }
+    //Dashboard
+    //Debugging
+      //Odometry
+        public void debugOdometryInit () {
+          //Odometry
+            dashboardOdometryHeading = tabSwerveSubsystem.add("OdometryHeading", odometry.getEstimatedPosition().getRotation().getDegrees()).getEntry();
+            dashboardOdometryY = tabSwerveSubsystem.add("OdometryY", odometry.getEstimatedPosition().getY()).getEntry();
+            dashboardOdometryX = tabSwerveSubsystem.add("OdometryX", odometry.getEstimatedPosition().getX()).getEntry();
+        }
+        public void debugOdometryPeriodic () {
+          //Odometry
+            dashboardOdometryHeading.setDouble(odometry.getEstimatedPosition().getRotation().getDegrees());
+            dashboardOdometryY.setDouble(odometry.getEstimatedPosition().getY());
+            dashboardOdometryX.setDouble(odometry.getEstimatedPosition().getX());
+        }
+      //Other
+        public void debugInit() {
+          //Odometry
+            debugOdometryInit();
+        }
+        public void debugPeriodic() {
+          //Chassis Speeds
+            //debug output: tabSwerveSubsystem.add("CSH", getChassisSpeeds().omegaRadiansPerSecond);
+            //debug output: tabSwerveSubsystem.add("CSY", getChassisSpeeds().vyMetersPerSecond);
+            //debug output: tabSwerveSubsystem.add("CSX", getChassisSpeeds().vxMetersPerSecond);
+          //Odometry
+            debugOdometryPeriodic();
+          //Gryo
+            //debug output: tabSwerveSubsystem.add("gyroH", getHeading());
+        }
 
   //Periodic
     @Override
     public void periodic() {
       //update odometry
         updateOdometry();
-      SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
-      SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
-      SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
-
       //dashboard outputs
-        debugOutputs();
+        debugPeriodic();
     }
 
 
