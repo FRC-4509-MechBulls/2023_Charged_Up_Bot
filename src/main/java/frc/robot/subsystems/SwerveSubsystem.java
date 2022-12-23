@@ -96,7 +96,8 @@ backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
   SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
   SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
   PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
-
+  PIDController xPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
+  PIDController yPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
 
   public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean limited, boolean fieldOriented){
     SmartDashboard.putNumber("dr_xSpeed",xSpeed);
@@ -117,13 +118,20 @@ backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort,
     //3.5. Fudge Factor to eliminate uncommanded change in direction when translating and rotating simultaneously
     ySpeed += turningSpeed * (-xSpeed) * DriveConstants.kPFudge;
     //debug output: ySpeed += turningSpeed * (-xSpeed) * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
-    xSpeed += turningSpeed * ySpeed * DriveConstants.kPFudge;
+    xSpeed += turningSpeed * (ySpeed - turningSpeed * (-xSpeed) * DriveConstants.kPFudge) * DriveConstants.kPFudge;
     //debug output: xSpeed += turningSpeed * ySpeed * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
 
     // 3.55. P loops to create accurate outputs
     //turning
     //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(getAngularVelocity(), turningSpeed);
+    //drive
+      //y
+        //Debug intput: yPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
+        ySpeed += yPID.calculate(getChassisSpeeds().vyMetersPerSecond + getAngularVelocity() * getChassisSpeeds().vxMetersPerSecond * DriveConstants.kPFudge, ySpeed);
+      //x
+        //Debug intput: xPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
+        xSpeed += xPID.calculate(getChassisSpeeds().vxMetersPerSecond + getAngularVelocity() * getChassisSpeeds().vyMetersPerSecond * DriveConstants.kPFudge, xSpeed);
 
 //4 - Convert and send chasis speeds
     if(fieldOriented)
