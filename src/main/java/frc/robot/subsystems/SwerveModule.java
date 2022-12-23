@@ -106,6 +106,7 @@ public class SwerveModule extends SubsystemBase {
       driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 0), 1000);
       driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 40, 40, 0), 1000);
       driveMotor.configNeutralDeadband(0.01, 1000);
+      driveMotor.setNeutralMode(NeutralMode.Coast);
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
       turningMotor.setInverted(turningMotorReversed);
