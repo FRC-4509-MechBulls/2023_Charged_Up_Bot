@@ -110,14 +110,27 @@ public class SwerveModule extends SubsystemBase {
       //turn
       turningMotor = new WPI_TalonFX(turningMotorId);
       turningMotor.setInverted(turningMotorReversed);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+      turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
       turningMotor.configFactoryDefault(1000);
-      turningMotor.setNeutralMode(NeutralMode.Coast);
+      turningMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 1000);
       turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero, 1000);
       turningMotor.config_kP(0, ModuleConstants.kPTurning, 1000);
-			turningMotor.configVoltageCompSaturation(12);
+      turningMotor.configVoltageCompSaturation(RobotConstants.kRobotNominalVoltage, 1000);
+      turningMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(false, 40, 40, 0), 1000);
+      turningMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(false, 40, 40, 0), 1000);
+      turningMotor.configNeutralDeadband(0.01, 1000);
+      turningMotor.setNeutralMode(NeutralMode.Coast);
       //both
-        enableVoltageCompensation(true);
-        resetEncoders();
+      enableVoltageCompensation(true);
+      enableOverrideLimitSwitches(true);
+      resetEncoders();
       //Debug
         debugInit();
     }
@@ -131,6 +144,12 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.enableVoltageCompensation(onOff);
     turningMotor.enableVoltageCompensation(onOff);
   } 
+  public void enableOverrideLimitSwitches(boolean onOff) {
+    driveMotor.overrideLimitSwitchesEnable(onOff);
+    driveMotor.overrideSoftLimitsEnable(onOff);
+    turningMotor.overrideLimitSwitchesEnable(onOff);
+    turningMotor.overrideSoftLimitsEnable(onOff);
+  }
 
   //Getters
   public double getTurningPosition() {
