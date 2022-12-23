@@ -45,7 +45,7 @@ public class CTREConfigs {
     swerveDriveMotor.neutralDeadband = 0.01;
   }
   public void configSwerveTurnMotor() {
-    swerveDriveMotor.primaryPID = new BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor);
+    swerveTurnMotor.primaryPID = new BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor);
     swerveTurnMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveTurnMotor.slot0.kP = ModuleConstants.kPTurning;
     swerveTurnMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
