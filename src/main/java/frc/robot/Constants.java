@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -87,11 +91,10 @@ public final class Constants {
         public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
         public static final int kBackRightDriveAbsoluteEncoderPort = 3;
 
-        //sort of calculated
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.613 * Math.PI * 2;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.536 * Math.PI * 2;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -0.605 * Math.PI * 2;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.719 * Math.PI * 2;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.607281 * Math.PI * 2;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.534903 * Math.PI * 2;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -0.612127 * Math.PI * 2;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.716259 * Math.PI * 2;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
@@ -113,7 +116,23 @@ public final class Constants {
         public static final double kPTurning = 0.0015; //0.0015 low-no oscillation
         public static final double kDTurning = 0.0; //0.0 unnecissary
 
+        public static final double kPTranslation = 0.0007; //0.0007; 0.0005 has low jiggle when stopping but lower strength, 0.001 is stronger but jiggles
+
         public static final double kPFudge = 0.02; //0.2 seems pretty close
+        
+        public static final Vector<N3> kSDOdo = VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians);
+        //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
+        public static final Vector<N1> kSDState = VecBuilder.fill(1 * DriveConstants.kDegreesToRadians);
+        //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
+        public static final Vector<N3> kSDVision = VecBuilder.fill(0.05, 100000, 1000000);
+        //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
+
+        public static final double kGyroZError = 0.674; //.674
+    }
+
+    public static final class RobotConstants {
+        public static double kMainLoopPeriod = 0.02;
+        public static double kRobotNominalVoltage = 12.0;
     }
 
     public static final class OIConstants {
