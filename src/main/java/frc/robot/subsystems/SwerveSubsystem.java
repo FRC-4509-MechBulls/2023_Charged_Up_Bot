@@ -57,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
-    private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
+    private WPI_Pigeon2 gyro = new WPI_Pigeon2(9);
 
   //Odometry
     private SwerveDrivePoseEstimator odometry;

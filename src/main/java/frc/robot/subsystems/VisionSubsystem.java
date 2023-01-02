@@ -27,7 +27,7 @@ public class VisionSubsystem extends SubsystemBase {
     public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
         this.swerveSubsystem = swerveSubsystem;
         fieldTags[0] = new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI)));
-        fieldTags[1] = new FieldTag(1, new Pose2d(4.28, 0, new Rotation2d(0)));
+        fieldTags[1] = new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2)));
     }
 
 
