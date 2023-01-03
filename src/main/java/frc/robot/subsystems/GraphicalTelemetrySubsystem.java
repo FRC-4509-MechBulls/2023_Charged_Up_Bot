@@ -33,7 +33,7 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
                       // Setup a CvSource. This will send images back to the Dashboard
                       CvSource outputStream = CameraServer.putVideo(name, 640, 480);
                       // Mats are very memory expensive. Lets reuse this Mat.
-                      Mat mat = new Mat(480,640,0);
+                      Mat mat = new Mat(480,640,16);
 
                       // This cannot be 'true'. The program will never exit if it is. This
                       // lets the robot stop this thread when restarting robot code or
