@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.subsystems.GraphicalTelemetrySubsystem;
+import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -25,6 +27,7 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
+  private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub("Pathing");
 
 
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -38,6 +41,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     swerveSubsystem.setDefaultCommand(rc_drive);
+    //pathingTelemSub.setDefaultCommand(new RunCommand(()->pathingTelemSub.periodic(),pathingTelemSub));
 
     // Configure the button bindings
     configureButtonBindings();
