@@ -27,7 +27,7 @@ public class VisionSubsystem extends SubsystemBase {
     public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
         this.swerveSubsystem = swerveSubsystem;
         fieldTags[0] = new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI)));
-        fieldTags[1] = new FieldTag(1, new Pose2d(4.28, 0, new Rotation2d(0)));
+        fieldTags[1] = new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2)));
     }
 
 
@@ -45,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
             for(int i = 0; i<fieldTags.length; i++){
                 if(fieldTags[i].getID() != id) continue;
                 Transform3d sentTransform = new Transform3d(new Translation3d(transform.getX()*-1,transform.getY()*-1,transform.getZ()),transform.getRotation());
-                swerveSubsystem.fieldTagSpotted(fieldTags[i], transform, camera.getLatestResult().getLatencyMillis());
+                swerveSubsystem.fieldTagSpotted(fieldTags[i], transform, camera.getLatestResult().getLatencyMillis(), camera.getLatestResult().getBestTarget().getPoseAmbiguity());
 
             }
 
@@ -69,6 +69,7 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
         }
+
     }
 
 

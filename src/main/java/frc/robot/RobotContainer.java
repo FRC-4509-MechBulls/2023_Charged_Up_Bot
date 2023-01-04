@@ -13,8 +13,13 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.lib.NavigationField;
+import frc.robot.subsystems.GraphicalTelemetrySubsystem;
+import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+
+import java.nio.file.Path;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -25,6 +30,9 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
+  private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub();
+
+  private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem);
 
 
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -38,7 +46,10 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     swerveSubsystem.setDefaultCommand(rc_drive);
+    //pathingTelemSub.setDefaultCommand(new RunCommand(()->pathingTelemSub.periodic(),pathingTelemSub));
+  //  (PathingTelemetrySub)pathingTelemSub.set
 
+    pathingTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
   }

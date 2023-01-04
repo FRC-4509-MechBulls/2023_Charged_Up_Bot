@@ -57,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
-    private WPI_Pigeon2 gyro = new WPI_Pigeon2(0);
+    private WPI_Pigeon2 gyro = new WPI_Pigeon2(9);
 
   //Odometry
     private SwerveDrivePoseEstimator odometry;
@@ -102,9 +102,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean limited, boolean fieldOriented){
-    SmartDashboard.putNumber("dr_xSpeed",xSpeed);
-    SmartDashboard.putNumber("dr_ySpeed",ySpeed);
-    SmartDashboard.putNumber("dr_rSpeed",turningSpeed);
+   // SmartDashboard.putNumber("dr_xSpeed",xSpeed);
+   // SmartDashboard.putNumber("dr_ySpeed",ySpeed);
+   // SmartDashboard.putNumber("dr_rSpeed",turningSpeed);
 
     //  Make the driving smoother, no sudden acceleration from sudden inputs
     if(limited) {
@@ -205,7 +205,7 @@ public class SwerveSubsystem extends SubsystemBase {
       //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
       VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 1 * DriveConstants.kDegreesToRadians),
       VecBuilder.fill(5 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(0.01,0.01,0.01),
+      VecBuilder.fill(0.6,0.6,0.01),
       0.02);  
     }
   
@@ -281,19 +281,22 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
       //update odometry
         updateOdometry();
-      SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
-      SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
-      SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
+      //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
+      //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
+      //SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
 
       //dashboard outputs
         debugOutputs();
     }
 
-
+public Pose2d getEstimatedPosition(){
+    return odometry.getEstimatedPosition();
+}
 
     // Vision stuff
 
-  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency){
+  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
+    if(ambiguity>Constants.VisionConstants.kMaxAmbiguity) return;
 
   //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
     Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));

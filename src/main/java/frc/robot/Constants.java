@@ -49,6 +49,8 @@ public final class Constants {
         public static final double kTrackWidth = Units.inchesToMeters(22.5); //need to find
         // Distance between right and left wheels
         public static final double kWheelBase = Units.inchesToMeters(22.5); //need to find
+
+
         // Distance between front and back wheels
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -122,5 +124,16 @@ public final class Constants {
         public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value;
 
         public static final double kDeadband = 0.06; //0.0275-0.03 //0.06
+    }
+
+    public static final class PathingConstants{
+        public static final double kRobotWidth = DriveConstants.kTrackWidth;
+        public static final double kRobotLength = DriveConstants.kWheelBase;
+        public static final double kRobotRadius = Math.sqrt(Math.pow(kRobotWidth/2,2)+Math.pow(kRobotLength/2,2));
+
+    }
+
+    public static final class VisionConstants {
+        public static final double kMaxAmbiguity = 0.2;
     }
 }
