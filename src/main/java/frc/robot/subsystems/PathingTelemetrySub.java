@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.lib.NavigationField;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -16,9 +17,7 @@ import java.util.List;
 
 public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
-    public PathingTelemetrySub() {
-        super("Pathing");
-    }
+    public PathingTelemetrySub() {super("Pathing");}
 
 
     protected void drawThings(Mat mat){
@@ -60,11 +59,17 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         };
         //convert corner points to pixels
         for(int i = 0; i<robotPts.length; i++)
-                robotPts[i] = metersPosToPixelsPos(robotPts[i]);
+            robotPts[i] = metersPosToPixelsPos(robotPts[i]);
         //draw robot to screen
         List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
         pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
         Imgproc.polylines(mat,pointList2 ,true,new Scalar(0,0,255),2);
+
+
+        //draw desired point
+        double[] navDesiredPointInPixels = metersPosToPixelsPos(NavigationField.getDesiredXY());
+        Point navPointAsPoint = new Point(navDesiredPointInPixels[0],navDesiredPointInPixels[1]);
+        Imgproc.line(mat, navPointAsPoint,navPointAsPoint,new Scalar(236,144,0),10);
 
 
         //   SmartDashboard.putNumber("point?",barriers.size());
@@ -79,21 +84,60 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
     }
 
     Pose2d robotPose = new Pose2d();
+    boolean robotOrientedView = false;
 public void updateRobotPose(Pose2d newPose){
 robotPose = newPose;
 }
 
-    public static double[] metersPosToPixelsPos(double[] posInMeters){
+    public  Point metersPosToPixelsPos(Point posInMeters){
+    posInMeters.x = -posInMeters.x;
+        posInMeters.x += SmartDashboard.getNumber("TCamX",0);
+        posInMeters.y += SmartDashboard.getNumber("TCamY",0);
+
+        if(robotOrientedView) {
+            posInMeters.x += robotPose.getX();
+            posInMeters.y += robotPose.getY();
+        }
+
+
+        double centerX = 640/2;
+        double centerY = 480/2;
+        double ang = Math.toRadians(90);
+        double zoom = SmartDashboard.getNumber("TCamZoom",1);
+
+        ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
+        if(robotOrientedView)
+            ang+= robotPose.getRotation().getRadians();
+
+        double outX = centerX;
+        double outY = centerY;
+        outX+= posInMeters.x * 60;
+        outY+= posInMeters.y * 60;
+
+        double dist = Math.sqrt(Math.pow(outX - centerX ,2) + Math.pow(outY -centerY,2)) * zoom;
+        double dir = Math.atan2(outY -centerY, outX - centerX);
+        outX = centerX + dist * Math.cos(dir+ang);
+        outY = centerY + dist * Math.sin(dir+ang);
+
+        return new Point (outX,outY);
+    }
+
+    public double[] metersPosToPixelsPos(double[] posInMeters){
         Point point = new Point(posInMeters[0],posInMeters[1]);
         Point newPoint = metersPosToPixelsPos(point);
         return new double[]{newPoint.x,newPoint.y};
     }
-    public static Point metersPosToPixelsPos(Point posInMeters){
-        double outX = 640/2;
-        double outY = 480/2;
-        outX+= posInMeters.x * 60;
-        outY+= posInMeters.y * 60;
-        return new Point (outX,outY);
+
+    public void init() {
+        SmartDashboard.putNumber("TCamAngle",0);
+        SmartDashboard.putNumber("TCamZoom",1.0);
+        SmartDashboard.putNumber("TCamX",0);
+        SmartDashboard.putNumber("TCamY",0);
+
     }
 
+    public void periodic(){
+    Line2D.Double pathLine = new Line2D.Double(robotPose.getX(), robotPose.getY(), 2, 0.3);
+    SmartDashboard.putBoolean("Clear path to (2, 0.3)", NavigationField.clearPathOnLine(pathLine));
+    }
 }

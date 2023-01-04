@@ -132,4 +132,8 @@ public final class Constants {
         public static final double kRobotRadius = Math.sqrt(Math.pow(kRobotWidth/2,2)+Math.pow(kRobotLength/2,2));
 
     }
+
+    public static final class VisionConstants {
+        public static final double kMaxAmbiguity = 0.2;
+    }
 }
