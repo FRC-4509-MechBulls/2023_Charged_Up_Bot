@@ -19,6 +19,8 @@ import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
+import java.nio.file.Path;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -45,7 +47,9 @@ public class RobotContainer {
   public RobotContainer() {
     swerveSubsystem.setDefaultCommand(rc_drive);
     //pathingTelemSub.setDefaultCommand(new RunCommand(()->pathingTelemSub.periodic(),pathingTelemSub));
+  //  (PathingTelemetrySub)pathingTelemSub.set
 
+    pathingTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
   }

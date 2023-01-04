@@ -53,8 +53,10 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
 
                         // Give the output stream a new image to display
                         outputStream.putFrame(mat);
+                          try {Thread.sleep(80);} catch (InterruptedException e) {}
                       }
                     });
+    m_visionThread.setPriority(1);
     m_visionThread.setDaemon(true);
     m_visionThread.start();
   }
@@ -73,5 +75,8 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+  public void init(){
+
   }
 }
