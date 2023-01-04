@@ -289,7 +289,9 @@ public class SwerveSubsystem extends SubsystemBase {
         debugOutputs();
     }
 
-
+public Pose2d getEstimatedPosition(){
+    return odometry.getEstimatedPosition();
+}
 
     // Vision stuff
 
