@@ -71,6 +71,9 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         Point navPointAsPoint = new Point(navDesiredPointInPixels[0],navDesiredPointInPixels[1]);
         Imgproc.line(mat, navPointAsPoint,navPointAsPoint,new Scalar(236,144,0),10);
 
+        //coords and heading
+        Imgproc.putText(mat,"("+robotPose.getX()+", "+robotPose.getY()+")",new Point(0,20),5,1,new Scalar(255,255,255));
+        Imgproc.putText(mat,robotPose.getRotation().getDegrees() + "*",new Point(0,40),5,1,new Scalar(255,255,255));
 
         //   SmartDashboard.putNumber("point?",barriers.size());
 
@@ -129,15 +132,15 @@ robotPose = newPose;
     }
 
     public void init() {
-        SmartDashboard.putNumber("TCamAngle",0);
-        SmartDashboard.putNumber("TCamZoom",1.0);
-        SmartDashboard.putNumber("TCamX",0);
-        SmartDashboard.putNumber("TCamY",0);
+   //     SmartDashboard.putNumber("TCamAngle",0);
+   //     SmartDashboard.putNumber("TCamZoom",1.0);
+   //     SmartDashboard.putNumber("TCamX",0);
+   //     SmartDashboard.putNumber("TCamY",0);
 
     }
 
     public void periodic(){
     Line2D.Double pathLine = new Line2D.Double(robotPose.getX(), robotPose.getY(), 2, 0.3);
-    SmartDashboard.putBoolean("Clear path to (2, 0.3)", NavigationField.clearPathOnLine(pathLine));
+  //  SmartDashboard.putBoolean("Clear path to (2, 0.3)", NavigationField.clearPathOnLine(pathLine));
     }
 }

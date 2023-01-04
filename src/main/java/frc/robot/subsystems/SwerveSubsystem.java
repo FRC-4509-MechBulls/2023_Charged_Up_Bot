@@ -102,9 +102,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
   public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean limited, boolean fieldOriented){
-    SmartDashboard.putNumber("dr_xSpeed",xSpeed);
-    SmartDashboard.putNumber("dr_ySpeed",ySpeed);
-    SmartDashboard.putNumber("dr_rSpeed",turningSpeed);
+   // SmartDashboard.putNumber("dr_xSpeed",xSpeed);
+   // SmartDashboard.putNumber("dr_ySpeed",ySpeed);
+   // SmartDashboard.putNumber("dr_rSpeed",turningSpeed);
 
     //  Make the driving smoother, no sudden acceleration from sudden inputs
     if(limited) {
@@ -281,9 +281,9 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
       //update odometry
         updateOdometry();
-      SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
-      SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
-      SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
+      //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
+      //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
+      //SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
 
       //dashboard outputs
         debugOutputs();
