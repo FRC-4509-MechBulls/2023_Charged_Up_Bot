@@ -205,7 +205,7 @@ public class SwerveSubsystem extends SubsystemBase {
       //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
       VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 1 * DriveConstants.kDegreesToRadians),
       VecBuilder.fill(5 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(0.01,0.01,0.01),
+      VecBuilder.fill(0.6,0.6,0.01),
       0.02);  
     }
   
@@ -295,7 +295,8 @@ public Pose2d getEstimatedPosition(){
 
     // Vision stuff
 
-  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency){
+  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
+    if(ambiguity>Constants.VisionConstants.kMaxAmbiguity) return;
 
   //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
     Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
