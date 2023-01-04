@@ -72,8 +72,8 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         Imgproc.line(mat, navPointAsPoint,navPointAsPoint,new Scalar(236,144,0),10);
 
         //coords and heading
-        Imgproc.putText(mat,"("+robotPose.getX()+", "+robotPose.getY()+")",new Point(0,20),5,1,new Scalar(255,255,255));
-        Imgproc.putText(mat,robotPose.getRotation().getDegrees() + "*",new Point(0,40),5,1,new Scalar(255,255,255));
+        Imgproc.putText(mat,"("+(Math.floor(robotPose.getX()*100)/100.0)+", "+(Math.floor(robotPose.getY()*100)/100.0)+")",new Point(0,20),5,1,new Scalar(255,255,255));
+        Imgproc.putText(mat,(Math.floor(robotPose.getRotation().getDegrees()*10)/10.0) + "*",new Point(0,40),5,1,new Scalar(255,255,255));
 
         //   SmartDashboard.putNumber("point?",barriers.size());
 
