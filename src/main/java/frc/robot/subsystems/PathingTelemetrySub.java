@@ -11,6 +11,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,10 +67,24 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         Imgproc.polylines(mat,pointList2 ,true,new Scalar(0,0,255),2);
 
 
-        //draw desired point
-        double[] navDesiredPointInPixels = metersPosToPixelsPos(NavigationField.getDesiredXY());
-        Point navPointAsPoint = new Point(navDesiredPointInPixels[0],navDesiredPointInPixels[1]);
-        Imgproc.line(mat, navPointAsPoint,navPointAsPoint,new Scalar(236,144,0),10);
+//        //draw desired point
+//        double[] navDesiredPointInPixels = metersPosToPixelsPos(NavigationField.getDesiredXY());
+//        Point navPointAsPoint = new Point(navDesiredPointInPixels[0],navDesiredPointInPixels[1]);
+//        Imgproc.line(mat, navPointAsPoint,navPointAsPoint,new Scalar(236,144,0),10);
+
+       //draw test line
+
+      //  Imgproc.line(mat,metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0))), metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0))),new Scalar(255,255,255),2);
+
+        //draw navigation lines
+        for(int i = 1; i<navPoses.size(); i++)
+            Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,255,255),2);
+        SmartDashboard.putNumber("navPosesInPathingTelemetry",navPoses.size());
+        String out = "";
+        for(Pose2d pose : navPoses){
+            out+= "(" + pose.getX() + ", " + pose.getY() + "), ";
+        }
+        SmartDashboard.putString("navPoses", out);
 
         //coords and heading
         Imgproc.putText(mat,"("+(Math.floor(robotPose.getX()*100)/100.0)+", "+(Math.floor(robotPose.getY()*100)/100.0)+")",new Point(0,20),5,1,new Scalar(255,255,255));
@@ -91,6 +106,9 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 public void updateRobotPose(Pose2d newPose){
 robotPose = newPose;
 }
+
+ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
+public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;}
 
     public  Point metersPosToPixelsPos(Point posInMeters){
     posInMeters.x = -posInMeters.x;

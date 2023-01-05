@@ -5,8 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -40,6 +42,8 @@ public class RobotContainer {
   private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
   private final Command rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
   private final Command rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
+  private final Command rc_generateNavPoses = new InstantCommand(()->navigationField.setNavPoint(new Pose2d(2.5,0,new Rotation2d())));
+  private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint()),swerveSubsystem);
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
 
 
@@ -52,6 +56,13 @@ public class RobotContainer {
     pathingTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
+
+    //inputs
+    SmartDashboard.putNumber("x1",0);
+    SmartDashboard.putNumber("y1",0);
+    SmartDashboard.putNumber("x2",0);
+    SmartDashboard.putNumber("y2",0);
+
   }
 
   /**
@@ -66,6 +77,9 @@ public class RobotContainer {
     new JoystickButton(driverController, XboxController.Button.kB.value).whenHeld(rc_goToPose);
     new JoystickButton(driverController, XboxController.Button.kStart.value).whenPressed(swerve_toggleFieldOriented);
     new JoystickButton(driverController, XboxController.Button.kA.value).whenPressed(swerve_resetPose);
+
+    new JoystickButton(driverController, XboxController.Button.kX.value).whenPressed(rc_generateNavPoses);
+    new JoystickButton(driverController, XboxController.Button.kLeftBumper.value).whenHeld(rc_navToPose);
 
   }
 

@@ -1,6 +1,7 @@
 package frc.robot.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -12,13 +13,13 @@ import java.util.ArrayList;
 
 public class NavigationField extends SubsystemBase {
 
-static ArrayList<Line2D.Double> barriers = new ArrayList<Line2D.Double>();
+ ArrayList<Line2D.Double> barriers = new ArrayList<Line2D.Double>();
 private static double desiredX = 2;
 private static double desiredY = 0.3;
 
 
 PathingTelemetrySub pTelemetrySub;
-SwerveSubsystem swerveSubsystem;
+ private SwerveSubsystem swerveSubsystem;
 public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem){
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
@@ -33,7 +34,7 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
     SmartDashboard.putBoolean("lineFree", barrierOnLine(testLine));
 }
 
-public static boolean barrierOnLine(Line2D.Double line){
+public  boolean barrierOnLine(Line2D.Double line){
     double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
     double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
@@ -73,8 +74,53 @@ public static boolean barrierOnLine(Line2D.Double line){
 
 }
 
-//public Pose2d findNextNavPose(Pose2d myPose, Pose2d desiredPose){
-//    if()
-//}
+
+
+ public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
+    if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
+        return new Pose2d[] {desiredPose};
+
+    if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth) {
+        for (double dist = 0; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
+            for (double ang = 0; ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
+                double branchHeadX = myPose.getX() + dist*Math.cos(ang);
+                double branchHeadY = myPose.getY() + dist*Math.sin(ang);
+                Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
+                Line2D.Double lineToDesiredPose = new Line2D.Double(branchHeadX,branchHeadY,desiredPose.getX(),desiredPose.getY());
+                if(!barrierOnLine(lineToTestPoint) && !barrierOnLine(lineToDesiredPose))
+                    return new Pose2d[]{desiredPose};
+
+                Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
+                Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
+                myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
+                System.arraycopy(lowerLevelOut, 0, myOut, 1, lowerLevelOut.length);
+                return myOut;
+
+            }
+    }
+    //if you've gone too deep, original pose should be returned
+    return new Pose2d[] {myPose};
+}
+
+private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
+public void setNavPoint(Pose2d desiredPose){
+    Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
+    navPoses.clear();
+    for(Pose2d  i : outNavPoses)
+        navPoses.add(i);
+    SmartDashboard.putNumber("navPosesInNavField",navPoses.size());
+    pTelemetrySub.updateNavPoses(navPoses);
+}
+public Pose2d getNextNavPoint(){
+    SmartDashboard.putNumber("navPosesInNavField",navPoses.size());
+    pTelemetrySub.updateNavPoses(navPoses);
+    Pose2d botPose = swerveSubsystem.getEstimatedPosition();
+    while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedGoalThreshold)
+        navPoses.remove(0);
+    return navPoses.get(0);
+}
+
+
+
 
 }
