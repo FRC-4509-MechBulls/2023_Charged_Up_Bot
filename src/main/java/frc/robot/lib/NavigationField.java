@@ -1,11 +1,12 @@
 package frc.robot.lib;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
 
-import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
@@ -28,17 +29,19 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
 
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
+Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
+    SmartDashboard.putBoolean("lineFree", barrierOnLine(testLine));
 }
 
-public static boolean clearPathOnLine(Line2D.Double line){
+public static boolean barrierOnLine(Line2D.Double line){
     double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
     double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
-    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI) * Constants.PathingConstants.kRobotRadius;
-    double edgePtY1 = line.getX1() + Math.sin(lineDir - Math.PI) * Constants.PathingConstants.kRobotRadius;
+    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius;
+    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius;
 
-    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI) * Constants.PathingConstants.kRobotRadius;
-    double edgePtY2 = line.getX1() + Math.sin(lineDir + Math.PI) * Constants.PathingConstants.kRobotRadius;
+    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
+    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
 
     double destEdgePtX1 = edgePtX1 + (line.getX2() - line.getX1());
     double destEdgePtY1 = edgePtY1 + (line.getY2() - line.getY1());
@@ -69,8 +72,9 @@ public static boolean clearPathOnLine(Line2D.Double line){
     return pathClear;
 
 }
-    static public double getDesiredX(){return desiredX;}
-    public static  double getDesiredY(){return desiredY;}
-    public static double[] getDesiredXY(){return new double[]{getDesiredX(),getDesiredY()};}
+
+//public Pose2d findNextNavPose(Pose2d myPose, Pose2d desiredPose){
+//    if()
+//}
 
 }
