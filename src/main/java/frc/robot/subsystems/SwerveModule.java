@@ -139,15 +139,14 @@ public class SwerveModule extends SubsystemBase {
     }
   //Getters
     public double getTurningPosition() {
-      return 0;//turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning; removed
+      return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
     }
     public double getDriveVelocity() {
-      return 0;//driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s removed
+      return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s
     }
     public double getAbsoluteEncoderRad() {
       double angle = absoluteEncoder.getAbsolutePosition(); //range 0-1
-      //Debug output: 
-      tabModules.add("absRadians" + absoluteEncoder.getSourceChannel(), angle);
+      //Debug output: tabModules.add("absRadians" + absoluteEncoder.getSourceChannel(), angle);
       angle *= ModuleConstants.kAbsToRadians; //converts to radians
       angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
       return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
@@ -163,19 +162,13 @@ public class SwerveModule extends SubsystemBase {
         return;
       }
       calculateFalconRelativeState();
-      /*
       driveMotor.set(TalonFXControlMode.Velocity, this.state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, 
                      DemandType.ArbitraryFeedForward, (this.state.speedMetersPerSecond/Math.abs(this.state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
       turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
-      removed
-      */
     }
     public void stop() { //sets both voltage outputs to 0
-      /*
       driveMotor.set(TalonFXControlMode.PercentOutput, 0);
       turningMotor.set(TalonFXControlMode.PercentOutput, 0);
-      removed
-      */
     }
   //Utility
     private void calculateFalconRelativeState() { //converts absolute state to falcon-encoder-relative state

@@ -125,13 +125,13 @@ public class SwerveSubsystem extends SubsystemBase {
     //A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
     //(if x / y falls halfway between two integers, the even integer is returned)
     public double getHeading() {
-          return 0;//Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward removed
+          return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
     }
     public Rotation2d getRotation2d() { //since wpilib often wants heading in format of Rotation2d
       return Rotation2d.fromDegrees(getHeading());
     }
     public double getAngularVelocity() { //get rotational velocity for closed loop
-        return 0;//-gyro.getRate() * DriveConstants.kDegreesToRadians;removed
+        return -gyro.getRate() * DriveConstants.kDegreesToRadians;
     }
     public SwerveModuleState[] getStates() { //module states
       return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
