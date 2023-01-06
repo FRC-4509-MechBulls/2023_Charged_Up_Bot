@@ -60,13 +60,13 @@ public  boolean barrierOnLine(Line2D.Double line){
     LineIntersection.Point l3p2 = new LineIntersection.Point(destEdgePtX2, destEdgePtY2);
 
 
-    boolean pathClear = true;
+    boolean pathClear = false;
     for(Line2D barrier : barriers){
         LineIntersection.Point bp1 = new LineIntersection.Point(barrier.getX1(), barrier.getY1());
         LineIntersection.Point bp2 = new LineIntersection.Point(barrier.getX2(), barrier.getY2());
 
         if(LineIntersection.doIntersect(bp1,bp2,l1p1,l1p2) || LineIntersection.doIntersect(bp1,bp2,l2p1,l2p2) || LineIntersection.doIntersect(bp1,bp2,l3p1,l3p2)){
-            pathClear = false;
+            pathClear = true;
         }
     }
 
