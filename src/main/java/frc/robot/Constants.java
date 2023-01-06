@@ -125,7 +125,7 @@ public final class Constants {
         //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
         public static final Vector<N1> kSDState = VecBuilder.fill(1 * DriveConstants.kDegreesToRadians);
         //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
-        public static final Vector<N3> kSDVision = VecBuilder.fill(0.05, 100000, 1000000);
+        public static final Vector<N3> kSDVision = VecBuilder.fill(1000000, 1000000, 1000000);
         //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
 
         public static final double kGyroZError = 0.674; //.674
