@@ -42,7 +42,7 @@ public class CTREConfigs {
     swerveDriveMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveDriveMotor.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 40, 40, 0);
     swerveDriveMotor.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 40, 40, 0);
-    swerveDriveMotor.neutralDeadband = 0.01;
+    swerveDriveMotor.neutralDeadband = ModuleConstants.kNeutralDeadband;
   }
   public void configSwerveTurnMotor() {
     swerveTurnMotor.primaryPID = new BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor);
@@ -51,7 +51,7 @@ public class CTREConfigs {
     swerveTurnMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
     swerveTurnMotor.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 40, 40, 0);
     swerveTurnMotor.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 40, 40, 0);
-    swerveTurnMotor.neutralDeadband = 0.01;
+    swerveTurnMotor.neutralDeadband = ModuleConstants.kNeutralDeadband;
   }
   public void configGyro() {
     gyro.ZAxisGyroError = DriveConstants.kGyroZError;
