@@ -26,9 +26,11 @@ public class SwerveJoystickCmd extends CommandBase {
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   private double TranslationMagnitude;
   private double TranslationMagnitudeScaled;
-  private double rotationMagnitude = 0;
-  private double scaledMagnitudeRotation = 0;
-  private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+  private double rotationMagnitude;
+  private double scaledMagnitudeRotation;
+  private PIDController turningPID;
+  private PIDController xPID;
+  private PIDController yPID;
 
   Rotation2d translationDirection;
   Rotation2d rotationDirection;
@@ -46,9 +48,13 @@ public class SwerveJoystickCmd extends CommandBase {
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     addRequirements(swerveSubsystem);
-
+    //PID
+      turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+      xPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
+      yPID = new PIDController(DriveConstants.kPTranslation, 0, 0);
     //dashboard
     //Debug output: SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
+    //Debug output: SmartDashboard.putNumber("kPTranslation", DriveConstants.kPTranslation);
     //Debug output: SmartDashboard.putNumber("kPFudge", DriveConstants.kPFudge);
     }
 
@@ -115,29 +121,34 @@ public class SwerveJoystickCmd extends CommandBase {
     //3.5. Fudge Factor to eliminate uncommanded change in direction when translating and rotating simultaneously
       ySpeed += turningSpeed * (-xSpeed) * DriveConstants.kPFudge;
       //debug output: ySpeed += turningSpeed * (-xSpeed) * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
-      xSpeed += turningSpeed * ySpeed * DriveConstants.kPFudge;
+      xSpeed += turningSpeed * (ySpeed - turningSpeed * (-xSpeed) * DriveConstants.kPFudge) * DriveConstants.kPFudge;
       //debug output: xSpeed += turningSpeed * ySpeed * SmartDashboard.getNumber("kPFudge", DriveConstants.kPFudge);
 
     // 3.55. P loops to create accurate outputs
       //turning
-        //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
-        turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
+          //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
+          turningSpeed += turningPID.calculate(swerveSubsystem.getAngularVelocity(), turningSpeed);
       //drive
-        
-      
-      
+        //y
+          //Debug intput: yPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
+          ySpeed += yPID.calculate(swerveSubsystem.getChassisSpeeds().vyMetersPerSecond + swerveSubsystem.getAngularVelocity() * -swerveSubsystem.getChassisSpeeds().vxMetersPerSecond * DriveConstants.kPFudge, ySpeed);
+        //x
+          //Debug intput: xPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
+          xSpeed += xPID.calculate(swerveSubsystem.getChassisSpeeds().vxMetersPerSecond + swerveSubsystem.getAngularVelocity() * swerveSubsystem.getChassisSpeeds().vyMetersPerSecond * DriveConstants.kPFudge, xSpeed);
+
     // 4. Construct desired chassis speeds (convert to appropriate reference frames)
-    ChassisSpeeds chassisSpeeds;
-    if (fieldOrientedFunction.get()) {
-      swerveSubsystem.fieldOriented(true);
-      // Relative to field
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-          xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
-    } else {
-      swerveSubsystem.fieldOriented(false);
-      // Relative to robot
-      chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
-    }
+      ChassisSpeeds chassisSpeeds;
+      if (fieldOrientedFunction.get()) {
+        swerveSubsystem.fieldOriented(true);
+        // Relative to field
+        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
+      } else {
+        swerveSubsystem.fieldOriented(false);
+        // Relative to robot
+        chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+      }
+      //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 
     // 5. Convert chassis speeds to individual module states
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);

@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -39,13 +39,16 @@ public final class Constants {
         public static final double kMetersToDriveVelocity = kMetersToDrive / 10;
         public static final double kAbsToRadians = 2.0 * Math.PI;
 
-        //Gains
-            //Turn
-            public static final double kPTurning = 0.21; //0.21 //works from 0.1-0.3 but 0.21 seems to offer low chattering and pretty quick alignment
-            //Drive
-            public static final double kAFFDrive = 0.015; //0.0151 //0.015
-            public static final double kFDrive = .045012; //0.04390375 //0.03751 //.045012
-            public static final double kPDrive = 0.02; //0.08 //0.02
+        //Configs
+            //Gains
+                //Turn
+                public static final double kPTurning = 0.21; //0.21 //works from 0.1-0.3 but 0.21 seems to offer low chattering and pretty quick alignment
+                //Drive
+                public static final double kAFFDrive = 0.015; //0.0151 //0.015
+                public static final double kFDrive = .045012; //0.04390375 //0.03751 //.045012
+                public static final double kPDrive = 0.02; //0.08 //0.02
+            //Neutral Deadband
+                public static final double kNeutralDeadband = 0.01;
     }
 
     public static final class DriveConstants {
@@ -61,17 +64,16 @@ public final class Constants {
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
         );
 
-        //TBD
         public static final int kFrontLeftDriveMotorPort = 1;
         public static final int kFrontRightDriveMotorPort = 2;
         public static final int kBackLeftDriveMotorPort = 3;
         public static final int kBackRightDriveMotorPort = 4;
 
-        //TBD
         public static final int kFrontLeftTurningMotorPort = 5;
         public static final int kFrontRightTurningMotorPort = 6;
         public static final int kBackLeftTurningMotorPort = 7;
         public static final int kBackRightTurningMotorPort = 8;
+        public static final int kPigeonPort = 9;
 
         public static final int kPigeonPort = 9;
 
@@ -85,7 +87,6 @@ public final class Constants {
         public static final boolean kBackLeftTurningEncoderReversed = true;
         public static final boolean kBackRightTurningEncoderReversed = true;
 
-        //TBD
         public static final int kFrontLeftDriveAbsoluteEncoderPort = 0;
         public static final int kFrontRightDriveAbsoluteEncoderPort = 1;
         public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
@@ -128,11 +129,14 @@ public final class Constants {
         //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
 
         public static final double kGyroZError = 0.674; //.674
+        public static final double kGyroMountPosePitch = 0;
+        public static final double kGyroMountPoseYaw = 0;
+        public static final double kGyroMountPoseRoll = 0;
     }
 
     public static final class RobotConstants {
-        public static double kMainLoopPeriod = 0.02;
-        public static double kRobotNominalVoltage = 12.0;
+        public static final double kMainLoopPeriod = 0.02;
+        public static final double kRobotNominalVoltage = 12.0;
     }
 
     public static final class OIConstants {
