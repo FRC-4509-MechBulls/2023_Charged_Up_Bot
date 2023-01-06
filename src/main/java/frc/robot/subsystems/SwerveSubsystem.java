@@ -153,7 +153,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //drive
       //y
         //Debug intput: yPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
-        ySpeed += yPID.calculate(getChassisSpeeds().vyMetersPerSecond + getAngularVelocity() * getChassisSpeeds().vxMetersPerSecond * DriveConstants.kPFudge, ySpeed);
+        ySpeed += yPID.calculate(getChassisSpeeds().vyMetersPerSecond + getAngularVelocity() * (-getChassisSpeeds().vxMetersPerSecond) * DriveConstants.kPFudge, ySpeed);
       //x
         //Debug intput: xPID.setP(SmartDashboard.getNumber("kPTranslation", DriveConstants.kPTranslation));
         xSpeed += xPID.calculate(getChassisSpeeds().vxMetersPerSecond + getAngularVelocity() * getChassisSpeeds().vyMetersPerSecond * DriveConstants.kPFudge, xSpeed);
