@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -62,6 +63,9 @@ public class SwerveModule extends SubsystemBase {
       //Values
         //abs encoders
           private NetworkTableEntry dashboardAbsRaw01;
+          private NetworkTableEntry dashboardAbsRad;
+        //falcon encoders
+          private NetworkTableEntry dashboardTurningRad;
       //Status
         //abs encoders
           private NetworkTableEntry dashboardAbsConnected;
@@ -75,6 +79,9 @@ public class SwerveModule extends SubsystemBase {
         //Turn
           private NetworkTableEntry dashboardkPTurn;
           private NetworkTableEntry dashboardErrorTurn;
+    //Initialization
+      //Timestamp
+      private double timestamp = Timer.getFPGATimestamp();
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
@@ -114,8 +121,9 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);    
       turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
       turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 1000);
-      turningMotor.setNeutralMode(NeutralMode.Coast);                         
       turningMotor.setInverted(turningMotorReversed);
+      while (Timer.getFPGATimestamp() < timestamp + 2) {}
+      turningMotor.setNeutralMode(NeutralMode.Coast);                         
       //both
       enableVoltageCompensation(true);  
       enableOverrideLimitSwitches(true);
@@ -127,7 +135,10 @@ public class SwerveModule extends SubsystemBase {
   //Configuration
     public void resetEncoders() {
       driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
+      //debug output: System.out.println(getAbsoluteEncoderRad() + "ma" + absoluteEncoder.getSourceChannel());
       turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * ModuleConstants.kRadiansToTurning); //resets turning motor encoder to absolute encoder value
+      //debug output: System.out.println(getTurningPosition() + "mt" + absoluteEncoder.getSourceChannel());
+      //debug output: System.out.println((getTurningPosition() - getAbsoluteEncoderRad()) + "mn" + absoluteEncoder.getSourceChannel());
     }
     public void enableVoltageCompensation(boolean onOff) {
       driveMotor.enableVoltageCompensation(onOff);
@@ -141,7 +152,7 @@ public class SwerveModule extends SubsystemBase {
     }
 //Getters
     public double getTurningPosition() {
-      return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
+      return turningMotor.getSelectedSensorPosition(0) / ModuleConstants.kRadiansToTurning;
     }
     public double getDriveVelocity() {
       return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s
@@ -213,13 +224,16 @@ public class SwerveModule extends SubsystemBase {
         //Encoders
           dashboardAbsConnected = tabModules.add("absConnected" + absoluteEncoder.getSourceChannel(), absoluteEncoder.isConnected()).getEntry();
           //Debug output: dashboardAbsRaw01 = tabModules.add("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition()).getEntry();
+          //Debug output: dashboardTurningRad = tabModules.add("TurningRad" + absoluteEncoder.getSourceChannel(), getTurningPosition()).getEntry();
+          //Debug output: dashboardAbsRad = tabModules.add("absRad" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad()).getEntry();
         //debugTuneModulePIDInit();
       }
       public void debugPeriodic() {
         //Encoders
           dashboardAbsConnected.setBoolean(absoluteEncoder.isConnected());
-          //Debug output: tabModules.add("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
           //Debug output: dashboardAbsRaw01.setDouble(absoluteEncoder.getAbsolutePosition());
+          //Debug output: dashboardTurningRad.setDouble(getTurningPosition());
+          //Debug output: dashboardAbsRad.setDouble(getAbsoluteEncoderRad());
         //Math
           //Debug output: tabModules.add("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
         //Output

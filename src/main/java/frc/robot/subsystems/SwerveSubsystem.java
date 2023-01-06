@@ -217,6 +217,7 @@ public class SwerveSubsystem extends SubsystemBase {
     rotationMagnitude = Math.abs(turningSpeed); //magnitude of joystick input
     rotationDirection = new Rotation2d(turningSpeed, 0); //conveys polarity +/-
     //Debug output: SmartDashboard.putNumber("directionR", rotationDirection.getCos());
+    //debug output:     SmartDashboard.putNumber("joystickmagnitude", translationMagnitude);
 
     //1.55 scale magnitudes to reflect deadzone
     //Translation

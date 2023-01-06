@@ -38,14 +38,14 @@ public class CTREConfigs {
     swerveDriveMotor.slot0.kF = ModuleConstants.kFDrive;
     swerveDriveMotor.slot0.kP = ModuleConstants.kPDrive;
     swerveDriveMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
-    swerveDriveMotor.primaryPID = new BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor);
+    swerveDriveMotor.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
     swerveDriveMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveDriveMotor.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 40, 40, 0);
     swerveDriveMotor.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 40, 40, 0);
     swerveDriveMotor.neutralDeadband = ModuleConstants.kNeutralDeadband;
   }
   public void configSwerveTurnMotor() {
-    swerveTurnMotor.primaryPID = new BaseTalonPIDSetConfiguration(FeedbackDevice.IntegratedSensor);
+    swerveTurnMotor.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
     swerveTurnMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveTurnMotor.slot0.kP = ModuleConstants.kPTurning;
     swerveTurnMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
