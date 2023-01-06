@@ -78,28 +78,34 @@ public  boolean barrierOnLine(Line2D.Double line){
 
  public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
-        return new Pose2d[] {desiredPose};
+        return new Pose2d[] {myPose,desiredPose};
 
-    if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth) {
+
         for (double dist = 0; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
             for (double ang = 0; ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
                 double branchHeadX = myPose.getX() + dist*Math.cos(ang);
                 double branchHeadY = myPose.getY() + dist*Math.sin(ang);
                 Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
                 Line2D.Double lineToDesiredPose = new Line2D.Double(branchHeadX,branchHeadY,desiredPose.getX(),desiredPose.getY());
-                if(!barrierOnLine(lineToTestPoint) && !barrierOnLine(lineToDesiredPose))
-                    return new Pose2d[]{desiredPose};
-
-                Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
-                Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
-                myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
-                System.arraycopy(lowerLevelOut, 0, myOut, 1, lowerLevelOut.length);
-                return myOut;
+                if(barrierOnLine(lineToTestPoint)) continue;
+                if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth+1){
+                    Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
+                    if(lowerLevelOut.length>0){
+                        Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
+                        myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
+                        for(int i = 1; i<myOut.length; i++)
+                            myOut[i] = lowerLevelOut[i-1];
+                        //the issue lies here
+                        return myOut;
+                    }
+                }
 
             }
-    }
+
+
+
     //if you've gone too deep, original pose should be returned
-    return new Pose2d[] {myPose};
+    return new Pose2d[] {};
 }
 
 private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();

@@ -63,6 +63,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("x2",0);
     SmartDashboard.putNumber("y2",0);
 
+    navigationField.setNavPoint(new Pose2d(2.5,0,new Rotation2d()));
+
   }
 
   /**
@@ -80,6 +82,8 @@ public class RobotContainer {
 
     new JoystickButton(driverController, XboxController.Button.kX.value).whenPressed(rc_generateNavPoses);
     new JoystickButton(driverController, XboxController.Button.kLeftBumper.value).whenHeld(rc_navToPose);
+
+
 
   }
 
