@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -36,6 +37,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.RobotConstants;
 
 public class SwerveModule extends SubsystemBase {
   //Module number
@@ -137,7 +139,7 @@ public class SwerveModule extends SubsystemBase {
       turningMotor.overrideLimitSwitchesEnable(onOff);
       turningMotor.overrideSoftLimitsEnable(onOff);
     }
-  //Getters
+//Getters
     public double getTurningPosition() {
       return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
     }
@@ -231,5 +233,6 @@ public class SwerveModule extends SubsystemBase {
   public void periodic() { // This method will be called once per scheduler run
     //Debug
       debugPeriodic();
+
   }
 }

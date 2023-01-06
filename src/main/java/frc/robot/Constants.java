@@ -75,6 +75,8 @@ public final class Constants {
         public static final int kBackRightTurningMotorPort = 8;
         public static final int kPigeonPort = 9;
 
+        public static final int kPigeonPort = 9;
+
         public static final boolean kFrontLeftDriveEncoderReversed = false;
         public static final boolean kFrontRightDriveEncoderReversed = true;
         public static final boolean kBackLeftDriveEncoderReversed = false;
@@ -118,7 +120,7 @@ public final class Constants {
         public static final double kPTranslation = 0.0007; //0.0007; 0.0005 has low jiggle when stopping but lower strength, 0.001 is stronger but jiggles
 
         public static final double kPFudge = 0.02; //0.2 seems pretty close
-
+        
         public static final Vector<N3> kSDOdo = VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 10 * DriveConstants.kDegreesToRadians);
         //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
         public static final Vector<N1> kSDState = VecBuilder.fill(1 * DriveConstants.kDegreesToRadians);

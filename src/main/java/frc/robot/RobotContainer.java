@@ -4,13 +4,17 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -20,19 +24,28 @@ import frc.robot.subsystems.SwerveSubsystem;
  */
 public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem;
+  private final VisionSubsystem visionSubsystem;
+
   private final XboxController driverController;
+  private final Command rc_drive;
+  private final Command swerve_toggleFieldOriented;
+  private final Command rc_goToTag;
+  private final Command rc_goToPose;
+  private final Command swerve_resetPose;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     swerveSubsystem = new SwerveSubsystem();
+    visionSubsystem = new VisionSubsystem(swerveSubsystem);
+
     driverController = new XboxController(OIConstants.kDriverControllerPort);
-    swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
-      swerveSubsystem,
-      () -> -driverController.getRawAxis(OIConstants.kDriverYAxis),
-      () -> driverController.getRawAxis(OIConstants.kDriverXAxis),
-      () -> driverController.getRawAxis(OIConstants.kDriverRotAxis),
-      () -> driverController.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)
-    ));
+    
+    rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
+    swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
+    rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
+    rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
+    swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
+    swerveSubsystem.setDefaultCommand(rc_drive);
 
     // Configure the button bindings
     configureButtonBindings();
@@ -45,7 +58,12 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(driverController, XboxController.Button.kStart.value).whenPressed(() -> swerveSubsystem.zeroHeading());
+    new JoystickButton(driverController, XboxController.Button.kBack.value).whenPressed(() -> swerveSubsystem.zeroHeading());
+    new JoystickButton(driverController, XboxController.Button.kY.value).whenHeld(rc_goToTag);
+    new JoystickButton(driverController, XboxController.Button.kB.value).whenHeld(rc_goToPose);
+    new JoystickButton(driverController, XboxController.Button.kStart.value).whenPressed(swerve_toggleFieldOriented);
+    new JoystickButton(driverController, XboxController.Button.kA.value).whenPressed(swerve_resetPose);
+
   }
 
   /**
