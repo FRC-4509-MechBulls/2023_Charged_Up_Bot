@@ -124,6 +124,9 @@ public final class Constants {
         //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
 
         public static final double kGyroZError = 0.674; //.674
+        public static final double kGyroMountPosePitch = 0;
+        public static final double kGyroMountPoseYaw = 0;
+        public static final double kGyroMountPoseRoll = 0;
     }
 
     public static final class RobotConstants {

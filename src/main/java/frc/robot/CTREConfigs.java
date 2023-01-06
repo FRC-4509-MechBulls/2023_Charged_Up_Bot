@@ -55,5 +55,8 @@ public class CTREConfigs {
   }
   public void configGyro() {
     gyro.ZAxisGyroError = DriveConstants.kGyroZError;
+    gyro.MountPosePitch = DriveConstants.kGyroMountPosePitch;
+    gyro.MountPoseYaw = DriveConstants.kGyroMountPoseYaw;
+    gyro.MountPoseRoll = DriveConstants.kGyroMountPoseRoll;
   }
 }
