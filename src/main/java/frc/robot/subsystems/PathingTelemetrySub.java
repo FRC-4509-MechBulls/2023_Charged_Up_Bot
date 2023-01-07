@@ -72,19 +72,26 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 //        Point navPointAsPoint = new Point(navDesiredPointInPixels[0],navDesiredPointInPixels[1]);
 //        Imgproc.line(mat, navPointAsPoint,navPointAsPoint,new Scalar(236,144,0),10);
 
-       //draw test line
-
-      //  Imgproc.line(mat,metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0))), metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0))),new Scalar(255,255,255),2);
 
         //draw navigation lines
         for(int i = 1; i<navPoses.size(); i++)
-            Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,255,255),2);
+            Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
         SmartDashboard.putNumber("navPosesInPathingTelemetry",navPoses.size());
         String out = "";
         for(Pose2d pose : navPoses){
             out+= "(" + pose.getX() + ", " + pose.getY() + "), ";
         }
         SmartDashboard.putString("navPoses", out);
+        if(navPoses.size()>0){
+            Pose2d lastPose = navPoses.get(navPoses.size()-1);
+            Point lastPosePix = metersPosToPixelsPos(new Point(lastPose.getX(),lastPose.getY()));
+            Imgproc.circle(mat,lastPosePix,1,new Scalar(0,255,255),4);
+
+        }
+
+        //draw test line
+        Imgproc.line(mat,metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0))), metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0))),new Scalar(255,255,255),2);
+
 
         //coords and heading
         Imgproc.putText(mat,"("+(Math.floor(robotPose.getX()*100)/100.0)+", "+(Math.floor(robotPose.getY()*100)/100.0)+")",new Point(0,20),5,1,new Scalar(255,255,255));

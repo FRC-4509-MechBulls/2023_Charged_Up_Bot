@@ -132,7 +132,7 @@ public final class Constants {
         public static final double kRobotRadius = Math.sqrt(Math.pow(kRobotWidth/2,2)+Math.pow(kRobotLength/2,2));
 
         public static final double maxLineDist = 4.0;
-        public static final double lineDistIterator = maxLineDist/3;
+        public static final double lineDistIterator = 1;
         public static final double moveAngles = 8;
         public static final int maxRecursionDepth = 3;
 

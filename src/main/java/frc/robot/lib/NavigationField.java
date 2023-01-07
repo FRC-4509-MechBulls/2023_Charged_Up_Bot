@@ -24,25 +24,27 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
 
-    barriers.add(new Line2D.Double(1,0.5,1,-0.5));
+    barriers.add(new Line2D.Double(1,1.5,1,-1.5));
+    barriers.add(new Line2D.Double(1,1.5,3,1.5));
+    barriers.add(new Line2D.Double(1,-1.5,3,-1.5));
     this.pTelemetrySub.updateBarriers(barriers);
 }
 
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
 Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
-    SmartDashboard.putBoolean("lineFree", barrierOnLine(testLine));
+    SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
     double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
     double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
-    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius;
-    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius;
+    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5; //why do I need to multiply by 2??
+    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5;
 
-    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
-    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
+    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5;
+    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5;
 
     double destEdgePtX1 = edgePtX1 + (line.getX2() - line.getX1());
     double destEdgePtY1 = edgePtY1 + (line.getY2() - line.getY1());
