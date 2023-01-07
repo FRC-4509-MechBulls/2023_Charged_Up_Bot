@@ -8,8 +8,8 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.RobotContainer;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.MathThings;
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonTrackedTarget;
+//import org.photonvision.PhotonCamera;
+//import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,11 +17,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 //meaga cool super epic coding time I love code so much UwU -Isaac
-
+// commented out everything because vendor libraries don't yet exist 😢
 public class VisionSubsystem extends SubsystemBase {
-    PhotonCamera camera = new PhotonCamera("gloworm");
-    /** Creates a new Vision. */
+    //PhotonCamera camera = new PhotonCamera("gloworm");
 
+/*
     private FieldTag[] fieldTags = new FieldTag[2];
     private SwerveSubsystem swerveSubsystem;
     public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
@@ -103,5 +103,5 @@ public class VisionSubsystem extends SubsystemBase {
 
         return out;
     }
-
+*/
 }
