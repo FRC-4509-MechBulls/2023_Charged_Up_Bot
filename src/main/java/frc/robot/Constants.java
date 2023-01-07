@@ -131,6 +131,12 @@ public final class Constants {
         public static final double kRobotLength = DriveConstants.kWheelBase;
         public static final double kRobotRadius = Math.sqrt(Math.pow(kRobotWidth/2,2)+Math.pow(kRobotLength/2,2));
 
+        public static final double maxLineDist = 4.0;
+        public static final double lineDistIterator = 1;
+        public static final double moveAngles = 8;
+        public static final int maxRecursionDepth = 3;
+
+        public static final double reachedGoalThreshold = 0.05;
     }
 
     public static final class VisionConstants {

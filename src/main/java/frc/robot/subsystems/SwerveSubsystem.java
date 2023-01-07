@@ -338,8 +338,15 @@ public Pose2d getEstimatedPosition(){
   public void driveToPose(Pose2d pose){
     double[] speeds = getDesiredSpeeds(pose);
 
-    speeds[0] = MathThings.absMax(speeds[0],0.2);
-    speeds[1] = MathThings.absMax(speeds[1],0.2);
+    double ang = Math.atan2(speeds[1],speeds[0]);
+    double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
+    if(mag>0.2){
+      speeds[0] = Math.cos(ang)*0.2;
+      speeds[1] = Math.sin(ang)*0.2;
+    }
+
+    //speeds[0] = MathThings.absMax(speeds[0],0.2);
+    //speeds[1] = MathThings.absMax(speeds[1],0.2);
     speeds[2] = MathThings.absMax(speeds[2],0.2);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
