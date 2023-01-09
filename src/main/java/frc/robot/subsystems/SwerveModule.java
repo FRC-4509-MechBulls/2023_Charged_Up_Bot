@@ -15,6 +15,7 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -99,8 +100,8 @@ public class SwerveModule extends SubsystemBase {
   } 
 
   //Getters
-  public double getTurningPosition() {
-    return turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning;
+  public SwerveModulePosition getTurningPosition() {
+    return new SwerveModulePosition(turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning);
   }
   public double getDriveVelocity() {
     return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s
@@ -111,8 +112,16 @@ public class SwerveModule extends SubsystemBase {
     angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
     return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
+  /* 
   public SwerveModuleState getState() { //wpi lib requests info in form of swerve module state, so this method converts it
     return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
+  } */
+
+  public SwerveModulePosition getPosition() {
+    return new SwerveModulePosition(
+      driveMotor.getSelectedSensorPosition(),
+      new Rotation2d(turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning)
+    );
   }
 
   //Setters

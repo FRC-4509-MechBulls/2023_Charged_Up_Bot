@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -142,7 +143,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public boolean getFieldOriented(){return fieldOriented;}
   public void setFieldOriented(boolean set){fieldOriented = set;}
   public void resetPose(){
-    odometry.resetPosition(new Pose2d(), new Rotation2d());
+    odometry.resetPosition(new Rotation2d(), getPositions(), new Pose2d());
   }
 
   public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
@@ -197,16 +198,20 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
     public void constructOdometry() { //constructs odometry object
-      odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
-      initialPose, 
-      DriveConstants.kDriveKinematics, 
+      //odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
+      //initialPose, 
+      //DriveConstants.kDriveKinematics, 
       //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
       //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
       //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 1 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(5 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(0.6,0.6,0.01),
-      0.02);  
+      //VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 1 * DriveConstants.kDegreesToRadians),
+      //VecBuilder.fill(5 * DriveConstants.kDegreesToRadians),
+      //VecBuilder.fill(0.6,0.6,0.01),
+      //0.02);  
+      odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
+      getRotation2d(), 
+      getPositions(), 
+      initialPose);
     }
   
   //Getters
@@ -217,8 +222,14 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     //module states
-    public SwerveModuleState[] getStates() {
-      return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
+
+    // public SwerveModuleState[] getStates() {
+    //   return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
+    // }
+
+  
+    public SwerveModulePosition[] getPositions() {
+      return new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
     }
 
     //chassis speeds
@@ -262,7 +273,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void updateOdometry() {
       //odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates()); //make rotation difference work!!!
-      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates());
+      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getPositions());
 
       //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
       //debug output: SmartDashboard.putNumber("gyroH", getHeading());
@@ -279,8 +290,12 @@ public class SwerveSubsystem extends SubsystemBase {
   //Periodic
     @Override
     public void periodic() {
+      //constantly updates the gyro angle
+      var gyroAngle = gyro.getRotation2d();
       //update odometry
-        updateOdometry();
+      
+      updateOdometry();
+
       //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
       //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
       //SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
