@@ -223,9 +223,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //module states
 
-    // public SwerveModuleState[] getStates() {
-    //   return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
-    // }
+     public SwerveModuleState[] getStates() {
+       return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
+     }
 
   
     public SwerveModulePosition[] getPositions() {
@@ -285,6 +285,7 @@ public class SwerveSubsystem extends SubsystemBase {
       //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
       //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
       //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
+
     }
 
   //Periodic
@@ -295,6 +296,7 @@ public class SwerveSubsystem extends SubsystemBase {
       //update odometry
       
       updateOdometry();
+      SmartDashboard.putNumber("rearLeftAbsEncoder",backLeft.getAbsoluteEncoderRad());
 
       //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
       //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());

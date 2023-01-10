@@ -28,6 +28,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
+import java.lang.management.ThreadInfo;
+
 public class SwerveModule extends SubsystemBase {
   //motors
   private final WPI_TalonFX driveMotor;
@@ -100,8 +102,8 @@ public class SwerveModule extends SubsystemBase {
   } 
 
   //Getters
-  public SwerveModulePosition getTurningPosition() {
-    return new SwerveModulePosition(turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning);
+  public Rotation2d getTurningPosition() {
+    return new Rotation2d(turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning);
   }
   public double getDriveVelocity() {
     return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s
@@ -112,14 +114,14 @@ public class SwerveModule extends SubsystemBase {
     angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
     return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
-  /* 
+
   public SwerveModuleState getState() { //wpi lib requests info in form of swerve module state, so this method converts it
-    return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
-  } */
+    return new SwerveModuleState(getDriveVelocity(), getTurningPosition());
+  }
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-      driveMotor.getSelectedSensorPosition(),
+      driveMotor.getSelectedSensorPosition() / ModuleConstants.kMetersToDrive,
       new Rotation2d(turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning)
     );
   }
@@ -132,9 +134,9 @@ public class SwerveModule extends SubsystemBase {
     }
     //Debug output: SmartDashboard.putNumber("preOpRadians" + absoluteEncoder.getSourceChannel(), state.angle.getRadians());
     state = SwerveModuleState.optimize(state, getState().angle); //makes it so wheel never turns more than 90 deg
-		delta = state.angle.getRadians() - getTurningPosition(); //error
+		delta = state.angle.getRadians() - getTurningPosition().getRadians(); //error
 		deltaConverted = delta % Math.PI; //error converted to representative of the actual gap; error > pi indicates we aren't taking the shortest route to setpoint, but rather doing one or more 180* rotations.this is caused by the discontinuity of numbers(pi is the same location as -pi, yet -pi is less than pi)
-		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition() + deltaConverted : getTurningPosition() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
+		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition().getRadians() + deltaConverted : getTurningPosition().getRadians() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
 
     //Debug intput: driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
     driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
