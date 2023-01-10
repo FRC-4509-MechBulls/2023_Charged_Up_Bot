@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -19,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -59,6 +61,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
     private WPI_Pigeon2 gyro = new WPI_Pigeon2(9);
+  public final AHRS navx = new AHRS(SPI.Port.kMXP);
 
   //Odometry
     private SwerveDrivePoseEstimator odometry;
@@ -86,9 +89,11 @@ public class SwerveSubsystem extends SubsystemBase {
                         Thread.sleep(1000);
                         gyro.configFactoryDefault();
                         gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
+
+                        navx.calibrate();
                         zeroHeading();
                         Thread.sleep(1000);
-                        constructOdometry(); //custructs odometry with newly corrct gyro values
+                        constructOdometry(); //constructs odometry with newly correct gyro values
                 } catch (Exception e) {
                 }
         
@@ -191,11 +196,8 @@ public class SwerveSubsystem extends SubsystemBase {
   public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
     gyro.zeroGyroBiasNow();
     gyro.setYaw(0);
-  }
 
-  public void zeroHeading(double yaw) {
-    gyro.zeroGyroBiasNow();
-    gyro.setYaw(yaw);
+    navx.zeroYaw();
   }
 
   // constructs odometry object, called in the SwerveSubsystem constructor
@@ -210,6 +212,9 @@ public class SwerveSubsystem extends SubsystemBase {
   // A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
   // (if x / y falls halfway between two integers, the even integer is returned)
   public double getHeading() {
+    if(DriveConstants.kUseNavXOverPigeon)
+      return Math.IEEEremainder(navx.getYaw(), 360);
+
     return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
 
@@ -235,6 +240,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   // get rotational velocity for closed loop
   public double getAngularVelocity() {
+    if(DriveConstants.kUseNavXOverPigeon)
+      return -navx.getRate() * DriveConstants.kDegreesToRadians;
+
     return -gyro.getRate() * DriveConstants.kDegreesToRadians;
   }
 
@@ -285,7 +293,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     //constantly updates the gyro angle
-    var gyroAngle = gyro.getRotation2d();
+  //  var gyroAngle = gyro.getRotation2d();
     //update odometry
       
     updateOdometry();

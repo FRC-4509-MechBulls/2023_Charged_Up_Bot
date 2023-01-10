@@ -114,6 +114,8 @@ public final class Constants {
         public static final double kDTurning = 0.0; //0.0 unnecissary
 
         public static final double kPFudge = 0.02; //0.2 seems pretty close
+
+        public static final boolean kUseNavXOverPigeon = true;
     }
 
     public static final class OIConstants {
