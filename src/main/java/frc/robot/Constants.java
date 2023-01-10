@@ -139,9 +139,15 @@ public final class Constants {
         public static final int maxRecursionDepth = 3;
 
         public static final double reachedGoalThreshold = 0.05;
+
     }
 
     public static final class VisionConstants {
         public static final double kMaxAmbiguity = 0.2;
+        public static final double kCamXOffset = Units.inchesToMeters(6);
+        public static final double kCamYOffset = 0;
+        public static final double camDirFromCenter = Math.atan2(kCamYOffset,kCamXOffset);
+        public static final double camDistFromCenter = Math.sqrt(Math.pow(kCamXOffset,2)+Math.pow(kCamYOffset,2));
+
     }
 }

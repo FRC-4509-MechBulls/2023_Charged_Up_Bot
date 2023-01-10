@@ -213,7 +213,7 @@ public class SwerveSubsystem extends SubsystemBase {
   // (if x / y falls halfway between two integers, the even integer is returned)
   public double getHeading() {
     if(DriveConstants.kUseNavXOverPigeon)
-      return Math.IEEEremainder(navx.getYaw(), 360);
+      return Math.IEEEremainder(-navx.getYaw(), 360);
 
     return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
@@ -241,7 +241,7 @@ public class SwerveSubsystem extends SubsystemBase {
   // get rotational velocity for closed loop
   public double getAngularVelocity() {
     if(DriveConstants.kUseNavXOverPigeon)
-      return -navx.getRate() * DriveConstants.kDegreesToRadians;
+      return navx.getRate() * DriveConstants.kDegreesToRadians;
 
     return -gyro.getRate() * DriveConstants.kDegreesToRadians;
   }
@@ -320,6 +320,11 @@ public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double lat
     double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getY() ) ;
     double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getX() ) ;
     Pose2d newPose = new Pose2d(newX,newY, newRotation);
+
+  double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
+  double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
+newX-=camXOffset;
+newY-=camYOffset;
 
     SmartDashboard.putNumber("new_x", newX);
     SmartDashboard.putNumber("new_y", newY);

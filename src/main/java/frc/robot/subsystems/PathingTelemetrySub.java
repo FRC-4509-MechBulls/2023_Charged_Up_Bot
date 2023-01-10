@@ -66,6 +66,10 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
         Imgproc.polylines(mat,pointList2 ,true,new Scalar(0,0,255),2);
 
+        double camX = robotPose.getX() + Math.cos(robotAngle+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
+        double camY = robotPose.getY() + Math.sin(robotAngle + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
+        Imgproc.circle(mat,metersPosToPixelsPos(new Point(camX,camY)),4,new Scalar(255,255,255),2);
+
 
 //        //draw desired point
 //        double[] navDesiredPointInPixels = metersPosToPixelsPos(NavigationField.getDesiredXY());
