@@ -17,10 +17,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 //meaga cool super epic coding time I love code so much UwU -Isaac
-
+// commented out everything because vendor libraries don't yet exist 😢
 public class VisionSubsystem extends SubsystemBase {
     PhotonCamera camera = new PhotonCamera("gloworm");
-    /** Creates a new Vision. */
+
 
     private FieldTag[] fieldTags = new FieldTag[2];
     private SwerveSubsystem swerveSubsystem;

@@ -81,7 +81,8 @@ public  boolean barrierOnLine(Line2D.Double line){
  public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
         return new Pose2d[] {myPose,desiredPose};
-
+//    if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
+//        return new Pose2d[] {myPose};
 
         for (double dist = 0; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
             for (double ang = 0; ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
@@ -111,6 +112,7 @@ public  boolean barrierOnLine(Line2D.Double line){
 }
 
 private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
+
 public void setNavPoint(Pose2d desiredPose){
     Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
     navPoses.clear();
