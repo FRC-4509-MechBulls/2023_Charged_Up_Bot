@@ -101,7 +101,7 @@ public  boolean barrierOnLine(Line2D.Double line){
                         //the issue lies here
                         return myOut;
                     }
-            //    }
+                }
 
             }
 
@@ -112,6 +112,7 @@ public  boolean barrierOnLine(Line2D.Double line){
 }
 
 private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
+
 public void setNavPoint(Pose2d desiredPose){
     Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
     navPoses.clear();
