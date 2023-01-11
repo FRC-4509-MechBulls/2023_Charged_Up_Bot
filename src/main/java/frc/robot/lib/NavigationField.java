@@ -40,11 +40,11 @@ public  boolean barrierOnLine(Line2D.Double line){
     double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
     double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
-    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5; //why do I need to multiply by 2??
-    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5;
+    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius *2; //why do I need to multiply by 2??
+    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius *2;
 
-    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5;
-    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius * 2.5;
+    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius *2;
+    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius *2;
 
     double destEdgePtX1 = edgePtX1 + (line.getX2() - line.getX1());
     double destEdgePtY1 = edgePtY1 + (line.getY2() - line.getY1());
@@ -62,17 +62,32 @@ public  boolean barrierOnLine(Line2D.Double line){
     LineIntersection.Point l3p2 = new LineIntersection.Point(destEdgePtX2, destEdgePtY2);
 
 
-    boolean pathClear = false;
-    for(Line2D barrier : barriers){
-        LineIntersection.Point bp1 = new LineIntersection.Point(barrier.getX1(), barrier.getY1());
-        LineIntersection.Point bp2 = new LineIntersection.Point(barrier.getX2(), barrier.getY2());
+    boolean pathObstructed = false;
+    for(int i = 0; i<Constants.PathingConstants.innerLineTestCount; i++)
+        for(Line2D barrier : barriers){
+            LineIntersection.Point bp1 = new LineIntersection.Point(barrier.getX1(), barrier.getY1());
+            LineIntersection.Point bp2 = new LineIntersection.Point(barrier.getX2(), barrier.getY2());
 
-        if(LineIntersection.doIntersect(bp1,bp2,l1p1,l1p2) || LineIntersection.doIntersect(bp1,bp2,l2p1,l2p2) || LineIntersection.doIntersect(bp1,bp2,l3p1,l3p2)){
-            pathClear = true;
-        }
+           // if(LineIntersection.doIntersect(bp1,bp2,l1p1,l1p2) || LineIntersection.doIntersect(bp1,bp2,l2p1,l2p2) || LineIntersection.doIntersect(bp1,bp2,l3p1,l3p2)){
+           //     pathClear = true;
+           // }
+            //         LineIntersection.Point linePoint1 = new
+            double x1 = l2p1.x + (l3p1.x - l2p1.x)*((double)i/ Constants.PathingConstants.innerLineTestCount);
+            double y1 = l2p1.y + (l3p1.y - l2p1.y)*((double)i/ Constants.PathingConstants.innerLineTestCount);
+
+            double x2 = l2p2.x + (l3p2.x - l2p2.x)*((double)i/ Constants.PathingConstants.innerLineTestCount);
+            double y2 = l2p2.y + (l3p2.y - l2p2.y)*((double)i/ Constants.PathingConstants.innerLineTestCount);
+
+            LineIntersection.Point lp1New = new LineIntersection.Point(x1,y1);
+            LineIntersection.Point lp2New = new LineIntersection.Point(x2,y2);
+
+            if(LineIntersection.doIntersect(bp1,bp2,lp1New,lp2New)){
+                pathObstructed = true;
+            }
+
     }
 
-    return pathClear;
+    return pathObstructed;
 
 }
 
@@ -112,15 +127,23 @@ public  boolean barrierOnLine(Line2D.Double line){
 }
 
 private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
+private Pose2d desiredPose;
 
-public void setNavPoint(Pose2d desiredPose){
-    Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
-    navPoses.clear();
-    for(Pose2d  i : outNavPoses)
-        navPoses.add(i);
-    SmartDashboard.putNumber("navPosesInNavField",navPoses.size());
-    pTelemetrySub.updateNavPoses(navPoses);
-}
+    public void setNavPoint(Pose2d desiredPose){
+        this.desiredPose = desiredPose;
+        setNavPoint();
+    }
+
+    public void setNavPoint(){
+        if(desiredPose == null)
+            return;
+        Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
+        navPoses.clear();
+        for(Pose2d  i : outNavPoses)
+            navPoses.add(i);
+        SmartDashboard.putNumber("navPosesInNavField",navPoses.size());
+        pTelemetrySub.updateNavPoses(navPoses);
+    }
 public Pose2d getNextNavPoint(){
     SmartDashboard.putNumber("navPosesInNavField",navPoses.size());
     pTelemetrySub.updateNavPoses(navPoses);

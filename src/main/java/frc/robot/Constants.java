@@ -136,7 +136,8 @@ public final class Constants {
         public static final double maxLineDist = 4.0;
         public static final double lineDistIterator = 1;
         public static final double moveAngles = 8;
-        public static final int maxRecursionDepth = 3;
+        public static final int maxRecursionDepth = 1;
+        public static final int innerLineTestCount = 12;
 
         public static final double reachedGoalThreshold = 0.05;
 
