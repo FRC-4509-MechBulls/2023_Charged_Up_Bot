@@ -24,9 +24,61 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
 
-    barriers.add(new Line2D.Double(1,1.5,1,-1.5));
-    barriers.add(new Line2D.Double(1,1.5,3,1.5));
-    barriers.add(new Line2D.Double(1,-1.5,3,-1.5));
+    double width1 = 16.56;
+    double height1 = 8.176;
+
+    double leftWallPos = -width1/2;
+    double rightWallPos = width1/2;
+    double bottomWallPos = -height1/2;
+    double topWallPos = height1/2;
+
+    double nodesWidth = 1.55;
+    double nodesHeight = 5.497;
+
+    double barrierLength = 1.984;
+
+    double chargeStationX = 4.417;
+    double chargeStationY = 1.267;
+    double chargeStationWidth = 1.931;
+    double chargeStationHeight = 2.471;
+
+    double chargeStationFarX = chargeStationX + chargeStationWidth/2; //roughly 5.374
+    double chargeStationCloseX = chargeStationX - chargeStationWidth/2;
+    double chargeStationTopY = chargeStationY + chargeStationHeight/2;
+    double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
+
+
+
+
+
+    //outer walls
+    barriers.add(new Line2D.Double(leftWallPos,topWallPos,rightWallPos,topWallPos));
+    barriers.add(new Line2D.Double(leftWallPos,bottomWallPos,rightWallPos,bottomWallPos));
+    barriers.add(new Line2D.Double(leftWallPos,topWallPos,leftWallPos,bottomWallPos));
+    barriers.add(new Line2D.Double(rightWallPos,topWallPos,rightWallPos,bottomWallPos));
+
+    //node long sides
+    barriers.add(new Line2D.Double(leftWallPos+nodesWidth, topWallPos, leftWallPos+nodesWidth, topWallPos - nodesHeight));
+    barriers.add(new Line2D.Double(rightWallPos-nodesWidth, topWallPos, rightWallPos-nodesWidth, topWallPos - nodesHeight));
+    //node short sides
+    barriers.add(new Line2D.Double(rightWallPos, topWallPos - nodesHeight, rightWallPos-nodesWidth, topWallPos - nodesHeight));
+    barriers.add(new Line2D.Double(leftWallPos, topWallPos - nodesHeight, leftWallPos+nodesWidth, topWallPos - nodesHeight));
+
+    //barriers
+    barriers.add(new Line2D.Double(leftWallPos+nodesWidth, topWallPos - nodesHeight, leftWallPos+nodesWidth + barrierLength, topWallPos - nodesHeight));
+    barriers.add(new Line2D.Double(rightWallPos-nodesWidth, topWallPos - nodesHeight, rightWallPos-nodesWidth - barrierLength, topWallPos - nodesHeight));
+
+    //charge stations
+    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationTopY, chargeStationCloseX, chargeStationTopY));
+    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationBottomY, chargeStationCloseX, chargeStationBottomY));
+
+    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationCloseX, chargeStationTopY));
+    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY));
+
+
+
+
+
     this.pTelemetrySub.updateBarriers(barriers);
 }
 
@@ -96,8 +148,8 @@ public  boolean barrierOnLine(Line2D.Double line){
  public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
         return new Pose2d[] {myPose,desiredPose};
-//    if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
-//        return new Pose2d[] {myPose};
+    if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
+        return new Pose2d[] {};
 
         for (double dist = 0; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
             for (double ang = 0; ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {

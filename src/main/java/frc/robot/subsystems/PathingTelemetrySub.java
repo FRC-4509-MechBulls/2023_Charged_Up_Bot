@@ -134,8 +134,8 @@ public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;
 
         double centerX = 640/2;
         double centerY = 480/2;
-        double ang = Math.toRadians(90);
-        double zoom = SmartDashboard.getNumber("TCamZoom",1);
+        double ang = Math.toRadians(180);
+        double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
 
         ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
         if(robotOrientedView)
