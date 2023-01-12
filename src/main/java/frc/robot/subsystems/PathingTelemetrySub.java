@@ -49,7 +49,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         //get robot corners in meters
         double ang1 = Math.atan2(Constants.PathingConstants.kRobotLength, Constants.PathingConstants.kRobotWidth);
         double ang2 = Math.atan2(Constants.PathingConstants.kRobotLength, -Constants.PathingConstants.kRobotWidth);
-        double cornerDist = Math.sqrt(Math.pow(Constants.PathingConstants.kRobotLength,2) + Math.pow(Constants.PathingConstants.kRobotWidth,2));
+        double cornerDist = Math.sqrt(Math.pow(Constants.PathingConstants.kRobotLength/2,2) + Math.pow(Constants.PathingConstants.kRobotWidth/2,2));
         double robotAngle = robotPose.getRotation().getRadians();
         Point[] robotPts = new Point[]{
                 new Point(cornerDist*Math.cos(robotAngle+ang1) + robotPose.getX(), cornerDist*Math.sin(robotAngle+ang1) + robotPose.getY()),

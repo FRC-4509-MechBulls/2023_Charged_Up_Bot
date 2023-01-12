@@ -40,11 +40,11 @@ public  boolean barrierOnLine(Line2D.Double line){
     double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
     double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
-    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius *2; //why do I need to multiply by 2??
-    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius *2;
+    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius; //why do I need to multiply by 2??
+    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius; //because your visualization was not to scale 😉
 
-    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius *2;
-    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius *2;
+    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
+    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
 
     double destEdgePtX1 = edgePtX1 + (line.getX2() - line.getX1());
     double destEdgePtY1 = edgePtY1 + (line.getY2() - line.getY1());
