@@ -47,6 +47,8 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
     double chargeStationTopY = chargeStationY + chargeStationHeight/2;
     double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
 
+    double doubleSubstationDepth = 0.404;
+
 
 
 
@@ -75,7 +77,9 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
     barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationCloseX, chargeStationTopY));
     barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY));
 
-
+    //double substations
+    barriers.add(new Line2D.Double(leftWallPos+doubleSubstationDepth, topWallPos - nodesHeight, leftWallPos+doubleSubstationDepth, bottomWallPos));
+    barriers.add(new Line2D.Double(rightWallPos-doubleSubstationDepth, topWallPos -nodesHeight, rightWallPos-doubleSubstationDepth, bottomWallPos));
 
 
 

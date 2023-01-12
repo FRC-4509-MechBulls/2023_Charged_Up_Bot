@@ -32,10 +32,10 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
 
         //draws a small point at each meter
-        for(int markX = -5; markX<=5; markX++)
-            for(int markY = -5; markY<=5; markY++){
+        for(int markX = -8; markX<=8; markX++)
+            for(int markY = -4; markY<=4; markY++){
                 double[] pt = metersPosToPixelsPos(new double[] {markX,markY});
-                Imgproc.rectangle(mat,new Point(pt[0],pt[1]),new Point(pt[0]+0,pt[1]+0), new Scalar(0,255,0),3);
+                Imgproc.rectangle(mat,new Point(pt[0],pt[1]),new Point(pt[0]+0,pt[1]+0), new Scalar(0,255,0),2);
             }
 
         //draws all barriers
@@ -66,9 +66,10 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
         Imgproc.polylines(mat,pointList2 ,true,new Scalar(0,0,255),2);
 
+        //draw camera dot
         double camX = robotPose.getX() + Math.cos(robotAngle+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
         double camY = robotPose.getY() + Math.sin(robotAngle + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
-        Imgproc.circle(mat,metersPosToPixelsPos(new Point(camX,camY)),4,new Scalar(255,255,255),2);
+        Imgproc.circle(mat,metersPosToPixelsPos(new Point(camX,camY)),2,new Scalar(255,255,255),2);
 
 
 //        //draw desired point
