@@ -200,6 +200,7 @@ private Pose2d desiredPose;
         pTelemetrySub.updateNavPoses(navPoses);
     }
 public Pose2d getNextNavPoint(){
+    if(navPoses.size()<1) return swerveSubsystem.getEstimatedPosition();
     pTelemetrySub.updateNavPoses(navPoses);
     Pose2d botPose = swerveSubsystem.getEstimatedPosition();
     while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedGoalThreshold)
