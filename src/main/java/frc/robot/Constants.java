@@ -19,6 +19,14 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public final class Constants {
 
+
+    public static final class SimulationConstants{
+        public static final boolean simulationEnabled = true;
+        public static final double speedMultiplier = 0.1;
+        public  static final double turningSpeedMultiplier = 1.0/1000;
+
+    }
+
     public static final class ModuleConstants {
         //Physical
         public static final double kWheelDiameterMeters = Units.inchesToMeters(3.8);
@@ -151,4 +159,5 @@ public final class Constants {
         public static final double camDistFromCenter = Math.sqrt(Math.pow(kCamXOffset,2)+Math.pow(kCamYOffset,2));
 
     }
+
 }

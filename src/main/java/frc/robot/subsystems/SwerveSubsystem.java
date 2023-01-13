@@ -142,6 +142,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
+    simHeading+=turningSpeed * (Timer.getFPGATimestamp() - lastSimUpdateTime) * Constants.SimulationConstants.turningSpeedMultiplier;
     setModuleStates(moduleStates);
   }
   public void toggleFieldOriented(){fieldOriented = !fieldOriented;}
@@ -263,7 +264,10 @@ public class SwerveSubsystem extends SubsystemBase {
     frontRight.setDesiredState(desiredStates[1]);
     backLeft.setDesiredState(desiredStates[2]);
     backRight.setDesiredState(desiredStates[3]);
+    lastSetStates = desiredStates;
   }
+  SwerveModuleState[] lastSetStates;
+  double simHeading = 0;
 
   // stops robot movement
   public void stopModules() {
@@ -272,10 +276,32 @@ public class SwerveSubsystem extends SubsystemBase {
     backLeft.stop();
     backRight.stop();
   }
-
+SwerveModulePosition[] simModulePositions;
+  double lastSimUpdateTime = Timer.getFPGATimestamp();
   public void updateOdometry() {
     //odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates()); //make rotation difference work!!!
-    odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getPositions());
+
+    if(!Constants.SimulationConstants.simulationEnabled)
+      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getPositions());
+
+    if(Constants.SimulationConstants.simulationEnabled) {
+
+      if (simModulePositions == null) {
+        simModulePositions = new SwerveModulePosition[4];
+        for (int i = 0; i < 4; i++) {
+          simModulePositions[i] = new SwerveModulePosition(0, new Rotation2d());
+        }
+      }
+
+      if (lastSetStates != null) {
+        for (int i = 0; i < 4; i++) {
+          simModulePositions[i].distanceMeters -= lastSetStates[i].speedMetersPerSecond * (Timer.getFPGATimestamp() / 1000 - lastSimUpdateTime) * Constants.SimulationConstants.speedMultiplier;
+          simModulePositions[i].angle = lastSetStates[i].angle;
+        }
+      }
+
+      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(simHeading), simModulePositions);
+    }
 
     //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
     //debug output: SmartDashboard.putNumber("gyroH", getHeading());
