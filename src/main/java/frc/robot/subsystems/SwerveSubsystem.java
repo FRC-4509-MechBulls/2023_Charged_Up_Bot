@@ -249,6 +249,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //since wpilib often wants heading in format of Rotation2d
   public Rotation2d getRotation2d() {
+    if(Constants.SimulationConstants.simulationEnabled)
+      return Rotation2d.fromRadians(simHeading);
     return Rotation2d.fromDegrees(getHeading());
   }
 
@@ -275,6 +277,7 @@ public class SwerveSubsystem extends SubsystemBase {
     frontRight.stop();
     backLeft.stop();
     backRight.stop();
+    lastSetStates = new SwerveModuleState[]{new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
   }
 SwerveModulePosition[] simModulePositions;
   double lastSimUpdateTime = Timer.getFPGATimestamp();
@@ -300,7 +303,7 @@ SwerveModulePosition[] simModulePositions;
         }
       }
 
-      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(simHeading), simModulePositions);
+      odometry.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromDegrees(simHeading), simModulePositions);
     }
 
     //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
