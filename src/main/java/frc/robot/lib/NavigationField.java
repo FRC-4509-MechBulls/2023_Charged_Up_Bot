@@ -162,7 +162,7 @@ public  boolean barrierOnLine(Line2D.Double line){
                 Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
                 Line2D.Double lineToDesiredPose = new Line2D.Double(branchHeadX,branchHeadY,desiredPose.getX(),desiredPose.getY());
                 if(barrierOnLine(lineToTestPoint)) continue;
-                if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth+1){
+             //   if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth+1){
                     Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
                     if(lowerLevelOut.length>0){
                         Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
@@ -172,7 +172,7 @@ public  boolean barrierOnLine(Line2D.Double line){
                         //the issue lies here
                         return myOut;
                     }
-                }
+             //   }
 
             }
 
@@ -197,16 +197,18 @@ private Pose2d desiredPose;
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
-        SmartDashboard.putNumber("navPosesInNavField",navPoses.size());
         pTelemetrySub.updateNavPoses(navPoses);
     }
 public Pose2d getNextNavPoint(){
-    SmartDashboard.putNumber("navPosesInNavField",navPoses.size());
     pTelemetrySub.updateNavPoses(navPoses);
     Pose2d botPose = swerveSubsystem.getEstimatedPosition();
     while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedGoalThreshold)
         navPoses.remove(0);
     return navPoses.get(0);
+}
+
+public void setNavTrajectory(ArrayList<Pose2d> navPoses){
+        this.navPoses = navPoses;
 }
 
 
