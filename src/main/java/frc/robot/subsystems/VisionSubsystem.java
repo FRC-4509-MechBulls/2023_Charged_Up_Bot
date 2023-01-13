@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.RobotContainer;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.MathThings;
+import frc.robot.lib.NavigationField;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -23,10 +24,12 @@ public class VisionSubsystem extends SubsystemBase {
 
     private FieldTag[] fieldTags = new FieldTag[2];
     private SwerveSubsystem swerveSubsystem;
-    public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
+    public VisionSubsystem(SwerveSubsystem swerveSubsystem, PathingTelemetrySub pathingTelemetrySub) {
         this.swerveSubsystem = swerveSubsystem;
         fieldTags[0] = new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI)));
         fieldTags[1] = new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2)));
+
+        pathingTelemetrySub.updateFieldTags(fieldTags);
     }
 
 
