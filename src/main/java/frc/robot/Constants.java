@@ -19,6 +19,42 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public final class Constants {
 
+
+    public static final class SimulationConstants{
+        public static final boolean simulationEnabled = true;
+        public static final double speedMultiplier = 0.6;
+        public  static final double turningSpeedMultiplier = 50;
+
+    }
+
+    public static final class FieldConstants{
+        public static final double width1 = 16.56;
+        public static final double height1 = 8.176;
+
+        public static final double leftWallPos = -width1/2;
+        public static final double rightWallPos = width1/2;
+        public static final double bottomWallPos = -height1/2;
+        public static final double topWallPos = height1/2;
+
+        public static final double nodesWidth = 1.55;
+        public static final double nodesHeight = 5.497;
+
+        public static final double barrierLength = 1.984;
+
+        public static final double chargeStationX = 4.417;
+        public static final double chargeStationY = 1.267;
+        public static final double chargeStationWidth = 1.931;
+        public static final double chargeStationHeight = 2.471;
+
+        public static final double chargeStationFarX = chargeStationX + chargeStationWidth/2; //roughly 5.374
+        public static final double chargeStationCloseX = chargeStationX - chargeStationWidth/2;
+        public static final double chargeStationTopY = chargeStationY + chargeStationHeight/2;
+        public static final double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
+
+        public static final double doubleSubstationDepth = 0.404;
+
+    }
+
     public static final class ModuleConstants {
         //Physical
         public static final double kWheelDiameterMeters = Units.inchesToMeters(3.8);
@@ -133,13 +169,15 @@ public final class Constants {
         public static final double kRobotLength = DriveConstants.kWheelBase;
         public static final double kRobotRadius = Math.sqrt(Math.pow(kRobotWidth/2,2)+Math.pow(kRobotLength/2,2));
 
-        public static final double maxLineDist = 4.0;
-        public static final double lineDistIterator = 1;
+        public static final double maxLineDist = 8.0;
+        public static final double lineDistIterator = 1.5;
         public static final double moveAngles = 8;
-        public static final int maxRecursionDepth = 1;
+        public static final int maxRecursionDepth = 2;
         public static final int innerLineTestCount = 12;
 
         public static final double reachedGoalThreshold = 0.05;
+
+        public static final double desiredCPUTime = 0.01; //Fraction of CPU time to be used in background thread
 
     }
 
@@ -151,4 +189,5 @@ public final class Constants {
         public static final double camDistFromCenter = Math.sqrt(Math.pow(kCamXOffset,2)+Math.pow(kCamYOffset,2));
 
     }
+
 }
