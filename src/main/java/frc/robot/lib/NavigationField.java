@@ -1,7 +1,7 @@
 package frc.robot.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -10,6 +10,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
+
+import static frc.robot.Constants.FieldConstants.*;
 
 public class NavigationField extends SubsystemBase {
 
@@ -20,38 +22,28 @@ private static double desiredY = 0.3;
 
 PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
+
+ Thread pathingThread;
 public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem){
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
 
-    double width1 = 16.56;
-    double height1 = 8.176;
-
-    double leftWallPos = -width1/2;
-    double rightWallPos = width1/2;
-    double bottomWallPos = -height1/2;
-    double topWallPos = height1/2;
-
-    double nodesWidth = 1.55;
-    double nodesHeight = 5.497;
-
-    double barrierLength = 1.984;
-
-    double chargeStationX = 4.417;
-    double chargeStationY = 1.267;
-    double chargeStationWidth = 1.931;
-    double chargeStationHeight = 2.471;
-
-    double chargeStationFarX = chargeStationX + chargeStationWidth/2; //roughly 5.374
-    double chargeStationCloseX = chargeStationX - chargeStationWidth/2;
-    double chargeStationTopY = chargeStationY + chargeStationHeight/2;
-    double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
-
-    double doubleSubstationDepth = 0.404;
-
-
-
-
+   pathingThread =
+            new Thread(
+                    () -> {
+                        try {
+                            while(!pathingThread.isInterrupted()){
+                                double startTime = Timer.getFPGATimestamp()*1000;
+                                updateNavPoses();
+                                double compTime = Timer.getFPGATimestamp()*1000 - startTime;
+                                SmartDashboard.putNumber("pathingCompTime",compTime);
+                                Thread.sleep(1000);
+                            }
+                        } catch (InterruptedException e) {throw new RuntimeException(e);}
+                    });
+    pathingThread.setDaemon(true);
+    pathingThread.setPriority(1); //low priority I hope?
+    pathingThread.start();
 
     //outer walls
     barriers.add(new Line2D.Double(leftWallPos,topWallPos,rightWallPos,topWallPos));
@@ -80,6 +72,7 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
     //double substations
     barriers.add(new Line2D.Double(leftWallPos+doubleSubstationDepth, topWallPos - nodesHeight, leftWallPos+doubleSubstationDepth, bottomWallPos));
     barriers.add(new Line2D.Double(rightWallPos-doubleSubstationDepth, topWallPos -nodesHeight, rightWallPos-doubleSubstationDepth, bottomWallPos));
+
 
 
 
@@ -187,10 +180,10 @@ private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
         this.desiredPose = desiredPose;
-        setNavPoint();
+        updateNavPoses();
     }
 
-    public void setNavPoint(){
+    public void updateNavPoses(){
         if(desiredPose == null)
             return;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
@@ -205,7 +198,10 @@ public Pose2d getNextNavPoint(){
     Pose2d botPose = swerveSubsystem.getEstimatedPosition();
     while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedGoalThreshold)
         navPoses.remove(0);
-    return navPoses.get(0);
+    if(navPoses.size()>0)
+        return navPoses.get(0);
+    return swerveSubsystem.getEstimatedPosition();
+
 }
 
 public void setNavTrajectory(ArrayList<Pose2d> navPoses){

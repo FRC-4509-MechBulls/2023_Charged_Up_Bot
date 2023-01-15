@@ -16,17 +16,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import java.util.ArrayList;
+
 //meaga cool super epic coding time I love code so much UwU -Isaac
 public class VisionSubsystem extends SubsystemBase {
     PhotonCamera camera = new PhotonCamera("gloworm");
 
 
-    private FieldTag[] fieldTags = new FieldTag[2];
+    private ArrayList<FieldTag> fieldTags = new ArrayList<FieldTag>();
     private SwerveSubsystem swerveSubsystem;
     public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
         this.swerveSubsystem = swerveSubsystem;
-        fieldTags[0] = new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI)));
-        fieldTags[1] = new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2)));
+        fieldTags.add(new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI))));
+        fieldTags.add(new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2))));
+
     }
 
 
@@ -41,10 +44,10 @@ public class VisionSubsystem extends SubsystemBase {
             Transform3d transform = target.getBestCameraToTarget();
             Rotation3d rotation = transform.getRotation();
 
-            for(int i = 0; i<fieldTags.length; i++){
-                if(fieldTags[i].getID() != id) continue;
+            for(int i = 0; i<fieldTags.size(); i++){
+                if(fieldTags.get(i).getID() != id) continue;
                 Transform3d sentTransform = new Transform3d(new Translation3d(transform.getX()*-1,transform.getY()*-1,transform.getZ()),transform.getRotation());
-                swerveSubsystem.fieldTagSpotted(fieldTags[i], transform, camera.getLatestResult().getLatencyMillis(), target.getPoseAmbiguity());
+                swerveSubsystem.fieldTagSpotted(fieldTags.get(i), transform, camera.getLatestResult().getLatencyMillis(), target.getPoseAmbiguity());
       //          SmartDashboard.putNumber("lastPoseAmbiguity",camera.getLatestResult().getBestTarget().getPoseAmbiguity());
 
             }
