@@ -13,6 +13,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -139,8 +140,8 @@ robotPose = newPose;
 ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;}
 
-    private FieldTag[] fieldTags;
-public void updateFieldTags(FieldTag[] fieldTags){
+    private ArrayList<FieldTag> fieldTags;
+public void updateFieldTags(ArrayList<FieldTag> fieldTags){
     this.fieldTags = fieldTags;
 }
 
