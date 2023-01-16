@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.*;
 import frc.robot.RobotContainer;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.MathThings;
+import frc.robot.lib.NavigationField;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import static frc.robot.Constants.FieldConstants.*;
 
 import java.util.ArrayList;
 
@@ -25,11 +27,32 @@ public class VisionSubsystem extends SubsystemBase {
 
     private ArrayList<FieldTag> fieldTags = new ArrayList<FieldTag>();
     private SwerveSubsystem swerveSubsystem;
-    public VisionSubsystem(SwerveSubsystem swerveSubsystem) {
+    public VisionSubsystem(SwerveSubsystem swerveSubsystem, PathingTelemetrySub pathingTelemetrySub) {
         this.swerveSubsystem = swerveSubsystem;
-        fieldTags.add(new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI))));
-        fieldTags.add(new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2))));
+        //fieldTags.add(new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI))));
+        //fieldTags.add(new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2))));
 
+        Pose2d tag1Pose = new Pose2d(-aprilTagX,centerTagY+distBetweenTags,new Rotation2d(Math.PI));
+        Pose2d tag2Pose = new Pose2d(-aprilTagX,centerTagY,new Rotation2d(Math.PI));
+        Pose2d tag3Pose = new Pose2d(-aprilTagX,centerTagY-distBetweenTags,new Rotation2d(Math.PI));
+
+        Pose2d tag6Pose = new Pose2d(aprilTagX,centerTagY-distBetweenTags,new Rotation2d(-Math.PI));
+        Pose2d tag7Pose = new Pose2d(aprilTagX,centerTagY,new Rotation2d(-Math.PI));
+        Pose2d tag8Pose = new Pose2d(aprilTagX,centerTagY+distBetweenTags,new Rotation2d(-Math.PI));
+
+        Pose2d tag4Pose = new Pose2d(-lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d(Math.PI));
+        Pose2d tag5Pose = new Pose2d(lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d(-Math.PI));
+
+        fieldTags.add(new FieldTag(1,tag1Pose));
+        fieldTags.add(new FieldTag(2,tag2Pose));
+        fieldTags.add(new FieldTag(3,tag3Pose));
+        fieldTags.add(new FieldTag(4,tag4Pose));
+        fieldTags.add(new FieldTag(5,tag5Pose));
+        fieldTags.add(new FieldTag(6,tag6Pose));
+        fieldTags.add(new FieldTag(7,tag7Pose));
+        fieldTags.add(new FieldTag(8,tag8Pose));
+
+    pathingTelemetrySub.updateFieldTags(fieldTags);
     }
 
 

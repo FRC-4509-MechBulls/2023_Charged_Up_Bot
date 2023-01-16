@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.lib.FieldTag;
 import frc.robot.lib.NavigationField;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -12,6 +13,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -94,6 +96,22 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
         }
 
+        //draw AprilTags
+        if(fieldTags!=null)
+            for(FieldTag tag : fieldTags){
+                double x = tag.getPose().getX();
+                double y = tag.getPose().getY();
+                double ang = tag.getPose().getRotation().getRadians();
+
+                double x1 = x + Math.cos(ang+Math.PI/2)*0.1;
+                double x2 = x + Math.cos(ang-Math.PI/2)*0.1;
+                double y1 = y + Math.sin(ang+Math.PI/2)*0.1;
+                double y2 = y + Math.sin(ang-Math.PI/2)*0.1;
+
+                Imgproc.line(mat, metersPosToPixelsPos(new Point(x1,y1)), metersPosToPixelsPos(new Point(x2,y2)), new Scalar(255,0,255),2);
+
+            }
+
         //draw test line
         Imgproc.line(mat,metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0))), metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0))),new Scalar(255,255,255),2);
 
@@ -121,6 +139,11 @@ robotPose = newPose;
 
 ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;}
+
+    private ArrayList<FieldTag> fieldTags;
+public void updateFieldTags(ArrayList<FieldTag> fieldTags){
+    this.fieldTags = fieldTags;
+}
 
     public  Point metersPosToPixelsPos(Point posInMeters){
     posInMeters.x = -posInMeters.x;
@@ -162,10 +185,10 @@ public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;
     }
 
     public void init() {
-   //     SmartDashboard.putNumber("TCamAngle",0);
-   //     SmartDashboard.putNumber("TCamZoom",1.0);
-   //     SmartDashboard.putNumber("TCamX",0);
-   //     SmartDashboard.putNumber("TCamY",0);
+            SmartDashboard.putNumber("TCamAngle",0);
+            SmartDashboard.putNumber("TCamZoom",1.0);
+            SmartDashboard.putNumber("TCamX",0);
+            SmartDashboard.putNumber("TCamY",0);
 
     }
 

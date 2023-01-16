@@ -31,11 +31,9 @@ import java.nio.file.Path;
  */
 public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub();
-
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem);
-
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
 
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
@@ -63,7 +61,6 @@ public class RobotContainer {
     SmartDashboard.putNumber("x2",0);
     SmartDashboard.putNumber("y2",0);
 
-    navigationField.setNavPoint(new Pose2d(5,3.3,new Rotation2d()));
 
   }
 

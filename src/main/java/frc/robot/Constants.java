@@ -27,33 +27,6 @@ public final class Constants {
 
     }
 
-    public static final class FieldConstants{
-        public static final double width1 = 16.56;
-        public static final double height1 = 8.176;
-
-        public static final double leftWallPos = -width1/2;
-        public static final double rightWallPos = width1/2;
-        public static final double bottomWallPos = -height1/2;
-        public static final double topWallPos = height1/2;
-
-        public static final double nodesWidth = 1.55;
-        public static final double nodesHeight = 5.497;
-
-        public static final double barrierLength = 1.984;
-
-        public static final double chargeStationX = 4.417;
-        public static final double chargeStationY = 1.267;
-        public static final double chargeStationWidth = 1.931;
-        public static final double chargeStationHeight = 2.471;
-
-        public static final double chargeStationFarX = chargeStationX + chargeStationWidth/2; //roughly 5.374
-        public static final double chargeStationCloseX = chargeStationX - chargeStationWidth/2;
-        public static final double chargeStationTopY = chargeStationY + chargeStationHeight/2;
-        public static final double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
-
-        public static final double doubleSubstationDepth = 0.404;
-
-    }
 
     public static final class ModuleConstants {
         //Physical
@@ -177,7 +150,9 @@ public final class Constants {
 
         public static final double reachedGoalThreshold = 0.05;
 
-        public static final double desiredCPUTime = 0.01; //Fraction of CPU time to be used in background thread
+        public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
+        public static final int minPathingDelay = 1000; //min time to take in ms
+
 
     }
 
@@ -187,6 +162,45 @@ public final class Constants {
         public static final double kCamYOffset = 0;
         public static final double camDirFromCenter = Math.atan2(kCamYOffset,kCamXOffset);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(kCamXOffset,2)+Math.pow(kCamYOffset,2));
+
+    }
+
+    public static final class FieldConstants{
+        public static final double width1 = 16.56;
+        public static final double height1 = 8.176;
+
+        public static final double leftWallPos = -width1/2;
+        public static final double rightWallPos = width1/2;
+        public static final double bottomWallPos = -height1/2;
+        public static final double topWallPos = height1/2;
+
+        public static final double nodesWidth = 1.55;
+        public static final double nodesHeight = 5.497;
+
+        public static final double barrierLength = 1.984;
+
+        public static final double chargeStationX = 4.417;
+        public static final double chargeStationY = 1.267;
+        public static final double chargeStationWidth = 1.931;
+        public static final double chargeStationHeight = 2.471;
+
+        public static final double chargeStationFarX = chargeStationX + chargeStationWidth/2; //roughly 5.374
+        public static final double chargeStationCloseX = chargeStationX - chargeStationWidth/2;
+        public static final double chargeStationTopY = chargeStationY + chargeStationHeight/2;
+        public static final double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
+
+        public static final double doubleSubstationDepth = 0.404;
+
+        public static final double distFromFarEdgesToTags = 1.013143;
+
+        public static final double distBetweenTags = 1.676400;
+
+        public static final double centerTagY = 1.234789;
+
+        public static final double aprilTagX = width1/2 - nodesWidth;
+        public static final double lonesomeAprilTagY = -2.741613;
+        public static final double lonesomeAprilTagX = width1/2 - doubleSubstationDepth;
+
 
     }
 
