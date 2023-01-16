@@ -201,6 +201,11 @@ public final class Constants {
         public static final double lonesomeAprilTagY = -2.741613;
         public static final double lonesomeAprilTagX = width1/2 - doubleSubstationDepth;
 
+        public static final double aprilTagOriginX = rightWallPos;
+        public static final double aprilTagOriginY = topWallPos;
+        public static final double[] aprilTagYDiffsFromOriginInches = {610.77,610.77,610.77,636.96,14.25,40.45,40.45,40.45}; //https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
+        public static final double[] aprilTagXDiffsFromOriginInches = {42.19,108.19,174.19,265.74,265.74,174.19,108.19,42.19};
+
 
     }
 

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.util.Units;
 import frc.robot.RobotContainer;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.MathThings;
@@ -32,25 +33,41 @@ public class VisionSubsystem extends SubsystemBase {
         //fieldTags.add(new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI))));
         //fieldTags.add(new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2))));
 
-        Pose2d tag1Pose = new Pose2d(-aprilTagX,centerTagY+distBetweenTags,new Rotation2d(Math.PI));
-        Pose2d tag2Pose = new Pose2d(-aprilTagX,centerTagY,new Rotation2d(Math.PI));
-        Pose2d tag3Pose = new Pose2d(-aprilTagX,centerTagY-distBetweenTags,new Rotation2d(Math.PI));
+//        Pose2d tag1Pose = new Pose2d(-aprilTagX,centerTagY+distBetweenTags,new Rotation2d(Math.PI));
+//        Pose2d tag2Pose = new Pose2d(-aprilTagX,centerTagY,new Rotation2d(Math.PI));
+//        Pose2d tag3Pose = new Pose2d(-aprilTagX,centerTagY-distBetweenTags,new Rotation2d(Math.PI));
+//
+//        Pose2d tag6Pose = new Pose2d(aprilTagX,centerTagY-distBetweenTags,new Rotation2d());
+//        Pose2d tag7Pose = new Pose2d(aprilTagX,centerTagY,new Rotation2d());
+//        Pose2d tag8Pose = new Pose2d(aprilTagX,centerTagY+distBetweenTags,new Rotation2d());
+//
+//        Pose2d tag4Pose = new Pose2d(-lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d(Math.PI));
+//        Pose2d tag5Pose = new Pose2d(lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d());
+//
+//        fieldTags.add(new FieldTag(1,tag1Pose));
+//        fieldTags.add(new FieldTag(2,tag2Pose));
+//        fieldTags.add(new FieldTag(3,tag3Pose));
+//        fieldTags.add(new FieldTag(4,tag4Pose));
+//        fieldTags.add(new FieldTag(5,tag5Pose));
+//        fieldTags.add(new FieldTag(6,tag6Pose));
+//        fieldTags.add(new FieldTag(7,tag7Pose));
+//        fieldTags.add(new FieldTag(8,tag8Pose));
 
-        Pose2d tag6Pose = new Pose2d(aprilTagX,centerTagY-distBetweenTags,new Rotation2d(-Math.PI));
-        Pose2d tag7Pose = new Pose2d(aprilTagX,centerTagY,new Rotation2d(-Math.PI));
-        Pose2d tag8Pose = new Pose2d(aprilTagX,centerTagY+distBetweenTags,new Rotation2d(-Math.PI));
+        for(int i = 0; i<8; i++){
+            int id = i+1;
+            double x = aprilTagOriginX  -  Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]);
+            double y = aprilTagOriginY - Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]);
+            SmartDashboard.putNumber("tagOriginX",aprilTagOriginX);
+            SmartDashboard.putNumber("tagOriginY",aprilTagOriginY);
+            SmartDashboard.putNumber("tagDiffX",Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]));
+            SmartDashboard.putNumber("tagDiffY",Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]));
 
-        Pose2d tag4Pose = new Pose2d(-lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d(Math.PI));
-        Pose2d tag5Pose = new Pose2d(lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d(-Math.PI));
+            Rotation2d rotation2d = new Rotation2d();
+            if(i>=3)
+                rotation2d = Rotation2d.fromDegrees(180);
 
-        fieldTags.add(new FieldTag(1,tag1Pose));
-        fieldTags.add(new FieldTag(2,tag2Pose));
-        fieldTags.add(new FieldTag(3,tag3Pose));
-        fieldTags.add(new FieldTag(4,tag4Pose));
-        fieldTags.add(new FieldTag(5,tag5Pose));
-        fieldTags.add(new FieldTag(6,tag6Pose));
-        fieldTags.add(new FieldTag(7,tag7Pose));
-        fieldTags.add(new FieldTag(8,tag8Pose));
+            fieldTags.add(new FieldTag(id, new Pose2d(x,y,rotation2d)));
+        }
 
     pathingTelemetrySub.updateFieldTags(fieldTags);
     }
