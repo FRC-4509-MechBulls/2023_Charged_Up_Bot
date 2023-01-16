@@ -61,7 +61,6 @@ public class RobotContainer {
     SmartDashboard.putNumber("x2",0);
     SmartDashboard.putNumber("y2",0);
 
-    navigationField.setNavPoint(new Pose2d(5,3.3,new Rotation2d()));
 
   }
 

@@ -150,6 +150,9 @@ public final class Constants {
 
         public static final double reachedGoalThreshold = 0.05;
 
+        public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
+        public static final int minPathingDelay = 1000; //min time to take in ms
+
 
     }
 

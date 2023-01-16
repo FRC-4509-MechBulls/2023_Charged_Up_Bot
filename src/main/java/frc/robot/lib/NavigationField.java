@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import static frc.robot.Constants.FieldConstants.*;
 
+
 public class NavigationField extends SubsystemBase {
 
  ArrayList<Line2D.Double> barriers = new ArrayList<Line2D.Double>();
@@ -37,7 +38,7 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
                                 updateNavPoses();
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                 SmartDashboard.putNumber("pathingCompTime",compTime);
-                                Thread.sleep(1000);
+                                Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
                             }
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
                     });
