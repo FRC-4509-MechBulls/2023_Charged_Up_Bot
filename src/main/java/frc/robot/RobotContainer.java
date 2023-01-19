@@ -39,6 +39,7 @@ public class RobotContainer {
 
 
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private final XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
   private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
   private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
   private final Command rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
@@ -46,6 +47,9 @@ public class RobotContainer {
   private final Command rc_generateNavPoses = new InstantCommand(()->navigationField.setNavPoint(new Pose2d(2.5,0,new Rotation2d())));
   private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint()),swerveSubsystem);
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
+
+  private final Command nav_iterateSetPoint = new InstantCommand(navigationField::iterateSetPoint);
+  private final Command nav_decimateSetPoint = new InstantCommand(navigationField::decimateSetPoint);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -81,9 +85,10 @@ public class RobotContainer {
     new JoystickButton(driverController, XboxController.Button.kA.value).whenPressed(swerve_resetPose);
 
     new JoystickButton(driverController, XboxController.Button.kX.value).whenPressed(rc_generateNavPoses);
-    new JoystickButton(driverController, XboxController.Button.kLeftBumper.value).whenHeld(rc_navToPose);
+    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whenHeld(rc_navToPose);
 
-
+    new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value).onTrue(nav_iterateSetPoint);
+    new JoystickButton(operatorController, XboxController.Button.kRightBumper.value).onTrue(nav_decimateSetPoint);
 
   }
 

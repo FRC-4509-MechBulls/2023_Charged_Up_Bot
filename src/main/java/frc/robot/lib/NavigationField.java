@@ -1,6 +1,8 @@
 package frc.robot.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,6 +20,7 @@ public class NavigationField extends SubsystemBase {
 
  ArrayList<Line2D.Double> barriers = new ArrayList<Line2D.Double>();
  ArrayList<Node> nodes = new ArrayList<Node>();
+ ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
 
 
 PathingTelemetrySub pTelemetrySub;
@@ -35,6 +38,7 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
 
     this.pTelemetrySub.updateBarriers(barriers);
     this.pTelemetrySub.updateNodes(nodes);
+    this.pTelemetrySub.updateSetPoints(setPoints);
 }
 
 boolean wasOnRedAlliance = true;
@@ -150,7 +154,8 @@ private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
         this.desiredPose = desiredPose;
-        updateNavPoses();
+        pTelemetrySub.updateDestinationPose(this.desiredPose);
+        //updateNavPoses();
     }
 
     public void updateNavPoses(){
@@ -232,6 +237,7 @@ private void createAndStartPathingThread(){
 
 private void resetNodes(){
         nodes.clear();
+        setPoints.clear();
         //for(int revX = -1; revX<=1; revX+=2)
     int revX = 1;  //used to make nodes mirror on both sides
     if(fmsGetter.isRedAlliance())
@@ -256,8 +262,37 @@ private void resetNodes(){
                     nodes.add(new Node(myNodeX*revX,topNodeY-y*yDistBetweenNodes, type, level));
             }
 
+            for(int y = 0; y<9; y++){
+                double yPos = topNodeY - y*yDistBetweenNodes;
+                double xPos = width1/2 - nodesWidth - Constants.PathingConstants.kRobotWidth/2 - Units.inchesToMeters(3); //3 inches from nodes barrier?
+                xPos*=revX;
+                Rotation2d myRotation = Rotation2d.fromDegrees(180); //red
+                if(revX>0)
+                    myRotation = Rotation2d.fromDegrees(0); //blue
+                setPoints.add(new Pose2d(xPos,yPos,myRotation));
+
+
+            }
 
 }
+int setPointIndex = 0;
+    public void iterateSetPoint(){
+        setPointIndex++;
+        updateSetPoint();
+    }
+    public void decimateSetPoint(){
+        setPointIndex--;
+        updateSetPoint();
+    }
+    public void updateSetPoint(){
+        if(setPointIndex>=setPoints.size())
+            setPointIndex = 0;
+        if(setPointIndex<0)
+            setPointIndex = setPoints.size()-1;
+
+        if(setPoints.size()>0)
+            setNavPoint(setPoints.get(setPointIndex));
+    }
 
 
 }

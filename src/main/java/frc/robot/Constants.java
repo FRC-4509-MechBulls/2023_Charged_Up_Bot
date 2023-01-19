@@ -130,6 +130,8 @@ public final class Constants {
 
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
+        public static final int kOperatorControllerPort = 1;
+
         public static final int kDriverYAxis = XboxController.Axis.kLeftY.value;
         public static final int kDriverXAxis = XboxController.Axis.kLeftX.value;
         public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;

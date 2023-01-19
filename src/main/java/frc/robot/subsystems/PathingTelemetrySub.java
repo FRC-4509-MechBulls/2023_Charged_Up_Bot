@@ -79,8 +79,13 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         /** Draw nav end pose*/
         drawRotatedRect(mat, destinationPose.getX(), destinationPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,destinationPose.getRotation(), new Scalar(0,0,130), 2);
 
-
-
+        /** Draw setpoints */
+        for(Pose2d setPoint : setPoints){
+            Scalar color = new Scalar(12,79,78);
+            if(setPoint.getX() == destinationPose.getX() && setPoint.getY() == destinationPose.getY())
+                color = new Scalar(31,216,214);
+            Imgproc.circle(mat, metersPosToPixelsPos(new Point(setPoint.getX(),setPoint.getY())),1,color,2);
+        }
 
 
         /** Draw camera dot*/
@@ -172,6 +177,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
     Pose2d robotPose = new Pose2d();
     Pose2d destinationPose = new Pose2d();
+    ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
     boolean robotOrientedView = false;
 
     public void updateRobotPose(Pose2d newPose){
@@ -187,6 +193,10 @@ public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;
     private ArrayList<FieldTag> fieldTags;
 public void updateFieldTags(ArrayList<FieldTag> fieldTags){
     this.fieldTags = fieldTags;
+}
+
+public void updateSetPoints(ArrayList<Pose2d> setPoints){
+    this.setPoints = setPoints;
 }
 
 public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
