@@ -31,11 +31,12 @@ import java.nio.file.Path;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private final FMSGetter fmsGetter = new FMSGetter();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub();
-  private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem);
+  private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
-  public final FMSGetter fmsGetter = new FMSGetter();
+
 
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);

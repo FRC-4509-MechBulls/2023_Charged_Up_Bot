@@ -24,22 +24,35 @@ PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
 
  Thread pathingThread;
-public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem){
+ FMSGetter fmsGetter;
+public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter){
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
+    this.fmsGetter = fmsGetter;
 
     createAndStartPathingThread();
     createBarriers();
-    createNodes();
 
     this.pTelemetrySub.updateBarriers(barriers);
     this.pTelemetrySub.updateNodes(nodes);
 }
 
+boolean wasOnRedAlliance = true;
+double lastAllianceCheck = Timer.getFPGATimestamp();
+boolean queueNodeReset = true;
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
 Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
     SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
+    if(Timer.getFPGATimestamp() - lastAllianceCheck>3){
+        if(wasOnRedAlliance!= fmsGetter.isRedAlliance() || queueNodeReset)
+        {
+            resetNodes();
+            wasOnRedAlliance = fmsGetter.isRedAlliance();
+            queueNodeReset = false;
+        }
+        lastAllianceCheck = Timer.getFPGATimestamp();
+    }
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
@@ -216,8 +229,13 @@ private void createAndStartPathingThread(){
     pathingThread.start();
 }
 
-private void createNodes(){
-        for(int revX = -1; revX<=1; revX+=2)
+private void resetNodes(){
+        nodes.clear();
+        //for(int revX = -1; revX<=1; revX+=2)
+    int revX = 1;  //used to make nodes mirror on both sides
+    if(fmsGetter.isRedAlliance())
+        revX = -1;
+
             for(int x = 0; x<=2; x++)
                 for(int y = 0; y<9; y++){
                     if(x==2){
