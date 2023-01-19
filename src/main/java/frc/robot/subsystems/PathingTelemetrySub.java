@@ -44,9 +44,15 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
         //draws all barriers
         for(Line2D.Double line: barriers){
+            Scalar color = new Scalar(255,255,255);
+            if(line.getX1()<0 && line.getX2()<0)
+                color = new Scalar(160,160,255);
+            if(line.getX1()>0 && line.getX2()>0)
+                color = new Scalar(255,160,160);
+
             double[] pt1Pix = metersPosToPixelsPos(new double[] {line.getX1(), line.getY1()});
             double[] pt2Pix = metersPosToPixelsPos(new double[] {line.getX2(), line.getY2()});
-            Imgproc.line(mat,new Point(pt1Pix[0],pt1Pix[1]),new Point(pt2Pix[0],pt2Pix[1]), new Scalar(255,255,255),4);
+            Imgproc.line(mat,new Point(pt1Pix[0],pt1Pix[1]),new Point(pt2Pix[0],pt2Pix[1]), color,4);
         }
 
         for(Node node : nodes){
