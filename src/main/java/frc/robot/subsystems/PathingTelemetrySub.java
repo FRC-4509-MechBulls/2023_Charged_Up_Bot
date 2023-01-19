@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.lib.FieldTag;
@@ -72,27 +73,18 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         }
 
 
-        //get robot corners in meters
-        double ang1 = Math.atan2(Constants.PathingConstants.kRobotLength, Constants.PathingConstants.kRobotWidth);
-        double ang2 = Math.atan2(Constants.PathingConstants.kRobotLength, -Constants.PathingConstants.kRobotWidth);
-        double cornerDist = Math.sqrt(Math.pow(Constants.PathingConstants.kRobotLength/2,2) + Math.pow(Constants.PathingConstants.kRobotWidth/2,2));
+        /**Draw robot */
+        drawRotatedRect(mat, robotPose.getX(), robotPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,robotPose.getRotation(), new Scalar(0,0,255), 2);
+
+        /** Draw nav end pose*/
+        drawRotatedRect(mat, destinationPose.getX(), destinationPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,destinationPose.getRotation(), new Scalar(0,0,130), 2);
+
+
+
+
+
+        /** Draw camera dot*/
         double robotAngle = robotPose.getRotation().getRadians();
-        Point[] robotPts = new Point[]{
-                new Point(cornerDist*Math.cos(robotAngle+ang1) + robotPose.getX(), cornerDist*Math.sin(robotAngle+ang1) + robotPose.getY()),
-                new Point(cornerDist*Math.cos(robotAngle-ang1) + robotPose.getX(), cornerDist*Math.sin(robotAngle-ang1) + robotPose.getY()),
-                new Point(cornerDist*Math.cos(robotAngle-ang2) + robotPose.getX(), cornerDist*Math.sin(robotAngle-ang2) + robotPose.getY()),
-                new Point(cornerDist*Math.cos(robotAngle+ang2) + robotPose.getX(), cornerDist*Math.sin(robotAngle+ang2) + robotPose.getY())
-
-        };
-        //convert corner points to pixels
-        for(int i = 0; i<robotPts.length; i++)
-            robotPts[i] = metersPosToPixelsPos(robotPts[i]);
-        //draw robot to screen
-        List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
-        pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
-        Imgproc.polylines(mat,pointList2 ,true,new Scalar(0,0,255),2);
-
-        //draw camera dot
         double camX = robotPose.getX() + Math.cos(robotAngle+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
         double camY = robotPose.getY() + Math.sin(robotAngle + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
         Imgproc.circle(mat,metersPosToPixelsPos(new Point(camX,camY)),2,new Scalar(255,255,255),2);
@@ -147,6 +139,27 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
     }
 
+    public void drawRotatedRect(Mat mat, double centerX, double centerY, double l, double w, Rotation2d angle, Scalar color, int thickness){
+        double ang1 = Math.atan2(l, w);
+        double ang2 = Math.atan2(l, -w);
+        double cornerDist = Math.sqrt(Math.pow(l/2,2) + Math.pow(w/2,2));
+        double robotAngle = angle.getRadians();
+        Point[] robotPts = new Point[]{
+                new Point(cornerDist*Math.cos(robotAngle+ang1) + centerX, cornerDist*Math.sin(robotAngle+ang1) + centerY),
+                new Point(cornerDist*Math.cos(robotAngle-ang1) + centerX, cornerDist*Math.sin(robotAngle-ang1) + centerY),
+                new Point(cornerDist*Math.cos(robotAngle-ang2) + centerX, cornerDist*Math.sin(robotAngle-ang2) + centerY),
+                new Point(cornerDist*Math.cos(robotAngle+ang2) + centerX, cornerDist*Math.sin(robotAngle+ang2) + centerY)
+
+        };
+        //convert corner points to pixels
+        for(int i = 0; i<robotPts.length; i++)
+            robotPts[i] = metersPosToPixelsPos(robotPts[i]);
+        //draw robot to screen
+        List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
+        pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
+        Imgproc.polylines(mat,pointList2 ,true,color,thickness);
+    }
+
     private ArrayList<Line2D.Double> barriers = new ArrayList<>();
     private ArrayList<Node> nodes = new ArrayList<Node>();
     public void updateBarriers(ArrayList<Line2D.Double> barriers){
@@ -155,11 +168,18 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
             this.barriers.add(line);
     }
 
+
+
     Pose2d robotPose = new Pose2d();
+    Pose2d destinationPose = new Pose2d();
     boolean robotOrientedView = false;
-public void updateRobotPose(Pose2d newPose){
-robotPose = newPose;
-}
+
+    public void updateRobotPose(Pose2d newPose){
+        robotPose = newPose;
+    }
+    public void updateDestinationPose(Pose2d newPose){
+        destinationPose = newPose;
+    }
 
 ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;}

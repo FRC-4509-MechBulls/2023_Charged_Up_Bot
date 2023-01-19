@@ -160,6 +160,7 @@ private Pose2d desiredPose;
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
+        pTelemetrySub.updateDestinationPose(this.desiredPose);
         pTelemetrySub.updateNavPoses(navPoses);
     }
 public Pose2d getNextNavPoint(){
