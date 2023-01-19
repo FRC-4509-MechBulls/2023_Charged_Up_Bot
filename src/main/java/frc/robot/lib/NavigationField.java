@@ -162,6 +162,8 @@ private Pose2d desiredPose;
         if(desiredPose == null)
             return;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
+        if(outNavPoses.length<1)
+            return;
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
@@ -211,6 +213,7 @@ private void createBarriers(){
     barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY));
 
     //little charge station edge things
+/*
     barriers.add(new Line2D.Double(chargeStationFarX, chargeStationTopY+chargeStationEdgeLength/2, chargeStationFarX, chargeStationTopY-chargeStationEdgeLength/2));
     barriers.add(new Line2D.Double(chargeStationCloseX, chargeStationTopY+chargeStationEdgeLength/2, chargeStationCloseX, chargeStationTopY-chargeStationEdgeLength/2));
     barriers.add(new Line2D.Double(chargeStationFarX, chargeStationBottomY+chargeStationEdgeLength/2, chargeStationFarX, chargeStationBottomY-chargeStationEdgeLength/2));
@@ -220,6 +223,14 @@ private void createBarriers(){
     barriers.add(new Line2D.Double(-chargeStationCloseX, chargeStationTopY+chargeStationEdgeLength/2, -chargeStationCloseX, chargeStationTopY-chargeStationEdgeLength/2));
     barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY+chargeStationEdgeLength/2, -chargeStationFarX, chargeStationBottomY-chargeStationEdgeLength/2));
     barriers.add(new Line2D.Double(-chargeStationCloseX, chargeStationBottomY+chargeStationEdgeLength/2, -chargeStationCloseX, chargeStationBottomY-chargeStationEdgeLength/2));
+*/
+    //block off charge stations
+
+   // barriers.add(new Line2D.Double(chargeStationFarX, chargeStationTopY, chargeStationFarX, chargeStationBottomY));
+    barriers.add(new Line2D.Double(chargeStationCloseX, chargeStationTopY, chargeStationCloseX, chargeStationBottomY));
+
+  //  barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationFarX, chargeStationBottomY));
+    barriers.add(new Line2D.Double(-chargeStationCloseX, chargeStationTopY, -chargeStationCloseX, chargeStationBottomY));
 
 
     //double substations
