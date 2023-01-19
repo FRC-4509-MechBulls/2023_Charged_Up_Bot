@@ -210,6 +210,18 @@ private void createBarriers(){
     barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationCloseX, chargeStationTopY));
     barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY));
 
+    //little charge station edge things
+    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationTopY+chargeStationEdgeLength/2, chargeStationFarX, chargeStationTopY-chargeStationEdgeLength/2));
+    barriers.add(new Line2D.Double(chargeStationCloseX, chargeStationTopY+chargeStationEdgeLength/2, chargeStationCloseX, chargeStationTopY-chargeStationEdgeLength/2));
+    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationBottomY+chargeStationEdgeLength/2, chargeStationFarX, chargeStationBottomY-chargeStationEdgeLength/2));
+    barriers.add(new Line2D.Double(chargeStationCloseX, chargeStationBottomY+chargeStationEdgeLength/2, chargeStationCloseX, chargeStationBottomY-chargeStationEdgeLength/2));
+
+    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY+chargeStationEdgeLength/2, -chargeStationFarX, chargeStationTopY-chargeStationEdgeLength/2));
+    barriers.add(new Line2D.Double(-chargeStationCloseX, chargeStationTopY+chargeStationEdgeLength/2, -chargeStationCloseX, chargeStationTopY-chargeStationEdgeLength/2));
+    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY+chargeStationEdgeLength/2, -chargeStationFarX, chargeStationBottomY-chargeStationEdgeLength/2));
+    barriers.add(new Line2D.Double(-chargeStationCloseX, chargeStationBottomY+chargeStationEdgeLength/2, -chargeStationCloseX, chargeStationBottomY-chargeStationEdgeLength/2));
+
+
     //double substations
     barriers.add(new Line2D.Double(leftWallPos+doubleSubstationDepth, topWallPos - nodesHeight, leftWallPos+doubleSubstationDepth, bottomWallPos));
     barriers.add(new Line2D.Double(rightWallPos-doubleSubstationDepth, topWallPos -nodesHeight, rightWallPos-doubleSubstationDepth, bottomWallPos));

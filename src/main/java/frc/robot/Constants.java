@@ -216,6 +216,8 @@ public final class Constants {
         public static final double topNodeY = 3.495389;
         public static final double yDistBetweenNodes = 0.558800;
 
+        public static final double chargeStationEdgeLength = Units.inchesToMeters(6);
+
 
 
 
