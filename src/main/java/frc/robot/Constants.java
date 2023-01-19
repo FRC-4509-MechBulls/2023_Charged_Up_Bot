@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -129,6 +130,8 @@ public final class Constants {
 
     public static final class OIConstants {
         public static final int kDriverControllerPort = 0;
+        public static final int kOperatorControllerPort = 1;
+
         public static final int kDriverYAxis = XboxController.Axis.kLeftY.value;
         public static final int kDriverXAxis = XboxController.Axis.kLeftX.value;
         public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;
@@ -167,7 +170,7 @@ public final class Constants {
 
     public static final class FieldConstants{
         public static final double width1 = 16.56;
-        public static final double height1 = 8.176;
+        public static final double height1 = 8.05; // 8.176  //we might need to re-measure some things 😭
 
         public static final double leftWallPos = -width1/2;
         public static final double rightWallPos = width1/2;
@@ -205,6 +208,15 @@ public final class Constants {
         public static final double aprilTagOriginY = topWallPos;
         public static final double[] aprilTagYDiffsFromOriginInches = {610.77,610.77,610.77,636.96,14.25,40.45,40.45,40.45}; //https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
         public static final double[] aprilTagXDiffsFromOriginInches = {42.19,108.19,174.19,265.74,265.74,174.19,108.19,42.19};
+
+        public static final double nodeX1 = 7.071332;
+        public static final double nodeX2 = 7.426611 + Units.inchesToMeters(1);
+        public static final double nodeX3 = nodeX2+0.432133;
+
+        public static final double topNodeY = 3.495389;
+        public static final double yDistBetweenNodes = 0.558800;
+
+
 
 
     }

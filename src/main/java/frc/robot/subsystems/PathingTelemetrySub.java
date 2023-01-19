@@ -1,10 +1,12 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.NavigationField;
+import frc.robot.lib.Node;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -13,6 +15,7 @@ import org.opencv.imgproc.Imgproc;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,33 +45,51 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
         //draws all barriers
         for(Line2D.Double line: barriers){
+            Scalar color = new Scalar(255,255,255);
+            if(line.getX1()<0 && line.getX2()<0)
+                color = new Scalar(160,160,255);
+            if(line.getX1()>0 && line.getX2()>0)
+                color = new Scalar(255,160,160);
+
             double[] pt1Pix = metersPosToPixelsPos(new double[] {line.getX1(), line.getY1()});
             double[] pt2Pix = metersPosToPixelsPos(new double[] {line.getX2(), line.getY2()});
-            Imgproc.line(mat,new Point(pt1Pix[0],pt1Pix[1]),new Point(pt2Pix[0],pt2Pix[1]), new Scalar(255,255,255),4);
+            Imgproc.line(mat,new Point(pt1Pix[0],pt1Pix[1]),new Point(pt2Pix[0],pt2Pix[1]), color,4);
+        }
+
+        for(Node node : nodes){
+            Scalar color = new Scalar(255,255,255);
+            int radius = 5;
+            switch(node.getNodeType()){
+                case CONE: color = new Scalar(0,240,255); break; //yellow?
+                case CUBE: color = new Scalar(298,20,188); break; //purple?
+                case HYBRID: color = new Scalar(46,162,0); break; //green?
+            }
+            switch(node.getLevel()){
+                case GROUND: radius = 3; break;
+                case LVL1: radius = 4; break;
+                case LVL2: radius = 5; break;
+            }
+            Imgproc.circle(mat, metersPosToPixelsPos(new Point(node.getX(),node.getY())),radius,color,2);
         }
 
 
-        //get robot corners in meters
-        double ang1 = Math.atan2(Constants.PathingConstants.kRobotLength, Constants.PathingConstants.kRobotWidth);
-        double ang2 = Math.atan2(Constants.PathingConstants.kRobotLength, -Constants.PathingConstants.kRobotWidth);
-        double cornerDist = Math.sqrt(Math.pow(Constants.PathingConstants.kRobotLength/2,2) + Math.pow(Constants.PathingConstants.kRobotWidth/2,2));
+        /**Draw robot */
+        drawRotatedRect(mat, robotPose.getX(), robotPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,robotPose.getRotation(), new Scalar(0,0,255), 2);
+
+        /** Draw nav end pose*/
+        drawRotatedRect(mat, destinationPose.getX(), destinationPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,destinationPose.getRotation(), new Scalar(0,0,130), 2);
+
+        /** Draw setpoints */
+        for(Pose2d setPoint : setPoints){
+            Scalar color = new Scalar(12,79,78);
+            if(setPoint.getX() == destinationPose.getX() && setPoint.getY() == destinationPose.getY())
+                color = new Scalar(31,216,214);
+            Imgproc.circle(mat, metersPosToPixelsPos(new Point(setPoint.getX(),setPoint.getY())),1,color,2);
+        }
+
+
+        /** Draw camera dot*/
         double robotAngle = robotPose.getRotation().getRadians();
-        Point[] robotPts = new Point[]{
-                new Point(cornerDist*Math.cos(robotAngle+ang1) + robotPose.getX(), cornerDist*Math.sin(robotAngle+ang1) + robotPose.getY()),
-                new Point(cornerDist*Math.cos(robotAngle-ang1) + robotPose.getX(), cornerDist*Math.sin(robotAngle-ang1) + robotPose.getY()),
-                new Point(cornerDist*Math.cos(robotAngle-ang2) + robotPose.getX(), cornerDist*Math.sin(robotAngle-ang2) + robotPose.getY()),
-                new Point(cornerDist*Math.cos(robotAngle+ang2) + robotPose.getX(), cornerDist*Math.sin(robotAngle+ang2) + robotPose.getY())
-
-        };
-        //convert corner points to pixels
-        for(int i = 0; i<robotPts.length; i++)
-            robotPts[i] = metersPosToPixelsPos(robotPts[i]);
-        //draw robot to screen
-        List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
-        pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
-        Imgproc.polylines(mat,pointList2 ,true,new Scalar(0,0,255),2);
-
-        //draw camera dot
         double camX = robotPose.getX() + Math.cos(robotAngle+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
         double camY = robotPose.getY() + Math.sin(robotAngle + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
         Imgproc.circle(mat,metersPosToPixelsPos(new Point(camX,camY)),2,new Scalar(255,255,255),2);
@@ -95,7 +116,6 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
             Imgproc.circle(mat,lastPosePix,1,new Scalar(0,255,255),4);
 
         }
-
         //draw AprilTags
         if(fieldTags!=null)
             for(FieldTag tag : fieldTags){
@@ -108,12 +128,12 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
                 double y1 = y + Math.sin(ang+Math.PI/2)*0.1;
                 double y2 = y + Math.sin(ang-Math.PI/2)*0.1;
 
-                Imgproc.line(mat, metersPosToPixelsPos(new Point(x1,y1)), metersPosToPixelsPos(new Point(x2,y2)), new Scalar(255,0,255),2);
+                Imgproc.line(mat, metersPosToPixelsPos(new Point(x1,y1)), metersPosToPixelsPos(new Point(x2,y2)), new Scalar(212,182,0),2);
 
             }
 
         //draw test line
-        Imgproc.line(mat,metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0))), metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0))),new Scalar(255,255,255),2);
+      //  Imgproc.line(mat,metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0))), metersPosToPixelsPos(new Point(SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0))),new Scalar(255,255,255),2);
 
 
         //coords and heading
@@ -124,18 +144,48 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
     }
 
+    public void drawRotatedRect(Mat mat, double centerX, double centerY, double l, double w, Rotation2d angle, Scalar color, int thickness){
+        double ang1 = Math.atan2(l, w);
+        double ang2 = Math.atan2(l, -w);
+        double cornerDist = Math.sqrt(Math.pow(l/2,2) + Math.pow(w/2,2));
+        double robotAngle = angle.getRadians();
+        Point[] robotPts = new Point[]{
+                new Point(cornerDist*Math.cos(robotAngle+ang1) + centerX, cornerDist*Math.sin(robotAngle+ang1) + centerY),
+                new Point(cornerDist*Math.cos(robotAngle-ang1) + centerX, cornerDist*Math.sin(robotAngle-ang1) + centerY),
+                new Point(cornerDist*Math.cos(robotAngle-ang2) + centerX, cornerDist*Math.sin(robotAngle-ang2) + centerY),
+                new Point(cornerDist*Math.cos(robotAngle+ang2) + centerX, cornerDist*Math.sin(robotAngle+ang2) + centerY)
+
+        };
+        //convert corner points to pixels
+        for(int i = 0; i<robotPts.length; i++)
+            robotPts[i] = metersPosToPixelsPos(robotPts[i]);
+        //draw robot to screen
+        List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
+        pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
+        Imgproc.polylines(mat,pointList2 ,true,color,thickness);
+    }
+
     private ArrayList<Line2D.Double> barriers = new ArrayList<>();
+    private ArrayList<Node> nodes = new ArrayList<Node>();
     public void updateBarriers(ArrayList<Line2D.Double> barriers){
         this.barriers.clear();
         for(Line2D.Double line : barriers)
             this.barriers.add(line);
     }
 
+
+
     Pose2d robotPose = new Pose2d();
+    Pose2d destinationPose = new Pose2d();
+    ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
     boolean robotOrientedView = false;
-public void updateRobotPose(Pose2d newPose){
-robotPose = newPose;
-}
+
+    public void updateRobotPose(Pose2d newPose){
+        robotPose = newPose;
+    }
+    public void updateDestinationPose(Pose2d newPose){
+        destinationPose = newPose;
+    }
 
 ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;}
@@ -144,6 +194,12 @@ public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;
 public void updateFieldTags(ArrayList<FieldTag> fieldTags){
     this.fieldTags = fieldTags;
 }
+
+public void updateSetPoints(ArrayList<Pose2d> setPoints){
+    this.setPoints = setPoints;
+}
+
+public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
     public  Point metersPosToPixelsPos(Point posInMeters){
     posInMeters.x = -posInMeters.x;

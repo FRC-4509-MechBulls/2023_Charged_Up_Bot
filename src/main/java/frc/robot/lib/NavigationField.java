@@ -1,6 +1,8 @@
 package frc.robot.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,73 +19,44 @@ import static frc.robot.Constants.FieldConstants.*;
 public class NavigationField extends SubsystemBase {
 
  ArrayList<Line2D.Double> barriers = new ArrayList<Line2D.Double>();
-private static double desiredX = 2;
-private static double desiredY = 0.3;
+ ArrayList<Node> nodes = new ArrayList<Node>();
+ ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
 
 
 PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
 
  Thread pathingThread;
-public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem){
+ FMSGetter fmsGetter;
+public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter){
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
+    this.fmsGetter = fmsGetter;
 
-   pathingThread =
-            new Thread(
-                    () -> {
-                        try {
-                            while(!pathingThread.isInterrupted()){
-                                double startTime = Timer.getFPGATimestamp()*1000;
-                                updateNavPoses();
-                                double compTime = Timer.getFPGATimestamp()*1000 - startTime;
-                                SmartDashboard.putNumber("pathingCompTime",compTime);
-                                Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
-                            }
-                        } catch (InterruptedException e) {throw new RuntimeException(e);}
-                    });
-    pathingThread.setDaemon(true);
-    pathingThread.setPriority(1); //low priority I hope?
-    pathingThread.start();
-
-    //outer walls
-    barriers.add(new Line2D.Double(leftWallPos,topWallPos,rightWallPos,topWallPos));
-    barriers.add(new Line2D.Double(leftWallPos,bottomWallPos,rightWallPos,bottomWallPos));
-    barriers.add(new Line2D.Double(leftWallPos,topWallPos,leftWallPos,bottomWallPos));
-    barriers.add(new Line2D.Double(rightWallPos,topWallPos,rightWallPos,bottomWallPos));
-
-    //node long sides
-    barriers.add(new Line2D.Double(leftWallPos+nodesWidth, topWallPos, leftWallPos+nodesWidth, topWallPos - nodesHeight));
-    barriers.add(new Line2D.Double(rightWallPos-nodesWidth, topWallPos, rightWallPos-nodesWidth, topWallPos - nodesHeight));
-    //node short sides
-    barriers.add(new Line2D.Double(rightWallPos, topWallPos - nodesHeight, rightWallPos-nodesWidth, topWallPos - nodesHeight));
-    barriers.add(new Line2D.Double(leftWallPos, topWallPos - nodesHeight, leftWallPos+nodesWidth, topWallPos - nodesHeight));
-
-    //barriers
-    barriers.add(new Line2D.Double(leftWallPos+nodesWidth, topWallPos - nodesHeight, leftWallPos+nodesWidth + barrierLength, topWallPos - nodesHeight));
-    barriers.add(new Line2D.Double(rightWallPos-nodesWidth, topWallPos - nodesHeight, rightWallPos-nodesWidth - barrierLength, topWallPos - nodesHeight));
-
-    //charge stations
-    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationTopY, chargeStationCloseX, chargeStationTopY));
-    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationBottomY, chargeStationCloseX, chargeStationBottomY));
-
-    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationCloseX, chargeStationTopY));
-    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY));
-
-    //double substations
-    barriers.add(new Line2D.Double(leftWallPos+doubleSubstationDepth, topWallPos - nodesHeight, leftWallPos+doubleSubstationDepth, bottomWallPos));
-    barriers.add(new Line2D.Double(rightWallPos-doubleSubstationDepth, topWallPos -nodesHeight, rightWallPos-doubleSubstationDepth, bottomWallPos));
-
-
-
+    createAndStartPathingThread();
+    createBarriers();
 
     this.pTelemetrySub.updateBarriers(barriers);
+    this.pTelemetrySub.updateNodes(nodes);
+    this.pTelemetrySub.updateSetPoints(setPoints);
 }
 
+boolean wasOnRedAlliance = true;
+double lastAllianceCheck = Timer.getFPGATimestamp();
+boolean queueNodeReset = true;
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
 Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
     SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
+    if(Timer.getFPGATimestamp() - lastAllianceCheck>3){
+        if(wasOnRedAlliance!= fmsGetter.isRedAlliance() || queueNodeReset)
+        {
+            resetNodes();
+            wasOnRedAlliance = fmsGetter.isRedAlliance();
+            queueNodeReset = false;
+        }
+        lastAllianceCheck = Timer.getFPGATimestamp();
+    }
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
@@ -181,7 +154,8 @@ private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
         this.desiredPose = desiredPose;
-        updateNavPoses();
+        pTelemetrySub.updateDestinationPose(this.desiredPose);
+        //updateNavPoses();
     }
 
     public void updateNavPoses(){
@@ -191,6 +165,7 @@ private Pose2d desiredPose;
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
+        pTelemetrySub.updateDestinationPose(this.desiredPose);
         pTelemetrySub.updateNavPoses(navPoses);
     }
 public Pose2d getNextNavPoint(){
@@ -209,7 +184,115 @@ public void setNavTrajectory(ArrayList<Pose2d> navPoses){
         this.navPoses = navPoses;
 }
 
+private void createBarriers(){
 
+    //outer walls
+    barriers.add(new Line2D.Double(leftWallPos,topWallPos,rightWallPos,topWallPos));
+    barriers.add(new Line2D.Double(leftWallPos,bottomWallPos,rightWallPos,bottomWallPos));
+    barriers.add(new Line2D.Double(leftWallPos,topWallPos,leftWallPos,bottomWallPos));
+    barriers.add(new Line2D.Double(rightWallPos,topWallPos,rightWallPos,bottomWallPos));
+
+    //node long sides
+    barriers.add(new Line2D.Double(leftWallPos+nodesWidth, topWallPos, leftWallPos+nodesWidth, topWallPos - nodesHeight));
+    barriers.add(new Line2D.Double(rightWallPos-nodesWidth, topWallPos, rightWallPos-nodesWidth, topWallPos - nodesHeight));
+    //node short sides
+    barriers.add(new Line2D.Double(rightWallPos, topWallPos - nodesHeight, rightWallPos-nodesWidth, topWallPos - nodesHeight));
+    barriers.add(new Line2D.Double(leftWallPos, topWallPos - nodesHeight, leftWallPos+nodesWidth, topWallPos - nodesHeight));
+
+    //barriers
+    barriers.add(new Line2D.Double(leftWallPos+nodesWidth, topWallPos - nodesHeight, leftWallPos+nodesWidth + barrierLength, topWallPos - nodesHeight));
+    barriers.add(new Line2D.Double(rightWallPos-nodesWidth, topWallPos - nodesHeight, rightWallPos-nodesWidth - barrierLength, topWallPos - nodesHeight));
+
+    //charge stations
+    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationTopY, chargeStationCloseX, chargeStationTopY));
+    barriers.add(new Line2D.Double(chargeStationFarX, chargeStationBottomY, chargeStationCloseX, chargeStationBottomY));
+
+    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationCloseX, chargeStationTopY));
+    barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY));
+
+    //double substations
+    barriers.add(new Line2D.Double(leftWallPos+doubleSubstationDepth, topWallPos - nodesHeight, leftWallPos+doubleSubstationDepth, bottomWallPos));
+    barriers.add(new Line2D.Double(rightWallPos-doubleSubstationDepth, topWallPos -nodesHeight, rightWallPos-doubleSubstationDepth, bottomWallPos));
+
+}
+
+private void createAndStartPathingThread(){
+    pathingThread =
+            new Thread(
+                    () -> {
+                        try {
+                            while(!pathingThread.isInterrupted()){
+                                double startTime = Timer.getFPGATimestamp()*1000;
+                                updateNavPoses();
+                                double compTime = Timer.getFPGATimestamp()*1000 - startTime;
+                                SmartDashboard.putNumber("pathingCompTime",compTime);
+                                Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
+                            }
+                        } catch (InterruptedException e) {throw new RuntimeException(e);}
+                    });
+    pathingThread.setDaemon(true);
+    pathingThread.setPriority(1); //low priority I hope?
+    pathingThread.start();
+}
+
+private void resetNodes(){
+        nodes.clear();
+        setPoints.clear();
+        //for(int revX = -1; revX<=1; revX+=2)
+    int revX = 1;  //used to make nodes mirror on both sides
+    if(fmsGetter.isRedAlliance())
+        revX = -1;
+
+            for(int x = 0; x<=2; x++)
+                for(int y = 0; y<9; y++){
+                    if(x==2){
+                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, Node.Level.GROUND));
+                        continue;
+                    }
+                    Node.Level level = Node.Level.LVL1;
+                    double myNodeX = nodeX2;
+                    if(x==1) {
+                        level = Node.Level.LVL2;
+                        myNodeX = nodeX3;
+                    }
+                    Node.NodeType type = Node.NodeType.CONE;
+                    if(y%3==1)
+                        type = Node.NodeType.CUBE;
+
+                    nodes.add(new Node(myNodeX*revX,topNodeY-y*yDistBetweenNodes, type, level));
+            }
+
+            for(int y = 0; y<9; y++){
+                double yPos = topNodeY - y*yDistBetweenNodes;
+                double xPos = width1/2 - nodesWidth - Constants.PathingConstants.kRobotWidth/2 - Units.inchesToMeters(3); //3 inches from nodes barrier?
+                xPos*=revX;
+                Rotation2d myRotation = Rotation2d.fromDegrees(180); //red
+                if(revX>0)
+                    myRotation = Rotation2d.fromDegrees(0); //blue
+                setPoints.add(new Pose2d(xPos,yPos,myRotation));
+
+
+            }
+
+}
+int setPointIndex = 0;
+    public void iterateSetPoint(){
+        setPointIndex++;
+        updateSetPoint();
+    }
+    public void decimateSetPoint(){
+        setPointIndex--;
+        updateSetPoint();
+    }
+    public void updateSetPoint(){
+        if(setPointIndex>=setPoints.size())
+            setPointIndex = 0;
+        if(setPointIndex<0)
+            setPointIndex = setPoints.size()-1;
+
+        if(setPoints.size()>0)
+            setNavPoint(setPoints.get(setPointIndex));
+    }
 
 
 }

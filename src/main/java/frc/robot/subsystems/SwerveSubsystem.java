@@ -383,8 +383,8 @@ newY-=camYOffset;
 
     double dirToPose = Math.atan2(yDiff,xDiff);
 
-    out[0] = dist * Math.cos(dirToPose +rotationDiff) * 0.5;
-    out[1] = dist * Math.sin(dirToPose+rotationDiff) * 0.5;
+    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;
+    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;  //sin and cos used to have +rotationDiff for some reason
     out[2] = rotationDiff * 0.7;
 
     if(Math.abs(rotationDiff)<Math.toRadians(2)) out[2] = 0;
