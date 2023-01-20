@@ -124,12 +124,12 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
                 double ang = tag.getPose().getRotation().getRadians();
 
                 double x1 = x + Math.cos(ang+Math.PI/2)*0.1;
-                double x2 = x + Math.cos(ang-Math.PI/2)*0.1;
+                double x2 = x - Math.cos(ang+Math.PI/2)*0.1;
                 double y1 = y + Math.sin(ang+Math.PI/2)*0.1;
-                double y2 = y + Math.sin(ang-Math.PI/2)*0.1;
+                double y2 = y - Math.sin(ang+Math.PI/2)*0.1;
 
                 Imgproc.line(mat, metersPosToPixelsPos(new Point(x1,y1)), metersPosToPixelsPos(new Point(x2,y2)), new Scalar(212,182,0),2);
-
+              //  Imgproc.circle(mat, metersPosToPixelsPos(new Point(x,y)),3,new Scalar(255,255,255),2);
             }
 
         //draw test line

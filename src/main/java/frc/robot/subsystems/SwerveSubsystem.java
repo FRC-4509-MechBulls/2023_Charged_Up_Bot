@@ -354,8 +354,8 @@ public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double lat
 
   //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
     Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
-    double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getY() ) ;
-    double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getX() ) ;
+    double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getY();
+    double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getX();
     Pose2d newPose = new Pose2d(newX,newY, newRotation);
 
   double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
