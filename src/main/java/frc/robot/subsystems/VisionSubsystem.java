@@ -62,8 +62,8 @@ public class VisionSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("tagDiffX",Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]));
             SmartDashboard.putNumber("tagDiffY",Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]));
 
-            Rotation2d rotation2d = new Rotation2d();
-            if(i>=3)
+            Rotation2d rotation2d = Rotation2d.fromDegrees(0);
+            if(i>=4)
                 rotation2d = Rotation2d.fromDegrees(180);
 
             fieldTags.add(new FieldTag(id, new Pose2d(x,y,rotation2d)));
