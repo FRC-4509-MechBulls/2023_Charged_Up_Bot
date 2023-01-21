@@ -98,10 +98,10 @@ public final class Constants {
         public static final int kBackRightDriveAbsoluteEncoderPort = 3;
 
         //sort of calculated
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -0.613 * Math.PI * 2;
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -0.536 * Math.PI * 2;
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -0.605 * Math.PI * 2;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.719 * Math.PI * 2;
+        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -2.29+Math.PI;
+        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -6.06+Math.PI;
+        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -2.25;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -1.83 +Math.PI;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;

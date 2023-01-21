@@ -53,14 +53,17 @@ public class VisionSubsystem extends SubsystemBase {
 //        fieldTags.add(new FieldTag(7,tag7Pose));
 //        fieldTags.add(new FieldTag(8,tag8Pose));
 
+
         for(int i = 0; i<8; i++){
             int id = i+1;
             double x = aprilTagOriginX  -  Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]);
             double y = aprilTagOriginY - Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]);
-            SmartDashboard.putNumber("tagOriginX",aprilTagOriginX);
-            SmartDashboard.putNumber("tagOriginY",aprilTagOriginY);
-            SmartDashboard.putNumber("tagDiffX",Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]));
-            SmartDashboard.putNumber("tagDiffY",Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]));
+//            SmartDashboard.putNumber("tagOriginX",aprilTagOriginX);
+//            SmartDashboard.putNumber("tagOriginY",aprilTagOriginY);
+//            SmartDashboard.putNumber("tagDiffX",Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]));
+//            SmartDashboard.putNumber("tagDiffY",Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]));
+
+
 
             Rotation2d rotation2d = Rotation2d.fromDegrees(0);
             if(i>=4)
@@ -69,6 +72,9 @@ public class VisionSubsystem extends SubsystemBase {
             fieldTags.add(new FieldTag(id, new Pose2d(x,y,rotation2d)));
         }
 
+//        fieldTags.add(new FieldTag(1,new Pose2d()));
+//        fieldTags.add(new FieldTag(2,new Pose2d(5,0, new Rotation2d())));
+//        fieldTags.add(new FieldTag(3,new Pose2d(0,5, new Rotation2d())));
     pathingTelemetrySub.updateFieldTags(fieldTags);
     }
 
