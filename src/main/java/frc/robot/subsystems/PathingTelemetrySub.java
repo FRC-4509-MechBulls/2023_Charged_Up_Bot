@@ -4,9 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.lib.Barrier;
+import frc.robot.lib.FieldLine;
 import frc.robot.lib.FieldTag;
-import frc.robot.lib.NavigationField;
 import frc.robot.lib.Node;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -15,11 +14,7 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
@@ -45,16 +40,10 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
             }
 
         //draws all barriers
-        for(Barrier line: barriers){
-            Scalar color = new Scalar(255,255,255);
-            if(line.getLine().getX1()<0 && line.getLine().getX2()<0)
-                color = new Scalar(160,160,255);
-            if(line.getLine().getX1()>0 && line.getLine().getX2()>0)
-                color = new Scalar(255,160,160);
-
+        for(FieldLine line: fieldLines){
             double[] pt1Pix = metersPosToPixelsPos(new double[] {line.getLine().getX1(), line.getLine().getY1()});
             double[] pt2Pix = metersPosToPixelsPos(new double[] {line.getLine().getX2(), line.getLine().getY2()});
-            Imgproc.line(mat,new Point(pt1Pix[0],pt1Pix[1]),new Point(pt2Pix[0],pt2Pix[1]), color,4);
+            Imgproc.line(mat,new Point(pt1Pix[0],pt1Pix[1]),new Point(pt2Pix[0],pt2Pix[1]), line.getColor(),4);
         }
 
         for(Node node : nodes){
@@ -166,12 +155,12 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         Imgproc.polylines(mat,pointList2 ,true,color,thickness);
     }
 
-    private ArrayList<Barrier> barriers = new ArrayList<>();
+    private ArrayList<FieldLine> fieldLines = new ArrayList<>();
     private ArrayList<Node> nodes = new ArrayList<Node>();
-    public void updateBarriers(ArrayList<Barrier> barriers){
-        this.barriers.clear();
-        for(Barrier line : barriers)
-            this.barriers.add(line);
+    public void updateBarriers(ArrayList<FieldLine> fieldLines){
+        this.fieldLines.clear();
+        for(FieldLine line : fieldLines)
+            this.fieldLines.add(line);
     }
 
 

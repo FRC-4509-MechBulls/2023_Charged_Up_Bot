@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
+import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import static frc.robot.Constants.FieldConstants.*;
 
 public class NavigationField extends SubsystemBase {
 
- ArrayList<Barrier> barriers = new ArrayList<Barrier>();
+ ArrayList<FieldLine> fieldLines = new ArrayList<FieldLine>();
  ArrayList<Node> nodes = new ArrayList<Node>();
  ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
 
@@ -36,7 +37,7 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
     createAndStartPathingThread();
     createBarriers();
 
-    this.pTelemetrySub.updateBarriers(barriers);
+    this.pTelemetrySub.updateBarriers(fieldLines);
     this.pTelemetrySub.updateNodes(nodes);
     this.pTelemetrySub.updateSetPoints(setPoints);
 }
@@ -87,9 +88,10 @@ public  boolean barrierOnLine(Line2D.Double line){
 
     boolean pathObstructed = false;
     for(int i = 0; i<Constants.PathingConstants.innerLineTestCount; i++)
-        for(Barrier barrier : barriers){
-            LineIntersection.Point bp1 = new LineIntersection.Point(barrier.getLine().getX1(), barrier.getLine().getY1());
-            LineIntersection.Point bp2 = new LineIntersection.Point(barrier.getLine().getX2(), barrier.getLine().getY2());
+        for(FieldLine fieldLine : fieldLines){
+            if(!fieldLine.isABarrier()) continue;
+            LineIntersection.Point bp1 = new LineIntersection.Point(fieldLine.getLine().getX1(), fieldLine.getLine().getY1());
+            LineIntersection.Point bp2 = new LineIntersection.Point(fieldLine.getLine().getX2(), fieldLine.getLine().getY2());
 
            // if(LineIntersection.doIntersect(bp1,bp2,l1p1,l1p2) || LineIntersection.doIntersect(bp1,bp2,l2p1,l2p2) || LineIntersection.doIntersect(bp1,bp2,l3p1,l3p2)){
            //     pathClear = true;
@@ -187,30 +189,32 @@ public void setNavTrajectory(ArrayList<Pose2d> navPoses){
 }
 
 private void createBarriers(){
+    Scalar redBarrierColor = new Scalar(100,100,255);
+    Scalar blueBarrierColor = new Scalar(255,100,100);
 
     //outer walls
-    barriers.add(new Barrier(new Line2D.Double(leftWallPos,topWallPos,rightWallPos,topWallPos)));
-    barriers.add(new Barrier(new Line2D.Double(leftWallPos,bottomWallPos,rightWallPos,bottomWallPos)));
-    barriers.add(new Barrier(new Line2D.Double(leftWallPos,topWallPos,leftWallPos,bottomWallPos)));
-    barriers.add(new Barrier(new Line2D.Double(rightWallPos,topWallPos,rightWallPos,bottomWallPos)));
+    fieldLines.add(new FieldLine(new Line2D.Double(leftWallPos,topWallPos,rightWallPos,topWallPos)));
+    fieldLines.add(new FieldLine(new Line2D.Double(leftWallPos,bottomWallPos,rightWallPos,bottomWallPos)));
+    fieldLines.add(new FieldLine(new Line2D.Double(leftWallPos,topWallPos,leftWallPos,bottomWallPos)));
+    fieldLines.add(new FieldLine(new Line2D.Double(rightWallPos,topWallPos,rightWallPos,bottomWallPos)));
 
     //node long sides
-    barriers.add(new Barrier(new Line2D.Double(leftWallPos+nodesWidth, topWallPos, leftWallPos+nodesWidth, topWallPos - nodesHeight)));
-    barriers.add(new Barrier(new Line2D.Double(rightWallPos-nodesWidth, topWallPos, rightWallPos-nodesWidth, topWallPos - nodesHeight)));
+    fieldLines.add(new FieldLine(new Line2D.Double(leftWallPos+nodesWidth, topWallPos, leftWallPos+nodesWidth, topWallPos - nodesHeight),true, redBarrierColor));
+    fieldLines.add(new FieldLine(new Line2D.Double(rightWallPos-nodesWidth, topWallPos, rightWallPos-nodesWidth, topWallPos - nodesHeight),true, blueBarrierColor));
     //node short sides
-    barriers.add(new Barrier(new Line2D.Double(rightWallPos, topWallPos - nodesHeight, rightWallPos-nodesWidth, topWallPos - nodesHeight)));
-    barriers.add(new Barrier(new Line2D.Double(leftWallPos, topWallPos - nodesHeight, leftWallPos+nodesWidth, topWallPos - nodesHeight)));
+    fieldLines.add(new FieldLine(new Line2D.Double(rightWallPos, topWallPos - nodesHeight, rightWallPos-nodesWidth, topWallPos - nodesHeight)));
+    fieldLines.add(new FieldLine(new Line2D.Double(leftWallPos, topWallPos - nodesHeight, leftWallPos+nodesWidth, topWallPos - nodesHeight)));
 
     //barriers
-    barriers.add(new Barrier(new Line2D.Double(leftWallPos+nodesWidth, topWallPos - nodesHeight, leftWallPos+nodesWidth + barrierLength, topWallPos - nodesHeight)));
-    barriers.add(new Barrier(new Line2D.Double(rightWallPos-nodesWidth, topWallPos - nodesHeight, rightWallPos-nodesWidth - barrierLength, topWallPos - nodesHeight)));
+    fieldLines.add(new FieldLine(new Line2D.Double(leftWallPos+nodesWidth, topWallPos - nodesHeight, leftWallPos+nodesWidth + barrierLength, topWallPos - nodesHeight),true));
+    fieldLines.add(new FieldLine(new Line2D.Double(rightWallPos-nodesWidth, topWallPos - nodesHeight, rightWallPos-nodesWidth - barrierLength, topWallPos - nodesHeight),true));
 
     //charge stations
-    barriers.add(new Barrier(new Line2D.Double(chargeStationFarX, chargeStationTopY, chargeStationCloseX, chargeStationTopY)));
-    barriers.add(new Barrier(new Line2D.Double(chargeStationFarX, chargeStationBottomY, chargeStationCloseX, chargeStationBottomY)));
+    fieldLines.add(new FieldLine(new Line2D.Double(chargeStationFarX, chargeStationTopY, chargeStationCloseX, chargeStationTopY),true, blueBarrierColor));
+    fieldLines.add(new FieldLine(new Line2D.Double(chargeStationFarX, chargeStationBottomY, chargeStationCloseX, chargeStationBottomY),true, blueBarrierColor));
 
-    barriers.add(new Barrier(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationCloseX, chargeStationTopY)));
-    barriers.add(new Barrier(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY)));
+    fieldLines.add(new FieldLine(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationCloseX, chargeStationTopY),true, redBarrierColor));
+    fieldLines.add(new FieldLine(new Line2D.Double(-chargeStationFarX, chargeStationBottomY, -chargeStationCloseX, chargeStationBottomY),true, redBarrierColor));
 
     //little charge station edge things
 /*
@@ -227,15 +231,15 @@ private void createBarriers(){
     //block off charge stations
 
    // barriers.add(new Line2D.Double(chargeStationFarX, chargeStationTopY, chargeStationFarX, chargeStationBottomY));
-    barriers.add(new Barrier(new Line2D.Double(chargeStationCloseX, chargeStationTopY, chargeStationCloseX, chargeStationBottomY)));
+    fieldLines.add(new FieldLine(new Line2D.Double(chargeStationCloseX, chargeStationTopY, chargeStationCloseX, chargeStationBottomY),true, new Scalar(20,20,20)));
 
   //  barriers.add(new Line2D.Double(-chargeStationFarX, chargeStationTopY, -chargeStationFarX, chargeStationBottomY));
-    barriers.add(new Barrier(new Line2D.Double(-chargeStationCloseX, chargeStationTopY, -chargeStationCloseX, chargeStationBottomY)));
+    fieldLines.add(new FieldLine(new Line2D.Double(-chargeStationCloseX, chargeStationTopY, -chargeStationCloseX, chargeStationBottomY),true, new Scalar(20,20,20)));
 
 
     //double substations
-    barriers.add(new Barrier(new Line2D.Double(leftWallPos+doubleSubstationDepth, topWallPos - nodesHeight, leftWallPos+doubleSubstationDepth, bottomWallPos)));
-    barriers.add(new Barrier(new Line2D.Double(rightWallPos-doubleSubstationDepth, topWallPos -nodesHeight, rightWallPos-doubleSubstationDepth, bottomWallPos)));
+    fieldLines.add(new FieldLine(new Line2D.Double(leftWallPos+doubleSubstationDepth, topWallPos - nodesHeight, leftWallPos+doubleSubstationDepth, bottomWallPos),true, blueBarrierColor));
+    fieldLines.add(new FieldLine(new Line2D.Double(rightWallPos-doubleSubstationDepth, topWallPos -nodesHeight, rightWallPos-doubleSubstationDepth, bottomWallPos),true, redBarrierColor));
 
 }
 
