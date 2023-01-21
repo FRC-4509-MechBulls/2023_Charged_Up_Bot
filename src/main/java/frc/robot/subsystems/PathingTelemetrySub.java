@@ -94,12 +94,12 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         //draw navigation lines
         for(int i = 1; i<navPoses.size(); i++)
             Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
-        SmartDashboard.putNumber("navPosesInPathingTelemetry",navPoses.size());
+       // SmartDashboard.putNumber("navPosesInPathingTelemetry",navPoses.size());
         String out = "";
         for(Pose2d pose : navPoses){
             out+= "(" + pose.getX() + ", " + pose.getY() + "), ";
         }
-        SmartDashboard.putString("navPoses", out);
+       // SmartDashboard.putString("navPoses", out);
         if(navPoses.size()>0){
             Pose2d lastPose = navPoses.get(navPoses.size()-1);
             Point lastPosePix = metersPosToPixelsPos(new Point(lastPose.getX(),lastPose.getY()));
@@ -192,19 +192,22 @@ public void updateSetPoints(ArrayList<Pose2d> setPoints){
 public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
     public  Point metersPosToPixelsPos(Point posInMeters){
-    posInMeters.x = -posInMeters.x;
+        double centerX = 640/2;
+        double centerY = 480/2;
+        double ang = Math.toRadians(180);
+
+        posInMeters.x = -posInMeters.x; //what?
         posInMeters.x += SmartDashboard.getNumber("TCamX",0);
         posInMeters.y += SmartDashboard.getNumber("TCamY",0);
 
         if(robotOrientedView) {
             posInMeters.x += robotPose.getX();
-            posInMeters.y += robotPose.getY();
+            posInMeters.y -= robotPose.getY();
+            ang-=Math.PI/2;
         }
 
 
-        double centerX = 640/2;
-        double centerY = 480/2;
-        double ang = Math.toRadians(180);
+
         double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
 
         ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
@@ -231,10 +234,10 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
     }
 
     public void init() {
-            SmartDashboard.putNumber("TCamAngle",0);
+       //     SmartDashboard.putNumber("TCamAngle",0);
             SmartDashboard.putNumber("TCamZoom",1.0);
-            SmartDashboard.putNumber("TCamX",0);
-            SmartDashboard.putNumber("TCamY",0);
+        //    SmartDashboard.putNumber("TCamX",0);
+        //    SmartDashboard.putNumber("TCamY",0);
 
     }
 
