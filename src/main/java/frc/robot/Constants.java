@@ -51,6 +51,8 @@ public final class Constants {
             public static final double kAFFDrive = 0.015; //0.0151 //0.015
             public static final double kFDrive = .045012; //0.04390375 //0.03751 //.045012
             public static final double kPDrive = 0.02; //0.08 //0.02
+
+        public static final double kNeutralDeadband = 0.01;
     }
 
     public static final class DriveConstants {
@@ -126,8 +128,16 @@ public final class Constants {
 
         public static final boolean kUseNavXOverPigeon = false;
 
+
         public static final double posTolerance = Units.inchesToMeters(0.5);
         public static final double rotationTolerance = 2;
+        public static final boolean kUseNavXOverPigeon = false;
+
+        
+        public static final double kGyroZError = 0.674; //.674
+        public static final double kGyroMountPosePitch = 0;
+        public static final double kGyroMountPoseYaw = 0;
+        public static final double kGyroMountPoseRoll = 0;
     }
 
     public static final class OIConstants {
@@ -140,6 +150,11 @@ public final class Constants {
         public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value;
 
         public static final double kDeadband = 0.06; //0.0275-0.03 //0.06
+    }
+
+    public static final class RobotConstants {
+        public static final double kMainLoopPeriod = 0.02;
+        public static final double kRobotNominalVoltage = 12.0;
     }
 
     public static final class PathingConstants{
