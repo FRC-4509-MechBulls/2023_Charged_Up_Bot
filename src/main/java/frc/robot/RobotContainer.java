@@ -84,8 +84,12 @@ public class RobotContainer {
     new JoystickButton(driverController, XboxController.Button.kStart.value).whenPressed(swerve_toggleFieldOriented);
     new JoystickButton(driverController, XboxController.Button.kA.value).whenPressed(swerve_resetPose);
 
-    new JoystickButton(driverController, XboxController.Button.kX.value).whenPressed(rc_generateNavPoses);
-    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whenHeld(rc_navToPose);
+    //new JoystickButton(driverController, XboxController.Button.kX.value).whenPressed(rc_generateNavPoses);
+
+    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whileTrue(rc_navToPose);
+    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(navigationField::engageNav));
+    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onFalse(new InstantCommand(navigationField::disengageNav));
+
 
     new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value).onTrue(nav_iterateSetPoint);
     new JoystickButton(operatorController, XboxController.Button.kRightBumper.value).onTrue(nav_decimateSetPoint);

@@ -26,7 +26,6 @@ public class NavigationField extends SubsystemBase {
 
 PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
-
  Thread pathingThread;
  FMSGetter fmsGetter;
 public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter){
@@ -250,10 +249,14 @@ private void createAndStartPathingThread(){
                         try {
                             while(!pathingThread.isInterrupted()){
                                 double startTime = Timer.getFPGATimestamp()*1000;
-                                updateNavPoses();
+                                if(Timer.getFPGATimestamp()-engageTime> 3)
+                                    disengageNav(); //disengage if engaged for >3s
+                                if(!engaged)
+                                    updateNavPoses();
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                 SmartDashboard.putNumber("pathingCompTime",compTime);
-                                Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
+                              //  Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
+                                Thread.sleep(Constants.PathingConstants.minPathingDelay);
                             }
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
                     });
@@ -261,6 +264,16 @@ private void createAndStartPathingThread(){
     pathingThread.setPriority(1); //low priority I hope?
     pathingThread.start();
 }
+private boolean engaged = false;
+    private double engageTime;
+
+    public void engageNav(){ //nudge th
+        engaged = true;
+        engageTime = Timer.getFPGATimestamp();
+    }
+    public void disengageNav(){
+        engaged = false;
+    }
 
 private void resetNodes(){
         nodes.clear();
