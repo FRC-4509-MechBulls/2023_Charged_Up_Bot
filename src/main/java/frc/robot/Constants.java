@@ -156,7 +156,7 @@ public final class Constants {
         public static final double reachedInBetweenPointThreshold = Units.inchesToMeters(2);
 
       //  public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
-        public static final int minPathingDelay = 500; //min time to take in ms
+        public static final int minPathingDelay = 200; //min time to take in ms
 
 
     }

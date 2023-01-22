@@ -74,12 +74,14 @@ public class RobotContainer {
 //    SmartDashboard.putNumber("x2",0);
 //    SmartDashboard.putNumber("y2",0);
 
-    NavToPointCommand nav1 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(7.3,-2.7,Rotation2d.fromDegrees(0)),15);
-    NavToPointCommand nav2 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.37,1.81,Rotation2d.fromDegrees(180)),15);
-    NavToPointCommand nav3 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(7.3,-2.71,Rotation2d.fromDegrees(0)),15);
+    NavToPointCommand nav1 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.36,2.93,Rotation2d.fromDegrees(180)),15);
+    NavToPointCommand nav2 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-2.95,3.0,Rotation2d.fromDegrees(0)),15);
+    NavToPointCommand nav3 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.36, 2.38,Rotation2d.fromDegrees(180)),15);
+    NavToPointCommand nav4 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-2.95,2.0,Rotation2d.fromDegrees(0)),15);
+    NavToPointCommand nav5 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.37,1.82,Rotation2d.fromDegrees(180)),15);
+    NavToPointCommand nav6 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-4.51, 0.6,Rotation2d.fromDegrees(0)),15);
 
-
-    SequentialCommandGroup twoConeBalanceSequence = new SequentialCommandGroup(nav1,nav2,nav3);
+    Command twoConeBalanceSequence = nav1.andThen(nav2.andThen(nav3.andThen(nav4.andThen(nav5.andThen(nav6)))));
 
 
     autoChooser.setDefaultOption("twoConeBalanceSequence", twoConeBalanceSequence);

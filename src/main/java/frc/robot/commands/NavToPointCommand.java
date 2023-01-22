@@ -34,7 +34,7 @@ public class NavToPointCommand extends CommandBase {
 
     double startTime;
     public void initialize() {
-        start();
+        firstExecuteDone = false;
     }
 
     public void start(){
@@ -70,6 +70,6 @@ public class NavToPointCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-
+        navigationField.disengageNav();
     }
 }

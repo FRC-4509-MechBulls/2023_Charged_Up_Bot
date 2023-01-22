@@ -277,8 +277,8 @@ private void createAndStartPathingThread(){
                         try {
                             while(!pathingThread.isInterrupted()){
                                 double startTime = Timer.getFPGATimestamp()*1000;
-                                if(Timer.getFPGATimestamp()-engageTime> 10)
-                                    disengageNav(); //disengage if engaged for >10s
+                            //    if(Timer.getFPGATimestamp()-engageTime> 10)
+                            //        disengageNav(); //disengage if engaged for >10s
                                 updateNavPoses();
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                 SmartDashboard.putNumber("pathingCompTime",compTime);
