@@ -57,6 +57,7 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         }
         lastAllianceCheck = Timer.getFPGATimestamp();
     }
+    SmartDashboard.putBoolean("poseChanged",poseChanged);
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
@@ -155,24 +156,30 @@ private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
         this.desiredPose = desiredPose;
+        poseChanged = true;
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         //updateNavPoses();
     }
 
     public void updateNavPoses(){
+        boolean poseChangedOld = poseChanged;
+        poseChanged = false;
         if(desiredPose == null)
             return;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
         if(outNavPoses.length<1)
             return;
-        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && engaged)
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && (!poseChangedOld))
             return;
+
+
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         pTelemetrySub.updateNavPoses(navPoses);
     }
+    boolean poseChanged = false;
     private double getPathLengthFromBot(Pose2d[] path){
         if(path.length==0)
             return Integer.MAX_VALUE;

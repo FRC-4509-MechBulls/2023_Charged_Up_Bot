@@ -363,11 +363,11 @@ public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double lat
 newX-=camXOffset;
 newY-=camYOffset;
 
-    SmartDashboard.putNumber("new_x", newX);
-    SmartDashboard.putNumber("new_y", newY);
+  //  SmartDashboard.putNumber("new_x", newX);
+   // SmartDashboard.putNumber("new_y", newY);
 
     //2. Pass vision measurement to odometry
-    SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
+  //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
     odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
   //  zeroHeading(newRotation.getDegrees());
 
@@ -387,9 +387,11 @@ newY-=camYOffset;
     out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;  //sin and cos used to have +rotationDiff for some reason
     out[2] = rotationDiff * 0.7;
 
-    if(Math.abs(rotationDiff)<Math.toRadians(2)) out[2] = 0;
-    if(Math.abs(out[0])<0.005) out[0] = 0;
-    if(Math.abs(out[1])<0.005) out[1] = 0;
+    if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;
+    if(dist<DriveConstants.posTolerance){
+      out[0] = 0;
+      out[1] = 0;
+    }
 
     return out;
   }

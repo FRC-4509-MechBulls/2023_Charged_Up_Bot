@@ -6,15 +6,19 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.NavToPointCommand;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.TestAutoCommand;
 import frc.robot.lib.FMSGetter;
 import frc.robot.lib.NavigationField;
 import frc.robot.subsystems.GraphicalTelemetrySubsystem;
@@ -51,6 +55,8 @@ public class RobotContainer {
   private final Command nav_iterateSetPoint = new InstantCommand(navigationField::iterateSetPoint);
   private final Command nav_decimateSetPoint = new InstantCommand(navigationField::decimateSetPoint);
 
+  SendableChooser<Command> autoChooser = new SendableChooser<>();
+
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -63,11 +69,13 @@ public class RobotContainer {
     configureButtonBindings();
 
     //inputs
-    SmartDashboard.putNumber("x1",0);
-    SmartDashboard.putNumber("y1",0);
-    SmartDashboard.putNumber("x2",0);
-    SmartDashboard.putNumber("y2",0);
+//    SmartDashboard.putNumber("x1",0);
+//    SmartDashboard.putNumber("y1",0);
+//    SmartDashboard.putNumber("x2",0);
+//    SmartDashboard.putNumber("y2",0);
 
+    autoChooser.setDefaultOption("test auto", new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(0,0,new Rotation2d()),5.0));
+    SmartDashboard.putData("Auto Chooser",autoChooser);
 
   }
 
@@ -103,6 +111,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return autoChooser.getSelected();
   }
 }
