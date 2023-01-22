@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.NavToPointCommand;
@@ -73,8 +74,17 @@ public class RobotContainer {
 //    SmartDashboard.putNumber("x2",0);
 //    SmartDashboard.putNumber("y2",0);
 
-    autoChooser.setDefaultOption("test auto", new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(0,0,new Rotation2d()),5.0));
+    NavToPointCommand nav1 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(7.3,-2.7,Rotation2d.fromDegrees(0)),15);
+    NavToPointCommand nav2 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.37,1.81,Rotation2d.fromDegrees(180)),15);
+    NavToPointCommand nav3 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(7.3,-2.71,Rotation2d.fromDegrees(0)),15);
+
+
+    SequentialCommandGroup twoConeBalanceSequence = new SequentialCommandGroup(nav1,nav2,nav3);
+
+
+    autoChooser.setDefaultOption("twoConeBalanceSequence", twoConeBalanceSequence);
     SmartDashboard.putData("Auto Chooser",autoChooser);
+
 
   }
 
