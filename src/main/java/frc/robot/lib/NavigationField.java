@@ -169,7 +169,7 @@ private Pose2d desiredPose;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
         if(outNavPoses.length<1)
             return;
-        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && (!poseChangedOld))
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && (engaged && !poseChangedOld))
             return;
 
 
@@ -346,12 +346,10 @@ int setPointIndex = 0;
     public void iterateSetPoint(){
         setPointIndex++;
         updateSetPoint();
-        disengageNav();
     }
     public void decimateSetPoint(){
         setPointIndex--;
         updateSetPoint();
-        disengageNav();
     }
     public void updateSetPoint(){
         if(setPointIndex>=setPoints.size())

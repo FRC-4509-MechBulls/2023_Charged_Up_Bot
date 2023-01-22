@@ -34,6 +34,10 @@ public class NavToPointCommand extends CommandBase {
 
     double startTime;
     public void initialize() {
+        start();
+    }
+
+    public void start(){
         this.startTime = Timer.getFPGATimestamp();
         navigationField.setNavPoint(desiredPose);
         navigationField.engageNav();
@@ -43,8 +47,14 @@ public class NavToPointCommand extends CommandBase {
      * The main body of a command.  Called repeatedly while the command is scheduled.
      * (That is, it is called repeatedly until {@link #isFinished()}) returns true.)
      */
+    boolean firstExecuteDone = false;
+
     @Override
     public void execute() {
+        if(!firstExecuteDone){
+            start();
+            firstExecuteDone = true;
+        }
         swerveSubsystem.driveToPose(navigationField.getNextNavPoint());
     }
 
