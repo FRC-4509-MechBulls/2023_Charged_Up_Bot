@@ -63,11 +63,17 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         }
 
 
+
         /**Draw robot */
         drawRotatedRect(mat, robotPose.getX(), robotPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,robotPose.getRotation(), new Scalar(0,0,255), 2);
 
+        double botFromNavEndDist = Math.sqrt(Math.pow(robotPose.getX() - destinationPose.getX(),2)+Math.pow(robotPose.getY() - destinationPose.getY(),2));
+        Scalar navEndPoseColor = new Scalar(0,0,130);
+        if(botFromNavEndDist<=Constants.DriveConstants.posTolerance)
+            navEndPoseColor = new Scalar(0,180,0);
         /** Draw nav end pose*/
-        drawRotatedRect(mat, destinationPose.getX(), destinationPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,destinationPose.getRotation(), new Scalar(0,0,130), 2);
+        drawRotatedRect(mat, destinationPose.getX(), destinationPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,destinationPose.getRotation(), navEndPoseColor, 2);
+
 
         /** Draw setpoints */
         for(Pose2d setPoint : setPoints){
