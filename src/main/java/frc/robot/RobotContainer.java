@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.NavToPointCommand;
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.TestAutoCommand;
 import frc.robot.lib.FMSGetter;
 import frc.robot.lib.NavigationField;
 import frc.robot.subsystems.GraphicalTelemetrySubsystem;
