@@ -21,7 +21,7 @@ public final class Constants {
 
 
     public static final class SimulationConstants{
-        public static final boolean simulationEnabled = true;
+        public static final boolean simulationEnabled = false;
         public static final double speedMultiplier = 0.6;
         public  static final double turningSpeedMultiplier = 50;
 
@@ -100,7 +100,7 @@ public final class Constants {
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -2.29+Math.PI;
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -6.06+Math.PI;
         public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -2.25;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -1.83 +Math.PI;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.75;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;

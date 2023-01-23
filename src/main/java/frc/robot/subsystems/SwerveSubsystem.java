@@ -324,6 +324,10 @@ SwerveModulePosition[] simModulePositions;
     //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
     //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
     //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
+    SmartDashboard.putNumber("FRAbs",frontRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("FLAbs",frontLeft.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("RRAbs",backRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("RLAbs",backLeft.getAbsoluteEncoderRad());
   }
 
   // Periodic
@@ -401,9 +405,9 @@ newY-=camYOffset;
 
     double ang = Math.atan2(speeds[1],speeds[0]);
     double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
-    if(mag>0.6){
-      speeds[0] = Math.cos(ang)*0.6;
-      speeds[1] = Math.sin(ang)*0.6;
+    if(mag>0.1){
+      speeds[0] = Math.cos(ang)*0.1;
+      speeds[1] = Math.sin(ang)*0.1;
     }
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
