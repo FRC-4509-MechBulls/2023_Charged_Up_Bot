@@ -8,7 +8,6 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -19,7 +18,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -386,7 +384,7 @@ newY-=camYOffset;
     //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
    // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
-    double rotationDiff = MathThings.angleDiffDeg(pose.getRotation().getDegrees(),odometry.getEstimatedPosition().getRotation().getDegrees());
+    double rotationDiff = MathThings.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
     double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;
     double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY()) * 1.5;
     double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
@@ -419,7 +417,7 @@ newY-=camYOffset;
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
     //speeds[1] = MathThings.absMax(speeds[1],0.2);
-    speeds[2] = MathThings.absMax(speeds[2],0.2);
+    speeds[2] = MathThings.maxValueCutoff(speeds[2],0.2);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
   }
