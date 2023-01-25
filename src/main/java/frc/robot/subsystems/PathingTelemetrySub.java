@@ -23,6 +23,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
 
     protected void drawThings(Mat mat){
+        dontTouchMe = true;
        /* List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
         pointList2.add(new MatOfPoint(
                 new Point(50,50),
@@ -63,11 +64,17 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         }
 
 
+
         /**Draw robot */
         drawRotatedRect(mat, robotPose.getX(), robotPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,robotPose.getRotation(), new Scalar(0,0,255), 2);
 
+        double botFromNavEndDist = Math.sqrt(Math.pow(robotPose.getX() - destinationPose.getX(),2)+Math.pow(robotPose.getY() - destinationPose.getY(),2));
+        Scalar navEndPoseColor = new Scalar(0,0,130);
+        if(botFromNavEndDist<=Constants.DriveConstants.posTolerance)
+            navEndPoseColor = new Scalar(0,180,0);
         /** Draw nav end pose*/
-        drawRotatedRect(mat, destinationPose.getX(), destinationPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,destinationPose.getRotation(), new Scalar(0,0,130), 2);
+        drawRotatedRect(mat, destinationPose.getX(), destinationPose.getY(), Constants.PathingConstants.kRobotLength,Constants.PathingConstants.kRobotWidth,destinationPose.getRotation(), navEndPoseColor, 2);
+
 
         /** Draw setpoints */
         for(Pose2d setPoint : setPoints){
@@ -94,12 +101,12 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         //draw navigation lines
         for(int i = 1; i<navPoses.size(); i++)
             Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
-        SmartDashboard.putNumber("navPosesInPathingTelemetry",navPoses.size());
+       // SmartDashboard.putNumber("navPosesInPathingTelemetry",navPoses.size());
         String out = "";
         for(Pose2d pose : navPoses){
             out+= "(" + pose.getX() + ", " + pose.getY() + "), ";
         }
-        SmartDashboard.putString("navPoses", out);
+       // SmartDashboard.putString("navPoses", out);
         if(navPoses.size()>0){
             Pose2d lastPose = navPoses.get(navPoses.size()-1);
             Point lastPosePix = metersPosToPixelsPos(new Point(lastPose.getX(),lastPose.getY()));
@@ -131,7 +138,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         Imgproc.putText(mat,(Math.floor(robotPose.getRotation().getDegrees()*10)/10.0) + "*",new Point(0,40),5,1,new Scalar(255,255,255));
 
         //   SmartDashboard.putNumber("point?",barriers.size());
-
+        dontTouchMe = false;
     }
 
     public void drawRotatedRect(Mat mat, double centerX, double centerY, double l, double w, Rotation2d angle, Scalar color, int thickness){
@@ -158,6 +165,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
     private ArrayList<FieldLine> fieldLines = new ArrayList<>();
     private ArrayList<Node> nodes = new ArrayList<Node>();
     public void updateBarriers(ArrayList<FieldLine> fieldLines){
+        if(dontTouchMe) return;
         this.fieldLines.clear();
         for(FieldLine line : fieldLines)
             this.fieldLines.add(line);
@@ -171,40 +179,52 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
     boolean robotOrientedView = false;
 
     public void updateRobotPose(Pose2d newPose){
+        if(dontTouchMe) return;
         robotPose = newPose;
     }
     public void updateDestinationPose(Pose2d newPose){
+        if(dontTouchMe) return;
         destinationPose = newPose;
     }
 
 ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
-public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;}
+public void updateNavPoses(ArrayList<Pose2d> navPoses){
+    if(dontTouchMe) return;
+    this.navPoses.clear();
+    for(Pose2d pose : navPoses)
+        this.navPoses.add(pose);
+}
 
     private ArrayList<FieldTag> fieldTags;
 public void updateFieldTags(ArrayList<FieldTag> fieldTags){
+    if(dontTouchMe) return;
     this.fieldTags = fieldTags;
 }
 
 public void updateSetPoints(ArrayList<Pose2d> setPoints){
+    if(dontTouchMe) return;
     this.setPoints = setPoints;
 }
 
 public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
     public  Point metersPosToPixelsPos(Point posInMeters){
-    posInMeters.x = -posInMeters.x;
+        double centerX = 640/2;
+        double centerY = 480/2;
+        double ang = Math.toRadians(180);
+
+        posInMeters.x = -posInMeters.x; //what?
         posInMeters.x += SmartDashboard.getNumber("TCamX",0);
         posInMeters.y += SmartDashboard.getNumber("TCamY",0);
 
         if(robotOrientedView) {
             posInMeters.x += robotPose.getX();
-            posInMeters.y += robotPose.getY();
+            posInMeters.y -= robotPose.getY();
+            ang-=Math.PI/2;
         }
 
 
-        double centerX = 640/2;
-        double centerY = 480/2;
-        double ang = Math.toRadians(180);
+
         double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
 
         ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
@@ -231,10 +251,10 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
     }
 
     public void init() {
-            SmartDashboard.putNumber("TCamAngle",0);
+       //     SmartDashboard.putNumber("TCamAngle",0);
             SmartDashboard.putNumber("TCamZoom",1.0);
-            SmartDashboard.putNumber("TCamX",0);
-            SmartDashboard.putNumber("TCamY",0);
+        //    SmartDashboard.putNumber("TCamX",0);
+        //    SmartDashboard.putNumber("TCamY",0);
 
     }
 

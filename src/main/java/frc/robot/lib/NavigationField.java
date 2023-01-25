@@ -26,7 +26,6 @@ public class NavigationField extends SubsystemBase {
 
 PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
-
  Thread pathingThread;
  FMSGetter fmsGetter;
 public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter){
@@ -58,6 +57,7 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         }
         lastAllianceCheck = Timer.getFPGATimestamp();
     }
+    SmartDashboard.putBoolean("poseChanged",poseChanged);
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
@@ -156,27 +156,54 @@ private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
         this.desiredPose = desiredPose;
+        poseChanged = true;
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         //updateNavPoses();
     }
 
     public void updateNavPoses(){
+        boolean poseChangedOld = poseChanged;
+        poseChanged = false;
         if(desiredPose == null)
             return;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
         if(outNavPoses.length<1)
             return;
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && (engaged && !poseChangedOld))
+            return;
+
+
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         pTelemetrySub.updateNavPoses(navPoses);
     }
+    boolean poseChanged = false;
+    private double getPathLengthFromBot(Pose2d[] path){
+        if(path.length==0)
+            return Integer.MAX_VALUE;
+        double botX = swerveSubsystem.getEstimatedPosition().getX();
+        double botY = swerveSubsystem.getEstimatedPosition().getY();
+        double length = Math.sqrt(Math.pow(botX - path[0].getX(),2)+Math.pow(botY-path[0].getY(),2));
+        for(int i = 1; i<path.length; i++)
+            length+=Math.sqrt(Math.pow(path[i].getX() - path[i-1].getX(),2)+Math.pow(path[i].getY() - path[i-1].getY(),2));
+
+        return length;
+    }
+    private  double getPathLengthFromBot(ArrayList<Pose2d> path){
+        Pose2d[] newPath = new Pose2d[path.size()];
+        for(int i = 0; i<newPath.length; i++)
+            newPath[i] = path.get(i);
+        return getPathLengthFromBot(newPath);
+    }
+
+
 public Pose2d getNextNavPoint(){
     if(navPoses.size()<1) return swerveSubsystem.getEstimatedPosition();
     pTelemetrySub.updateNavPoses(navPoses);
     Pose2d botPose = swerveSubsystem.getEstimatedPosition();
-    while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedGoalThreshold)
+    while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedInBetweenPointThreshold)
         navPoses.remove(0);
     if(navPoses.size()>0)
         return navPoses.get(0);
@@ -250,10 +277,13 @@ private void createAndStartPathingThread(){
                         try {
                             while(!pathingThread.isInterrupted()){
                                 double startTime = Timer.getFPGATimestamp()*1000;
+                            //    if(Timer.getFPGATimestamp()-engageTime> 10)
+                            //        disengageNav(); //disengage if engaged for >10s
                                 updateNavPoses();
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                 SmartDashboard.putNumber("pathingCompTime",compTime);
-                                Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
+                              //  Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
+                                Thread.sleep(Constants.PathingConstants.minPathingDelay);
                             }
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
                     });
@@ -261,6 +291,16 @@ private void createAndStartPathingThread(){
     pathingThread.setPriority(1); //low priority I hope?
     pathingThread.start();
 }
+private boolean engaged = false;
+    private double engageTime;
+
+    public void engageNav(){ //nudge th
+        engaged = true;
+        engageTime = Timer.getFPGATimestamp();
+    }
+    public void disengageNav(){
+        engaged = false;
+    }
 
 private void resetNodes(){
         nodes.clear();

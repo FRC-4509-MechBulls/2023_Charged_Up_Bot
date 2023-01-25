@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -22,7 +21,7 @@ public final class Constants {
 
 
     public static final class SimulationConstants{
-        public static final boolean simulationEnabled = true;
+        public static final boolean simulationEnabled = false;
         public static final double speedMultiplier = 0.6;
         public  static final double turningSpeedMultiplier = 50;
 
@@ -101,7 +100,7 @@ public final class Constants {
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -2.29+Math.PI;
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -6.06+Math.PI;
         public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -2.25;
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -1.83 +Math.PI;
+        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -0.75;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
@@ -126,6 +125,9 @@ public final class Constants {
         public static final double kPFudge = 0.02; //0.2 seems pretty close
 
         public static final boolean kUseNavXOverPigeon = true;
+
+        public static final double posTolerance = Units.inchesToMeters(0.5);
+        public static final double rotationTolerance = Units.degreesToRadians(1);
     }
 
     public static final class OIConstants {
@@ -151,10 +153,10 @@ public final class Constants {
         public static final int maxRecursionDepth = 2;
         public static final int innerLineTestCount = 12;
 
-        public static final double reachedGoalThreshold = 0.05;
+        public static final double reachedInBetweenPointThreshold = Units.inchesToMeters(2);
 
-        public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
-        public static final int minPathingDelay = 1000; //min time to take in ms
+      //  public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
+        public static final int minPathingDelay = 200; //min time to take in ms
 
 
     }
