@@ -23,6 +23,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
 
     protected void drawThings(Mat mat){
+        dontTouchMe = true;
        /* List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
         pointList2.add(new MatOfPoint(
                 new Point(50,50),
@@ -137,7 +138,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         Imgproc.putText(mat,(Math.floor(robotPose.getRotation().getDegrees()*10)/10.0) + "*",new Point(0,40),5,1,new Scalar(255,255,255));
 
         //   SmartDashboard.putNumber("point?",barriers.size());
-
+        dontTouchMe = false;
     }
 
     public void drawRotatedRect(Mat mat, double centerX, double centerY, double l, double w, Rotation2d angle, Scalar color, int thickness){
@@ -164,6 +165,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
     private ArrayList<FieldLine> fieldLines = new ArrayList<>();
     private ArrayList<Node> nodes = new ArrayList<Node>();
     public void updateBarriers(ArrayList<FieldLine> fieldLines){
+        if(dontTouchMe) return;
         this.fieldLines.clear();
         for(FieldLine line : fieldLines)
             this.fieldLines.add(line);
@@ -177,21 +179,30 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
     boolean robotOrientedView = false;
 
     public void updateRobotPose(Pose2d newPose){
+        if(dontTouchMe) return;
         robotPose = newPose;
     }
     public void updateDestinationPose(Pose2d newPose){
+        if(dontTouchMe) return;
         destinationPose = newPose;
     }
 
 ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
-public void updateNavPoses(ArrayList<Pose2d> navPoses){this.navPoses = navPoses;}
+public void updateNavPoses(ArrayList<Pose2d> navPoses){
+    if(dontTouchMe) return;
+    this.navPoses.clear();
+    for(Pose2d pose : navPoses)
+        this.navPoses.add(pose);
+}
 
     private ArrayList<FieldTag> fieldTags;
 public void updateFieldTags(ArrayList<FieldTag> fieldTags){
+    if(dontTouchMe) return;
     this.fieldTags = fieldTags;
 }
 
 public void updateSetPoints(ArrayList<Pose2d> setPoints){
+    if(dontTouchMe) return;
     this.setPoints = setPoints;
 }
 
