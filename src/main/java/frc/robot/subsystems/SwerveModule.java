@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -17,16 +18,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Robot;
 
 import java.lang.management.ThreadInfo;
 
@@ -44,6 +42,7 @@ public class SwerveModule extends SubsystemBase {
 	private double delta = 0;
 	private double deltaConverted = 0;
 	private double setAngle = 0;
+  private double timestamp = Timer.getFPGATimestamp();
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
@@ -56,25 +55,35 @@ public class SwerveModule extends SubsystemBase {
     
     //motors
       //drive
-      driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.configFactoryDefault();
-      driveMotor.setNeutralMode(NeutralMode.Coast);
-      driveMotor.setInverted(driveMotorReversed);
-      driveMotor.config_kF(0, ModuleConstants.kFDrive);
-      driveMotor.config_kP(0, ModuleConstants.kPDrive);
-			driveMotor.configVoltageCompSaturation(12);
-      driveMotor.configNeutralDeadband(0.01);
+    driveMotor = new WPI_TalonFX(driveMotorId);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
+    driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 1000);
+    driveMotor.setNeutralMode(NeutralMode.Coast);
+    driveMotor.setInverted(driveMotorReversed);
       //debug output: driveMotor.config_kF(0, 0);
       //debug output: driveMotor.config_kP(0, 0);
       //turn
-      turningMotor = new WPI_TalonFX(turningMotorId);
-      turningMotor.configFactoryDefault();
-      turningMotor.setNeutralMode(NeutralMode.Coast);
-      turningMotor.setInverted(turningMotorReversed);
-      turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
-      turningMotor.config_kP(0, ModuleConstants.kPTurning);
-			turningMotor.configVoltageCompSaturation(12);
-      //both
+    turningMotor = new WPI_TalonFX(turningMotorId);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
+    turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 1000);
+    turningMotor.setInverted(turningMotorReversed);
+    while (Timer.getFPGATimestamp() < timestamp + 2) {}
+    turningMotor.setNeutralMode(NeutralMode.Coast);
+    //both
       enableVoltageCompensation(true);
       //initialize encoders in thread so they don't timeout
       new Thread(() -> {

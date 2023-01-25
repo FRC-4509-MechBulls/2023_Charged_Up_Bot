@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Robot;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.MathThings;
 
@@ -81,21 +82,16 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem() {
     initialPose = new Pose2d();
     constructOdometry();
-        //put in thread so it doesn't stop the rest of our code from running
-        new Thread(() -> {
-                try {
-                        Thread.sleep(1000);
-                        gyro.configFactoryDefault();
-                        gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
 
-                        navx.calibrate();
-                        zeroHeading();
-                        Thread.sleep(1000);
-                        constructOdometry(); //constructs odometry with newly correct gyro values
-                } catch (Exception e) {
-                }
-        
-        }).start();
+    gyro.configFactoryDefault();
+    gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
+    gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);
+
+    navx.calibrate();
+    zeroHeading();
+    constructOdometry(); //constructs odometry with newly correct gyro values
+
+
         //allows gyro to calibrate for 1 sec before requesting to reset^^
   }
 
