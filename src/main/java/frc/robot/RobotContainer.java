@@ -5,14 +5,21 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.NavToPointCommand;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.lib.FMSGetter;
 import frc.robot.lib.NavigationField;
 import frc.robot.subsystems.GraphicalTelemetrySubsystem;
 import frc.robot.subsystems.PathingTelemetrySub;
@@ -28,19 +35,27 @@ import java.nio.file.Path;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private final FMSGetter fmsGetter = new FMSGetter();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem);
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub();
-
-  private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem);
+  private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter);
+  private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
 
 
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private final XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
   private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
   private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
   private final Command rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
   private final Command rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
+  private final Command rc_generateNavPoses = new InstantCommand(()->navigationField.setNavPoint(new Pose2d(2.5,0,new Rotation2d())));
+  private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint()),swerveSubsystem);
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
+
+  private final Command nav_iterateSetPoint = new InstantCommand(navigationField::iterateSetPoint);
+  private final Command nav_decimateSetPoint = new InstantCommand(navigationField::decimateSetPoint);
+
+  SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -52,6 +67,27 @@ public class RobotContainer {
     pathingTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
+
+    //inputs
+//    SmartDashboard.putNumber("x1",0);
+//    SmartDashboard.putNumber("y1",0);
+//    SmartDashboard.putNumber("x2",0);
+//    SmartDashboard.putNumber("y2",0);
+
+    NavToPointCommand nav1 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.36,2.93,Rotation2d.fromDegrees(180)),15);
+    NavToPointCommand nav2 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-2.95,3.0,Rotation2d.fromDegrees(0)),15);
+    NavToPointCommand nav3 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.36, 2.38,Rotation2d.fromDegrees(180)),15);
+    NavToPointCommand nav4 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-2.95,2.0,Rotation2d.fromDegrees(0)),15);
+    NavToPointCommand nav5 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.37,1.82,Rotation2d.fromDegrees(180)),15);
+    NavToPointCommand nav6 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-4.51, 0.6,Rotation2d.fromDegrees(0)),15);
+
+    Command twoConeBalanceSequence = nav1.andThen(nav2.andThen(nav3.andThen(nav4.andThen(nav5.andThen(nav6)))));
+
+
+    autoChooser.setDefaultOption("twoConeBalanceSequence", twoConeBalanceSequence);
+    SmartDashboard.putData("Auto Chooser",autoChooser);
+
+
   }
 
   /**
@@ -67,6 +103,16 @@ public class RobotContainer {
     new JoystickButton(driverController, XboxController.Button.kStart.value).whenPressed(swerve_toggleFieldOriented);
     new JoystickButton(driverController, XboxController.Button.kA.value).whenPressed(swerve_resetPose);
 
+    //new JoystickButton(driverController, XboxController.Button.kX.value).whenPressed(rc_generateNavPoses);
+
+    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whileTrue(rc_navToPose);
+    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(navigationField::engageNav));
+    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onFalse(new InstantCommand(navigationField::disengageNav));
+
+
+    new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value).onTrue(nav_iterateSetPoint);
+    new JoystickButton(operatorController, XboxController.Button.kRightBumper.value).onTrue(nav_decimateSetPoint);
+
   }
 
   /**
@@ -76,6 +122,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return autoChooser.getSelected();
   }
 }

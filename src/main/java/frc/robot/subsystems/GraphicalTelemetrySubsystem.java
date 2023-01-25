@@ -49,7 +49,8 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
                           ));
                           Imgproc.fillPoly(mat,pointList1,new Scalar(0,0,0));
 
-                          this.drawThings(mat);
+
+                            this.drawThings(mat);
 
                         // Give the output stream a new image to display
                         outputStream.putFrame(mat);
@@ -61,6 +62,8 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
     m_visionThread.start();
   }
 
+  protected boolean dontTouchMe = false;
+
   protected void drawThings(Mat mat){
       List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
       pointList2.add(new MatOfPoint(
@@ -71,6 +74,8 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
       ));
       Imgproc.polylines (mat, pointList2, true, new Scalar(255, 255, 255), 1);
   }
+
+
 
   @Override
   public void periodic() {

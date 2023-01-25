@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
-import edu.wpi.first.math.VecBuilder;
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -16,8 +16,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -58,6 +59,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
     private WPI_Pigeon2 gyro = new WPI_Pigeon2(9);
+  public final AHRS navx = new AHRS(SPI.Port.kMXP);
 
   //Odometry
     private SwerveDrivePoseEstimator odometry;
@@ -85,9 +87,11 @@ public class SwerveSubsystem extends SubsystemBase {
                         Thread.sleep(1000);
                         gyro.configFactoryDefault();
                         gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
+
+                        navx.calibrate();
                         zeroHeading();
                         Thread.sleep(1000);
-                        constructOdometry(); //custructs odometry with newly corrct gyro values
+                        constructOdometry(); //constructs odometry with newly correct gyro values
                 } catch (Exception e) {
                 }
         
@@ -136,13 +140,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
+    simHeading+=turningSpeed * (lastSimUpdateLength) * Constants.SimulationConstants.turningSpeedMultiplier;
     setModuleStates(moduleStates);
   }
   public void toggleFieldOriented(){fieldOriented = !fieldOriented;}
   public boolean getFieldOriented(){return fieldOriented;}
   public void setFieldOriented(boolean set){fieldOriented = set;}
   public void resetPose(){
-    odometry.resetPosition(new Pose2d(), new Rotation2d());
+    odometry.resetPosition(new Rotation2d(), getPositions(), new Pose2d());
   }
 
   public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
@@ -187,106 +192,162 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   //Configuration
-    public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
-          gyro.zeroGyroBiasNow();
-          gyro.setYaw(0);
-    }
-  public void zeroHeading(double yaw) {
+  public void zeroHeading() { //reset gyroscope to have it set the current direction as the forward direction of field when robot boots up
     gyro.zeroGyroBiasNow();
-    gyro.setYaw(yaw);
+    gyro.setYaw(0);
+
+    navx.zeroYaw();
   }
 
-    public void constructOdometry() { //constructs odometry object
-      odometry = new SwerveDrivePoseEstimator(getRotation2d(), 
-      initialPose, 
-      DriveConstants.kDriveKinematics, 
-      //VecBuilder.fill(0.5, 0.5, 5 * DriveConstants.kDegreesToRadians), 
-      //VecBuilder.fill(0.01 * DriveConstants.kDegreesToRadians), 
-      //VecBuilder.fill(0.5, 0.5, 30 * DriveConstants.kDegreesToRadians), 
-      VecBuilder.fill(Units.feetToMeters(.5), Units.feetToMeters(.5), 1 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(5 * DriveConstants.kDegreesToRadians),
-      VecBuilder.fill(0.6,0.6,0.01),
-      0.02);  
-    }
+  // constructs odometry object, called in the SwerveSubsystem constructor
+  public void constructOdometry() {
+    odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
+    getRotation2d(), 
+    getPositions(), 
+    initialPose);
+  }
   
-  //Getters
-    //A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
-    //(if x / y falls halfway between two integers, the even integer is returned)
-    public double getHeading() {
-          return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
-    }
+  // Getters
+  // A number equal to x - (y Q), where Q is the quotient of x / y rounded to the nearest integer
+  // (if x / y falls halfway between two integers, the even integer is returned)
+  public double getHeading() {
+    if(Constants.SimulationConstants.simulationEnabled)
+      return Math.IEEEremainder(simHeading, 360);
 
-    //module states
-    public SwerveModuleState[] getStates() {
-      return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
-    }
+    if(DriveConstants.kUseNavXOverPigeon)
+      return Math.IEEEremainder(navx.getYaw(), 360);
 
-    //chassis speeds
-    public ChassisSpeeds getChassisSpeeds() {
-      chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
-      return fieldOriented ? 
-      ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
-      chassisSpeeds;
-    }
+    return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
+  }
 
-    //get rotational velocity for closed loop
-    public double getAngularVelocity() {
-        return -gyro.getRate() * DriveConstants.kDegreesToRadians;
-    }
+  // module states
+  // groups each individual module state into an array to be used in other functions
+  public SwerveModuleState[] getStates() {
+    return new SwerveModuleState[] {frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()};
+  }
 
-    //since wpilib often wants heading in format of Rotation2d
-    public Rotation2d getRotation2d() {
-      return Rotation2d.fromDegrees(getHeading());
-    }
+  // module positions
+  // groups each individual module position into an array to be used in other functions
+  public SwerveModulePosition[] getPositions() {
+    return new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
+  }
+
+  // chassis speeds
+  public ChassisSpeeds getChassisSpeeds() {
+    chassisSpeeds = DriveConstants.kDriveKinematics.toChassisSpeeds(getStates());
+    return fieldOriented ? 
+    ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond, chassisSpeeds.omegaRadiansPerSecond, getRotation2d()) :
+    chassisSpeeds;
+  }
+
+  // get rotational velocity for closed loop
+  public double getAngularVelocity() {
+    if(DriveConstants.kUseNavXOverPigeon)
+      return navx.getRate() * DriveConstants.kDegreesToRadians;
+
+    return -gyro.getRate() * DriveConstants.kDegreesToRadians;
+  }
+
+  //since wpilib often wants heading in format of Rotation2d
+  public Rotation2d getRotation2d() {
+    if(Constants.SimulationConstants.simulationEnabled)
+      return Rotation2d.fromDegrees(simHeading);
+    return Rotation2d.fromDegrees(getHeading());
+  }
 
   //Setters 
-    public void fieldOriented(boolean isFieldOriented) {
-      fieldOriented = isFieldOriented;
+  public void fieldOriented(boolean isFieldOriented) {
+    fieldOriented = isFieldOriented;
+  }
+
+  public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+    // normalizes wheel speeds in case max speed reached^^
+    frontLeft.setDesiredState(desiredStates[0]);
+    frontRight.setDesiredState(desiredStates[1]);
+    backLeft.setDesiredState(desiredStates[2]);
+    backRight.setDesiredState(desiredStates[3]);
+    lastSetStates = desiredStates;
+  }
+  SwerveModuleState[] lastSetStates;
+  double simHeading = 0;
+
+  // stops robot movement
+  public void stopModules() {
+    frontLeft.stop();
+    frontRight.stop();
+    backLeft.stop();
+    backRight.stop();
+    lastSetStates = new SwerveModuleState[]{new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
+  }
+SwerveModulePosition[] simModulePositions;
+  double lastSimUpdateTime = Timer.getFPGATimestamp();
+  double lastSimUpdateLength = 0;
+  public void updateOdometry() {
+    //odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates()); //make rotation difference work!!!
+
+    if(!Constants.SimulationConstants.simulationEnabled)
+      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getPositions());
+
+    if(Constants.SimulationConstants.simulationEnabled) {
+
+      if (simModulePositions == null) {
+        simModulePositions = new SwerveModulePosition[4];
+        for (int i = 0; i < 4; i++) {
+          simModulePositions[i] = new SwerveModulePosition(0, new Rotation2d());
+        }
+      }
+
+      if (lastSetStates != null) {
+        for (int i = 0; i < 4; i++) {
+          simModulePositions[i].distanceMeters += lastSetStates[i].speedMetersPerSecond * (lastSimUpdateLength) * Constants.SimulationConstants.speedMultiplier;
+          simModulePositions[i].angle = lastSetStates[i].angle;
+        }
+      }
+
+      odometry.updateWithTime(Timer.getFPGATimestamp(), Rotation2d.fromDegrees(simHeading), simModulePositions);
+
+      lastSimUpdateLength = Timer.getFPGATimestamp() - lastSimUpdateTime;
+      lastSimUpdateTime = Timer.getFPGATimestamp();
+
     }
 
-    public void setModuleStates(SwerveModuleState[] desiredStates) {
-      SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-      //normalizes wheel speeds in case max speed reached^^
-      frontLeft.setDesiredState(desiredStates[0]);
-      frontRight.setDesiredState(desiredStates[1]);
-      backLeft.setDesiredState(desiredStates[2]);
-      backRight.setDesiredState(desiredStates[3]);
-    }
-
-    public void stopModules() {
-      frontLeft.stop();
-      frontRight.stop();
-      backLeft.stop();
-      backRight.stop();
-    }
-
-    public void updateOdometry() {
-      //odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates()); //make rotation difference work!!!
-      odometry.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(Math.toRadians(getHeading())), getStates());
-
-      //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
-      //debug output: SmartDashboard.putNumber("gyroH", getHeading());
-      //debug output: SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
-      //debug output: SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
-    }
+    //debug output: SmartDashboard.putNumber("OdoH", odometry.getEstimatedPosition().getRotation().getDegrees());
+    //debug output: SmartDashboard.putNumber("gyroH", getHeading());
+    //debug output: SmartDashboard.putNumber("OdoY", Units.metersToFeet(odometry.getEstimatedPosition().getY()));
+    //debug output: SmartDashboard.putNumber("OdoX", Units.metersToFeet(odometry.getEstimatedPosition().getX()));      
+  }
     
-    public void debugOutputs() {
-      //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
-      //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
-      //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
-    }
+  public void debugOutputs() {
+    //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
+    //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
+    //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
+    SmartDashboard.putNumber("FRAbs",frontRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("FLAbs",frontLeft.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("RRAbs",backRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("RLAbs",backLeft.getAbsoluteEncoderRad());
+  }
 
-  //Periodic
-    @Override
-    public void periodic() {
-      //update odometry
-        updateOdometry();
-      //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
-      //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
-      //SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
+  // Periodic
+  @Override
+  public void periodic() {
+    //constantly updates the gyro angle
+  //  var gyroAngle = gyro.getRotation2d();
+    //update odometry
+      
+    updateOdometry();
 
-      //dashboard outputs
-        debugOutputs();
+    double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+    SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
+    SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
+    SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
+
+    //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
+    //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
+    //SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
+
+    //dashboard outputs
+      debugOutputs();
     }
 
 public Pose2d getEstimatedPosition(){
@@ -295,20 +356,25 @@ public Pose2d getEstimatedPosition(){
 
     // Vision stuff
 
-  public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
-    if(ambiguity>Constants.VisionConstants.kMaxAmbiguity) return;
+public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
+  if(ambiguity>Constants.VisionConstants.kMaxAmbiguity) return;
 
   //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
     Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
-    double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getY() ) ;
-    double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians()) + fieldTag.getPose().getX() ) ;
+    double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getY();
+    double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getX();
     Pose2d newPose = new Pose2d(newX,newY, newRotation);
 
-    SmartDashboard.putNumber("new_x", newX);
-    SmartDashboard.putNumber("new_y", newY);
+  double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
+  double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
+newX-=camXOffset;
+newY-=camYOffset;
+
+  //  SmartDashboard.putNumber("new_x", newX);
+   // SmartDashboard.putNumber("new_y", newY);
 
     //2. Pass vision measurement to odometry
-    SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
+  //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
     odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
   //  zeroHeading(newRotation.getDegrees());
 
@@ -317,20 +383,24 @@ public Pose2d getEstimatedPosition(){
   public double[] getDesiredSpeeds(Pose2d pose){
     //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
-    double rotationDiff = (pose.getRotation().getRadians() - odometry.getEstimatedPosition().getRotation().getRadians());
-    double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX());
-    double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY());
+   // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
+    double rotationDiff = MathThings.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
+    double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;
+    double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY()) * 1.5;
     double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
 
     double dirToPose = Math.atan2(yDiff,xDiff);
 
-    out[0] = dist * Math.cos(dirToPose +rotationDiff) * 0.5;
-    out[1] = dist * Math.sin(dirToPose+rotationDiff) * 0.5;
-    out[2] = rotationDiff * 0.7;
+    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;
+    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;  //sin and cos used to have +rotationDiff for some reason
+    SmartDashboard.putNumber("rotationDiff",rotationDiff);
+    out[2] =  rotationDiff * 1/500.0;
 
-    if(Math.abs(rotationDiff)<Math.toRadians(2)) out[2] = 0;
-    if(Math.abs(out[0])<0.005) out[0] = 0;
-    if(Math.abs(out[1])<0.005) out[1] = 0;
+    if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;
+    if(dist<DriveConstants.posTolerance){
+      out[0] = 0;
+      out[1] = 0;
+    }
 
     return out;
   }
@@ -338,9 +408,16 @@ public Pose2d getEstimatedPosition(){
   public void driveToPose(Pose2d pose){
     double[] speeds = getDesiredSpeeds(pose);
 
-    speeds[0] = MathThings.absMax(speeds[0],0.2);
-    speeds[1] = MathThings.absMax(speeds[1],0.2);
-    speeds[2] = MathThings.absMax(speeds[2],0.2);
+    double ang = Math.atan2(speeds[1],speeds[0]);
+    double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
+    if(mag>0.1){
+      speeds[0] = Math.cos(ang)*0.1;
+      speeds[1] = Math.sin(ang)*0.1;
+    }
+
+    //speeds[0] = MathThings.absMax(speeds[0],0.2);
+    //speeds[1] = MathThings.absMax(speeds[1],0.2);
+    speeds[2] = MathThings.maxValueCutoff(speeds[2],0.2);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
   }
