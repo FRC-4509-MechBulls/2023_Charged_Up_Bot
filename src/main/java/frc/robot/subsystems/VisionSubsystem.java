@@ -6,17 +6,14 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
-import frc.robot.RobotContainer;
 import frc.robot.lib.FieldTag;
 import frc.robot.lib.MathThings;
-import frc.robot.lib.NavigationField;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+
 import static frc.robot.Constants.FieldConstants.*;
 
 import java.util.ArrayList;
@@ -144,10 +141,10 @@ public class VisionSubsystem extends SubsystemBase {
         double rotationFromCamera = Math.IEEEremainder(lastTransform.getRotation().getZ() + Math.PI, 2*Math.PI);
         out[2] =  rotationFromCamera;//this might be the wrong axis, uncomment this for rotation tracking
 
-        out[0] = MathThings.absMax(out[0], 0.2);
-        out[1] = MathThings.absMax(out[1], 0.2);
+        out[0] = MathThings.maxValueCutoff(out[0], 0.2);
+        out[1] = MathThings.maxValueCutoff(out[1], 0.2);
         if(Math.abs(out[2])<0.1) out[2] = 0;
-        out[2] = MathThings.absMax(out[2], 0.05);
+        out[2] = MathThings.maxValueCutoff(out[2], 0.05);
 
 
         return out;

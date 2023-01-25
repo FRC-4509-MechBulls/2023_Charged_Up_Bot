@@ -127,7 +127,7 @@ public final class Constants {
         public static final boolean kUseNavXOverPigeon = true;
 
         public static final double posTolerance = Units.inchesToMeters(0.5);
-        public static final double rotationTolerance = Units.degreesToRadians(1);
+        public static final double rotationTolerance = 2;
     }
 
     public static final class OIConstants {

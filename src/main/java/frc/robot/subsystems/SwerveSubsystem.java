@@ -8,7 +8,6 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -19,7 +18,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -217,7 +215,7 @@ public class SwerveSubsystem extends SubsystemBase {
       return Math.IEEEremainder(simHeading, 360);
 
     if(DriveConstants.kUseNavXOverPigeon)
-      return Math.IEEEremainder(-navx.getYaw(), 360);
+      return Math.IEEEremainder(navx.getYaw(), 360);
 
     return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
@@ -339,6 +337,11 @@ SwerveModulePosition[] simModulePositions;
       
     updateOdometry();
 
+    double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+    SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
+    SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
+    SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
+
     //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
     //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
     //SmartDashboard.putNumber("o_r",odometry.getEstimatedPosition().getRotation().getDegrees());
@@ -380,7 +383,8 @@ newY-=camYOffset;
   public double[] getDesiredSpeeds(Pose2d pose){
     //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
-    double rotationDiff = (pose.getRotation().getRadians() - odometry.getEstimatedPosition().getRotation().getRadians());
+   // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
+    double rotationDiff = MathThings.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
     double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;
     double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY()) * 1.5;
     double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
@@ -389,7 +393,8 @@ newY-=camYOffset;
 
     out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;
     out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;  //sin and cos used to have +rotationDiff for some reason
-    out[2] = rotationDiff * 0.7;
+    SmartDashboard.putNumber("rotationDiff",rotationDiff);
+    out[2] =  rotationDiff * 1/500.0;
 
     if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;
     if(dist<DriveConstants.posTolerance){
@@ -412,7 +417,7 @@ newY-=camYOffset;
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
     //speeds[1] = MathThings.absMax(speeds[1],0.2);
-    speeds[2] = MathThings.absMax(speeds[2],0.2);
+    speeds[2] = MathThings.maxValueCutoff(speeds[2],0.2);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
   }
