@@ -131,7 +131,6 @@ public final class Constants {
 
         public static final double posTolerance = Units.inchesToMeters(0.5);
         public static final double rotationTolerance = 2;
-        public static final boolean kUseNavXOverPigeon = false;
 
         
         public static final double kGyroZError = 0.674; //.674
