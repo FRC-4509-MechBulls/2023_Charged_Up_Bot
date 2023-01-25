@@ -124,7 +124,7 @@ public final class Constants {
 
         public static final double kPFudge = 0.02; //0.2 seems pretty close
 
-        public static final boolean kUseNavXOverPigeon = true;
+        public static final boolean kUseNavXOverPigeon = false;
 
         public static final double posTolerance = Units.inchesToMeters(0.5);
         public static final double rotationTolerance = 2;
