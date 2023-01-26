@@ -21,6 +21,7 @@ import frc.robot.commands.NavToPointCommand;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.lib.FMSGetter;
 import frc.robot.lib.NavigationField;
+import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.GraphicalTelemetrySubsystem;
 import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -40,6 +41,7 @@ public class RobotContainer {
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub();
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
+  private final EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
 
 
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -55,12 +57,16 @@ public class RobotContainer {
   private final Command nav_iterateSetPoint = new InstantCommand(navigationField::iterateSetPoint);
   private final Command nav_decimateSetPoint = new InstantCommand(navigationField::decimateSetPoint);
 
+  private final Command ef_stop = new RunCommand(()-> endEffectorSubsystem.stopMotors(), endEffectorSubsystem);
+
   SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     swerveSubsystem.setDefaultCommand(rc_drive);
+    endEffectorSubsystem.setDefaultCommand(ef_stop);
+
     //pathingTelemSub.setDefaultCommand(new RunCommand(()->pathingTelemSub.periodic(),pathingTelemSub));
   //  (PathingTelemetrySub)pathingTelemSub.set
 
