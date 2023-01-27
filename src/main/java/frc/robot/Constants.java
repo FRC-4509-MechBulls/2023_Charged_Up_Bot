@@ -23,8 +23,20 @@ public final class Constants {
     public static final class SimulationConstants{
         public static final boolean simulationEnabled = false;
         public static final double speedMultiplier = 0.6;
-        public  static final double turningSpeedMultiplier = 50;
+        public static final double turningSpeedMultiplier = 50;
 
+    }
+
+    public static final class EndEffectorConstants {
+        public static final int kEFMotorTopID = 0; //not yet decided
+        public static final int kEFMotorBottomID = 1; //not yet decided
+
+        public static final double kIntakeConeOutput = 0.8; //not yet decided, might make separate speeds for motors
+        public static final double kIntakeCubeOutput = 0.8; //not yet decided, might make separate speeds for motors
+        public static final double kHoldConeOutput = 0.1; //not yet decided
+        public static final double kHoldCubeOutput = 0.1; //not yet decided
+        public static final double kPlaceConeOutput = -0.8; //not yet decided
+        public static final double kPlaceCubeOutput = -0.8; //not yet decided 
     }
 
 
