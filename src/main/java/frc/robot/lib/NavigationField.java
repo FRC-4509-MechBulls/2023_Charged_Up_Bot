@@ -12,6 +12,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import static frc.robot.Constants.FieldConstants.*;
@@ -22,6 +23,8 @@ public class NavigationField extends SubsystemBase {
  ArrayList<FieldLine> fieldLines = new ArrayList<FieldLine>();
  ArrayList<Node> nodes = new ArrayList<Node>();
  ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
+
+ ArrayList<Pose2d> cornerPoints = new ArrayList<Pose2d>();
 
 
 PathingTelemetrySub pTelemetrySub;
@@ -124,26 +127,29 @@ public  boolean barrierOnLine(Line2D.Double line){
     if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
         return new Pose2d[] {};
 
-        for (double dist = 0; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
-            for (double ang = 0; ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
-                double branchHeadX = myPose.getX() + dist*Math.cos(ang);
-                double branchHeadY = myPose.getY() + dist*Math.sin(ang);
-                Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
-                Line2D.Double lineToDesiredPose = new Line2D.Double(branchHeadX,branchHeadY,desiredPose.getX(),desiredPose.getY());
-                if(barrierOnLine(lineToTestPoint)) continue;
-             //   if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth+1){
-                    Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
-                    if(lowerLevelOut.length>0){
-                        Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
-                        myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
-                        for(int i = 1; i<myOut.length; i++)
-                            myOut[i] = lowerLevelOut[i-1];
-                        //the issue lies here
-                        return myOut;
-                    }
-             //   }
-
+    for (double dist = Constants.PathingConstants.lineDistIterator; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
+        for (double ang = -cornerPoints.size(); ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
+            double branchHeadX = myPose.getX() + dist*Math.cos(ang);
+            double branchHeadY = myPose.getY() + dist*Math.sin(ang);
+            if(ang<0){ //iterate through every corner point before doing anything else - notice how ang starts at -size
+                //for indexes, use [cornerPoints.size()-ang]
             }
+
+            Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
+
+            if(barrierOnLine(lineToTestPoint)) continue;
+
+            Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
+
+            if(lowerLevelOut.length>0){
+                Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
+                myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
+                for(int i = 1; i<myOut.length; i++)
+                    myOut[i] = lowerLevelOut[i-1];
+                return myOut;
+            }
+
+        }
 
 
 
