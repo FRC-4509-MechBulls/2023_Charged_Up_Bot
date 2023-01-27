@@ -123,6 +123,7 @@ public  boolean barrierOnLine(Line2D.Double line){
 
 
  public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
+    double random = Math.random(); // :)
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
         return new Pose2d[] {myPose,desiredPose};
     if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
@@ -138,6 +139,7 @@ public  boolean barrierOnLine(Line2D.Double line){
             if(angI<0){ //iterate through every corner point before doing anything else - notice how angI starts at -size
                 //for indexes, use [cornerPoints.size()-ang]
                 int cornerIndex = angI + cornerPoints.size();
+                if(Math.random()>0.5) cornerIndex = -angI - 1;
                 branchHeadX = cornerPoints.get(cornerIndex).getX();
                 branchHeadY = cornerPoints.get(cornerIndex).getY();
 
@@ -378,15 +380,17 @@ int setPointIndex = 0;
 
     public void placeCornerPoints(){
         cornerPoints.clear();
+
         cornerPoints.add(new Pose2d(-3,3, Rotation2d.fromDegrees(0)));
         cornerPoints.add(new Pose2d(-3,-0.8, Rotation2d.fromDegrees(0)));
         cornerPoints.add(new Pose2d(-6,3, Rotation2d.fromDegrees(0)));
         cornerPoints.add(new Pose2d(-6,-0.8, Rotation2d.fromDegrees(0)));
-
-        cornerPoints.add(new Pose2d(3,3, Rotation2d.fromDegrees(0)));
+        
         cornerPoints.add(new Pose2d(3,-0.8, Rotation2d.fromDegrees(0)));
         cornerPoints.add(new Pose2d(6,3, Rotation2d.fromDegrees(0)));
         cornerPoints.add(new Pose2d(6,-0.8, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(3,3, Rotation2d.fromDegrees(0)));
+
 
         pTelemetrySub.updateCornerPoints(cornerPoints);
     }
