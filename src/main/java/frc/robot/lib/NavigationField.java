@@ -55,6 +55,7 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         if(wasOnRedAlliance!= fmsGetter.isRedAlliance() || queueNodeReset)
         {
             resetNodes();
+            placeCornerPoints();
             wasOnRedAlliance = fmsGetter.isRedAlliance();
             queueNodeReset = false;
         }
@@ -128,12 +129,20 @@ public  boolean barrierOnLine(Line2D.Double line){
         return new Pose2d[] {};
 
     for (double dist = Constants.PathingConstants.lineDistIterator; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
-        for (double ang = -cornerPoints.size(); ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
+        for (int angI = -cornerPoints.size(); angI < Constants.PathingConstants.moveAngles; angI += 1) {
+
+            double ang = angI * (Math.PI * 2 / (Constants.PathingConstants.moveAngles));
             double branchHeadX = myPose.getX() + dist*Math.cos(ang);
             double branchHeadY = myPose.getY() + dist*Math.sin(ang);
-            if(ang<0){ //iterate through every corner point before doing anything else - notice how ang starts at -size
+
+            if(angI<0){ //iterate through every corner point before doing anything else - notice how angI starts at -size
                 //for indexes, use [cornerPoints.size()-ang]
+                int cornerIndex = angI + cornerPoints.size();
+                branchHeadX = cornerPoints.get(cornerIndex).getX();
+                branchHeadY = cornerPoints.get(cornerIndex).getY();
+
             }
+
 
             Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
 
@@ -365,6 +374,21 @@ int setPointIndex = 0;
 
         if(setPoints.size()>0)
             setNavPoint(setPoints.get(setPointIndex));
+    }
+
+    public void placeCornerPoints(){
+        cornerPoints.clear();
+        cornerPoints.add(new Pose2d(-3,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-3,-0.8, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,-0.8, Rotation2d.fromDegrees(0)));
+
+        cornerPoints.add(new Pose2d(3,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(3,-0.8, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,-0.8, Rotation2d.fromDegrees(0)));
+
+        pTelemetrySub.updateCornerPoints(cornerPoints);
     }
 
 

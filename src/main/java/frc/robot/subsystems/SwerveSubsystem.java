@@ -406,9 +406,9 @@ newY-=camYOffset;
 
     double ang = Math.atan2(speeds[1],speeds[0]);
     double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
-    if(mag>0.1){
-      speeds[0] = Math.cos(ang)*0.1;
-      speeds[1] = Math.sin(ang)*0.1;
+    if(mag>0.8){
+      speeds[0] = Math.cos(ang)*0.6;
+      speeds[1] = Math.sin(ang)*0.6;
     }
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
