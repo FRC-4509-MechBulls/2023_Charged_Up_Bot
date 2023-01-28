@@ -137,10 +137,9 @@ public  boolean barrierOnLine(Line2D.Double line){
             double branchHeadX = myPose.getX() + dist*Math.cos(ang);
             double branchHeadY = myPose.getY() + dist*Math.sin(ang);
 
-            if(angI<0){ //iterate through every corner point before doing anything else - notice how angI starts at -size
+            if(angI<0 && cornerPoints.size()>0 && randIndexes.length>0){ //iterate through every corner point before doing anything else - notice how angI starts at -size
                 //for indexes, use [cornerPoints.size()-ang]
                 int cornerIndex = angI + cornerPoints.size();
-
                 branchHeadX = cornerPoints.get(randIndexes[cornerIndex]).getX();
                 branchHeadY = cornerPoints.get(randIndexes[cornerIndex]).getY();
 
