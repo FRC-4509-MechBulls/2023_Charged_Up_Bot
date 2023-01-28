@@ -124,6 +124,7 @@ public  boolean barrierOnLine(Line2D.Double line){
 
  public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
     double random = Math.random(); // :)
+     int[] randIndexes = MathThings.randomIndexes(cornerPoints.size());
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
         return new Pose2d[] {myPose,desiredPose};
     if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
@@ -139,9 +140,9 @@ public  boolean barrierOnLine(Line2D.Double line){
             if(angI<0){ //iterate through every corner point before doing anything else - notice how angI starts at -size
                 //for indexes, use [cornerPoints.size()-ang]
                 int cornerIndex = angI + cornerPoints.size();
-                if(Math.random()>0.5) cornerIndex = -angI - 1;
-                branchHeadX = cornerPoints.get(cornerIndex).getX();
-                branchHeadY = cornerPoints.get(cornerIndex).getY();
+
+                branchHeadX = cornerPoints.get(randIndexes[cornerIndex]).getX();
+                branchHeadY = cornerPoints.get(randIndexes[cornerIndex]).getY();
 
             }
 
