@@ -179,6 +179,7 @@ private Pose2d desiredPose;
         //updateNavPoses();
     }
 
+    Pose2d lastUsedPose = new Pose2d();
     public void updateNavPoses(){
         boolean poseChangedOld = poseChanged;
         poseChanged = false;
@@ -187,10 +188,11 @@ private Pose2d desiredPose;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
         if(outNavPoses.length<1)
             return;
-        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && (engaged && !poseChangedOld))
+        boolean poseCloseToLast = MathThings.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged ||poseCloseToLast ) && !poseChangedOld))
             return;
 
-
+        lastUsedPose = swerveSubsystem.getEstimatedPosition();
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);

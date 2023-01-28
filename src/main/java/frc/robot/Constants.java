@@ -184,6 +184,8 @@ public final class Constants {
       //  public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
         public static final int minPathingDelay = 200; //min time to take in ms
 
+        public static final double recalcThreshold = Units.inchesToMeters(2); // max distance to travel before recalculating trajectory
+
 
     }
 
