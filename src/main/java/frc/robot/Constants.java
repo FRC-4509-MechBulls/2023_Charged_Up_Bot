@@ -43,6 +43,11 @@ public final class Constants {
         public static final double stageOne_kP = 0.5; //undecided
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
+
+        public static final double stageTwo_kP = 0.5; //undecided
+        public static final double stageTwo_kI = 0; //undecided
+        public static final double stageTwo_kD = 0; //undecided
+
         public static final int kStageOne_MotorLeftID = 0; //undecided
         public static final int kStageOne_MotorRightID = 0; //undecided
         public static final int kStageOne_MagEncoderID = 0; //undecided
@@ -54,6 +59,11 @@ public final class Constants {
         public static final double kStageOne_AbsEncoderInitialOffset = 0; //undecided
 
         public static final double kStageOne_LimitSwitchAngleRad = 0; //undecided
+
+
+        public static final int kStageTwo_MotorLeftChannel = 0; //undecided
+        public static final int kStageTwo_MotorRightChannel = 1; //undecided
+
     }
 
 

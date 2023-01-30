@@ -49,7 +49,7 @@ public class ArmStageOne extends SubsystemBase {
   }
 
   public double getAbsoluteEncoderRad() {
-    double angle = magEncoder.getAbsolutePosition(); //range 0-1
+    double angle = magEncoder.getPositionOffset(); //range 0-1
     angle *= Math.PI*2; //convert to radians
     angle += encoderOffset; //add the offset
     return angle * (ArmConstants.kStageOne_AbsEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
