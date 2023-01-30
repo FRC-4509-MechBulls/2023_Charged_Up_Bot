@@ -64,6 +64,12 @@ public final class Constants {
         public static final int kStageTwo_MotorLeftChannel = 0; //undecided
         public static final int kStageTwo_MotorRightChannel = 1; //undecided
 
+        public static final boolean kStageTwo_AbsEncoderReversed = false; //undecided
+
+        public static final double kStageTwo_AbsEncoderInitialOffset = 0; //undecided
+
+        public static final double kStageTwo_LimitSwitchAngleRad = 0; //undecided
+
     }
 
 

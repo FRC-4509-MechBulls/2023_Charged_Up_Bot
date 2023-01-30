@@ -23,11 +23,11 @@ public class ArmStageTwo extends SubsystemBase {
   private RelativeEncoder encoder;
   private SparkMaxPIDController pidController;
 
-  private double encoderOffset = ArmConstants.kStageOne_AbsEncoderInitialOffset;
-  private PIDController pid = new PIDController(ArmConstants.stageOne_kP,ArmConstants.stageOne_kI,ArmConstants.stageOne_kD);
+  private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
+  private PIDController pid = new PIDController(ArmConstants.stageTwo_kP,ArmConstants.stageTwo_kI,ArmConstants.stageTwo_kD);
   private double setpointRad = encoderOffset;
 
-  /** Creates a new ArmStageOne. */
+  /** Creates a new ArmStageTwo. */
   public ArmStageTwo() {
     armMotorPrimary = new CANSparkMax(ArmConstants.kStageTwo_MotorLeftChannel, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
     armMotorSecondary = new CANSparkMax(ArmConstants.kStageTwo_MotorRightChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -55,7 +55,7 @@ public class ArmStageTwo extends SubsystemBase {
     double angle = encoder.getPosition(); //range 0-1
     angle *= Math.PI*2; //convert to radians
     angle += encoderOffset; //add the offset
-    return angle * (ArmConstants.kStageOne_AbsEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
+    return angle * (ArmConstants.kStageTwo_AbsEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
 
   public double getSetpointRaw(){
@@ -68,7 +68,7 @@ public class ArmStageTwo extends SubsystemBase {
 
   public void limitSwitchPassed(){
     double encoderAng = encoder.getPosition() * Math.PI * 2;
-    encoderOffset =  ArmConstants.kStageOne_LimitSwitchAngleRad - encoderAng;
+    encoderOffset =  ArmConstants.kStageTwo_LimitSwitchAngleRad - encoderAng;
   }
 
   public void setArmPositionRad(double setpoint){
