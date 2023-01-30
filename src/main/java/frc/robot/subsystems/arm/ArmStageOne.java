@@ -18,7 +18,6 @@ import static frc.robot.Constants.ArmConstants;
 public class ArmStageOne extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
-  private DutyCycleEncoder magEncoder;
   private double encoderOffset = ArmConstants.kStageOne_AbsEncoderInitialOffset;
   private PIDController pid = new PIDController(ArmConstants.stageOne_kP,ArmConstants.stageOne_kI,ArmConstants.stageOne_kD);
   private double setpointRad = encoderOffset;
@@ -44,19 +43,19 @@ public class ArmStageOne extends SubsystemBase {
 
     //magEncoder = new DutyCycleEncoder(ArmConstants.kStageOne_MagEncoderID);
 
-    magEncoder.setDistancePerRotation(1);
+
 
   }
 
   public double getAbsoluteEncoderRad() {
-    double angle = magEncoder.getPositionOffset(); //range 0-1
+    double angle = armMotorPrimary.getSelectedSensorPosition(); //range 0-1
     angle *= Math.PI*2; //convert to radians
     angle += encoderOffset; //add the offset
     return angle * (ArmConstants.kStageOne_AbsEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
 
   public double getSetpointRaw(){
-    double angle = magEncoder.getAbsolutePosition();
+    double angle = armMotorPrimary.getSelectedSensorPosition();
     angle -= encoderOffset/Math.PI/2;
     angle += setpointRad/Math.PI/2;
     return angle;
@@ -64,7 +63,7 @@ public class ArmStageOne extends SubsystemBase {
 
 
   public void limitSwitchPassed(){
-    double encoderAng = magEncoder.getAbsolutePosition() * Math.PI * 2;
+    double encoderAng = armMotorPrimary.getSelectedSensorPosition() * Math.PI * 2;
     encoderOffset =  ArmConstants.kStageOne_LimitSwitchAngleRad - encoderAng;
   }
 
