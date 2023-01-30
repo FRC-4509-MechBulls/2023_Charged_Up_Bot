@@ -20,7 +20,7 @@ import static frc.robot.Constants.ArmConstants;
 public class ArmStageTwo extends SubsystemBase {
   private CANSparkMax armMotorPrimary;
   private CANSparkMax armMotorSecondary;
-  private RelativeEncoder encoder;
+
   private SparkMaxPIDController pidController;
 
   private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
@@ -52,14 +52,14 @@ public class ArmStageTwo extends SubsystemBase {
   }
 
   public double getAbsoluteEncoderRad() {
-    double angle = encoder.getPosition(); //range 0-1
+    double angle = armMotorPrimary.getEncoder().getPosition(); //range 0-1
     angle *= Math.PI*2; //convert to radians
     angle += encoderOffset; //add the offset
     return angle * (ArmConstants.kStageTwo_AbsEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
 
   public double getSetpointRaw(){
-    double angle = encoder.getPosition();
+    double angle = armMotorPrimary.getEncoder().getPosition();
     angle -= encoderOffset/Math.PI/2;
     angle += setpointRad/Math.PI/2;
     return angle;
@@ -67,7 +67,7 @@ public class ArmStageTwo extends SubsystemBase {
 
 
   public void limitSwitchPassed(){
-    double encoderAng = encoder.getPosition() * Math.PI * 2;
+    double encoderAng = armMotorPrimary.getEncoder().getPosition() * Math.PI * 2;
     encoderOffset =  ArmConstants.kStageTwo_LimitSwitchAngleRad - encoderAng;
   }
 
