@@ -21,7 +21,7 @@ public final class Constants {
 
 
     public static final class SimulationConstants{
-        public static final boolean simulationEnabled = false;
+        public static final boolean simulationEnabled = true;
         public static final double speedMultiplier = 0.6;
         public static final double turningSpeedMultiplier = 50;
 
@@ -149,6 +149,13 @@ public final class Constants {
         public static final double kGyroMountPosePitch = 0;
         public static final double kGyroMountPoseYaw = 0;
         public static final double kGyroMountPoseRoll = 0;
+
+        public static final double drivePValue = 0.5; //% speed for every meter away from target
+        public static final double turnPValue = 1/180.0; //% speed for every degree away from target
+
+        public static final double maxPowerOut = 0.3;
+        public static final double maxTurningPowerOut = 0.3;
+
     }
 
     public static final class OIConstants {
@@ -182,7 +189,10 @@ public final class Constants {
         public static final double reachedInBetweenPointThreshold = Units.inchesToMeters(2);
 
       //  public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
-        public static final int minPathingDelay = 200; //min time to take in ms
+        public static final int minPathingDelay = 50; //min time to take in ms
+
+        public static final double recalcThreshold = Units.inchesToMeters(2); // max distance to travel before recalculating trajectory
+
 
 
     }

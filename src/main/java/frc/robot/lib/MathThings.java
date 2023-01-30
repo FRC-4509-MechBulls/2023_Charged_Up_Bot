@@ -1,5 +1,7 @@
 package frc.robot.lib;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 public class MathThings {
     public static double maxValueCutoff(double input, double max){ //This probably exists somewhere else 😋
         max = Math.abs(max);
@@ -18,6 +20,25 @@ public class MathThings {
                return -ang1+ang2-360;
        }
        return ang2-ang1;
+    }
+
+    public static int[] randomIndexes(int size){
+        int[] out = new int[size];
+        for(int i = 0; i<out.length; i++)
+            out[i] = i;
+
+        for(int i = 0; i<out.length; i++){
+            int rand1 = (int)(Math.random()*out.length);
+            int rand2 = (int)(Math.random()*out.length);
+            int held = out[rand1];
+            out[rand1] = out[rand2];
+            out[rand2] = held;
+        }
+        return out;
+    }
+
+    public static double poseDist(Pose2d pose1, Pose2d pose2){
+        return Math.sqrt(Math.pow(pose1.getX() - pose2.getX(),2)+Math.pow(pose1.getY() - pose2.getY(),2));
     }
 
 }
