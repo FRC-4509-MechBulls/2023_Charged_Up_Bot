@@ -70,14 +70,13 @@ public class ArmStageOne extends SubsystemBase {
 
   public void setArmPositionRad(double setpoint){
     pid.setSetpoint(setpoint);
+    armMotorPrimary.set(TalonSRXControlMode.Position, getSetpointRaw());
   }
 
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    armMotorPrimary.set(TalonSRXControlMode.Position, getSetpointRaw());
-
     //armMotorPrimary.set(TalonSRXControlMode.PercentOutput,pid.calculate(getAbsoluteEncoderRad())); //replace this with internal PID
   }
 }
