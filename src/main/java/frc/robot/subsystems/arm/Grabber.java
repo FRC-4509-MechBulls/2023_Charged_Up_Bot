@@ -2,19 +2,24 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.arm;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.arm.ArmStageOne;
-import frc.robot.subsystems.arm.ArmStageTwo;
+import frc.robot.subsystems.EndEffectorSubsystem;
+
 import static frc.robot.Constants.ArmConstants;
 
 
 public class Grabber extends SubsystemBase {
 
-  ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:(
+  ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:( //can we name the variable "stageOne" cus I dont feel like typing arm for no reason
   ArmStageTwo armStageTwo;
   EndEffectorSubsystem endEffectorSubsystem;
+
+  double stageOneAFF;
+  double stageTwoAFF;
+  double stageTwoGravityAFF;
+  double stageOneGravityAFF;
   /** Creates a new Grabber. */
   public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem) {
     this.armStageOne = armStageOne;
@@ -59,8 +64,20 @@ public class Grabber extends SubsystemBase {
     setArmPosition(armMode);
   }
 
+  /* 
+  public void calculateArmData() {
+    stageTwoAFF = calculateAFF();
+  }
+  public double calculateAFF(double angle, double mass) {
+    return calculateGravityAFF(angle, mass) - calculateCounterBalanceAFF();
+  }
+  public double calculateGravityAFF(double angle, double mass) {
+    return Math.cos(angle) * mass;
+  }
+*/
   @Override
   public void periodic() {
+    //calculateArmData();
     // This method will be called once per scheduler run
   }
 }

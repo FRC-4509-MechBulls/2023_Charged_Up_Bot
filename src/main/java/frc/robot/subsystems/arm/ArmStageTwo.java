@@ -26,6 +26,7 @@ public class ArmStageTwo extends SubsystemBase {
 
   private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
   private double setpointRad = encoderOffset;
+  private double AFF;
 
   /** Creates a new ArmStageTwo. */
   public ArmStageTwo() {
@@ -52,7 +53,15 @@ public class ArmStageTwo extends SubsystemBase {
 
 
   }
+  public double getCGAngle() {
 
+  }
+  public double getMass() {
+    
+  }
+  public void setAFF(double AFF) {
+    this.AFF = AFF;
+  }
   public double getEncoderRad() {
     return armMotorPrimary.getEncoder().getPosition() * ArmConstants.kstageTwo_encoderTicksToRadians;
   }

@@ -45,20 +45,25 @@ public class ArmStageOne extends SubsystemBase {
 
 
   }
+  //Config
+  //Getters
+  public double getCGAngle() {
 
+  }
+  public double getMass() {
+    
+  }
   public double getEncoderRad() {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
   }
-
-
+  //Setters
   public void limitSwitchPassed(){
     armMotorPrimary.setSelectedSensorPosition(ArmConstants.kStageOne_LimitSwitchAngleRad);
   }
-
   public void setArmPositionRad(double setpoint){
     armMotorPrimary.set(TalonSRXControlMode.Position, setpoint);
   }
-
+  //Util
 
   @Override
   public void periodic() {
