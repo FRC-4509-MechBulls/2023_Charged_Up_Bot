@@ -51,7 +51,7 @@ public class ArmStageTwo extends SubsystemBase {
   }
 
   public double getEncoderRad() {
-    return armMotorPrimary.getEncoder().getPosition() * Math.PI * 2;
+    return armMotorPrimary.getEncoder().getPosition() * ArmConstants.kstageTwo_encoderTicksToRadians;
   }
 
 

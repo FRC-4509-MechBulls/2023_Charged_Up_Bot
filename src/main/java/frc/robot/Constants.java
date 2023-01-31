@@ -48,6 +48,10 @@ public final class Constants {
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 
+        public static final double kstageOne_encoderTicksToRadians =  Math.PI * 2 / 2048;
+        public static final double kstageTwo_encoderTicksToRadians = 1 * Math.PI * 2;
+
+
         public static final int kStageOne_MotorLeftID = 0; //undecided
         public static final int kStageOne_MotorRightID = 0; //undecided
         public static final int kStageOne_MagEncoderID = 0; //undecided

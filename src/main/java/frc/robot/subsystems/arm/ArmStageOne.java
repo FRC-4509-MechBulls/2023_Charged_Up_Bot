@@ -47,7 +47,7 @@ public class ArmStageOne extends SubsystemBase {
   }
 
   public double getEncoderRad() {
-    return armMotorPrimary.getSelectedSensorPosition() *Math.PI*2; //range 0-1
+    return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
   }
 
 
