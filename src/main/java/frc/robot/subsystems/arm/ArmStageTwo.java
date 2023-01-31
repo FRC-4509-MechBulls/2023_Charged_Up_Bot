@@ -57,6 +57,9 @@ public class ArmStageTwo extends SubsystemBase {
     return armMotorPrimary.getEncoder().getPosition() * ArmConstants.kstageTwo_encoderTicksToRadians;
   }
 
+  public void setFeedForward(double gain){
+    pidController.setFF(gain);
+  }
 
   public void limitSwitchPassed(){
     armMotorPrimary.getEncoder().setPosition(ArmConstants.kStageTwo_LimitSwitchAngleRad / Math.PI / 2.0);

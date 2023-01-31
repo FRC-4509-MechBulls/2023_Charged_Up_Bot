@@ -50,6 +50,10 @@ public class ArmStageOne extends SubsystemBase {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
   }
 
+  public void setFeedForward(){
+    //implement this pls
+  }
+
 
   public void limitSwitchPassed(){
     armMotorPrimary.setSelectedSensorPosition(ArmConstants.kStageOne_LimitSwitchAngleRad);
