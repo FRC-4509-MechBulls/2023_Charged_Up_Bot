@@ -47,27 +47,16 @@ public class ArmStageOne extends SubsystemBase {
   }
 
   public double getEncoderRad() {
-    double angle = armMotorPrimary.getSelectedSensorPosition(); //range 0-1
-    angle *= Math.PI*2; //convert to radians
-    angle += encoderOffset; //add the offset
-    return angle * (ArmConstants.kStageOne_AbsEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
-  }
-
-  public double getSetpointRaw(){
-    double angle = armMotorPrimary.getSelectedSensorPosition();
-    angle -= encoderOffset/Math.PI/2;
-    angle += setpointRad/Math.PI/2;
-    return angle;
+    return armMotorPrimary.getSelectedSensorPosition() *Math.PI*2; //range 0-1
   }
 
 
   public void limitSwitchPassed(){
-    double encoderAng = armMotorPrimary.getSelectedSensorPosition() * Math.PI * 2;
-    encoderOffset =  ArmConstants.kStageOne_LimitSwitchAngleRad - encoderAng;
+    armMotorPrimary.setSelectedSensorPosition(ArmConstants.kStageOne_LimitSwitchAngleRad);
   }
 
   public void setArmPositionRad(double setpoint){
-    armMotorPrimary.set(TalonSRXControlMode.Position, getSetpointRaw());
+    armMotorPrimary.set(TalonSRXControlMode.Position, setpoint);
   }
 
 

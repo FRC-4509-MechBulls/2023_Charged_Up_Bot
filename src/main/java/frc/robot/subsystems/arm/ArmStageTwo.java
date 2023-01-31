@@ -51,27 +51,16 @@ public class ArmStageTwo extends SubsystemBase {
   }
 
   public double getEncoderRad() {
-    double angle = armMotorPrimary.getEncoder().getPosition(); //range 0-1
-    angle *= Math.PI*2; //convert to radians
-    angle += encoderOffset; //add the offset
-    return angle * (ArmConstants.kStageTwo_AbsEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
-  }
-
-  public double getSetpointRaw(){
-    double angle = armMotorPrimary.getEncoder().getPosition();
-    angle -= encoderOffset/Math.PI/2;
-    angle += setpointRad/Math.PI/2;
-    return angle;
+    return armMotorPrimary.getEncoder().getPosition() * Math.PI * 2;
   }
 
 
   public void limitSwitchPassed(){
-    double encoderAng = armMotorPrimary.getEncoder().getPosition() * Math.PI * 2;
-    encoderOffset =  ArmConstants.kStageTwo_LimitSwitchAngleRad - encoderAng;
+    armMotorPrimary.getEncoder().setPosition(ArmConstants.kStageTwo_LimitSwitchAngleRad / Math.PI / 2.0);
   }
 
   public void setArmPositionRad(double setpoint){
-    pidController.setReference(getSetpointRaw(), CANSparkMax.ControlType.kPosition);
+    pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
   }
 
 
