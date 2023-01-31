@@ -47,7 +47,7 @@ public class ArmStageOne extends SubsystemBase {
 
   }
 
-  public double getAbsoluteEncoderRad() {
+  public double getEncoderRad() {
     double angle = armMotorPrimary.getSelectedSensorPosition(); //range 0-1
     angle *= Math.PI*2; //convert to radians
     angle += encoderOffset; //add the offset

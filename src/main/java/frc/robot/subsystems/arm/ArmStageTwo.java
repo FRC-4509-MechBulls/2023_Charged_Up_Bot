@@ -51,7 +51,7 @@ public class ArmStageTwo extends SubsystemBase {
 
   }
 
-  public double getAbsoluteEncoderRad() {
+  public double getEncoderRad() {
     double angle = armMotorPrimary.getEncoder().getPosition(); //range 0-1
     angle *= Math.PI*2; //convert to radians
     angle += encoderOffset; //add the offset
