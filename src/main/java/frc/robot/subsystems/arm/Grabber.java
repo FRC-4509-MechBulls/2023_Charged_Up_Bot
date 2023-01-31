@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.arm;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.EndEffectorSubsystem;
 
@@ -64,20 +65,34 @@ public class Grabber extends SubsystemBase {
     setArmPosition(armMode);
   }
 
-  /* 
+   
   public void calculateArmData() {
-    stageTwoAFF = calculateAFF();
+    stageOneAFF = calculateAFF(calculateFusedCG(calculateRelativeCoordinate(armStageTwo.getRelativeCG(), armStageOne.getRelativeCG()), armStageTwo.getRelativeCG()), armStageOne.getRelativeCB());
   }
-  public double calculateAFF(double angle, double mass) {
-    return calculateGravityAFF(angle, mass) - calculateCounterBalanceAFF();
+  public double calculateAFF(double[] cG, double[] cB) {
+    return calculateGravityTorque(cGAngleRad new Rotation2d(stageOneCG[0], stage), massLb, cGDistanceIn) - calculateCounterBalanceTorque(cBAngleRad, springConstantLbIn, currentLengthIn, initialLengthIn);
   }
-  public double calculateGravityAFF(double angle, double mass) {
-    return Math.cos(angle) * mass;
+  public double[] calculateRelativeCoordinate (double[] origin, double[] point) {
+    return new double[] {point[0] + origin[0], point[1] + origin[1], point[2]};
   }
-*/
+  public double[] calculateFusedCG(double[] cGOne, double[] cGTwo) {
+    double magnitude = calculateMagnitude(cGOne[2], cGTwo[2]);
+    return new double[] {((cGOne[2]/magnitude) * cGOne[0]) + ((cGTwo[2]/magnitude) * cGTwo[0]),
+                        ((cGOne[2]/magnitude) * cGOne[1]) + ((cGTwo[2]/magnitude) * cGTwo[1]),
+                        cGOne[2] + cGTwo[2]};
+  }
+  public double calculateMagnitude(double valueOne, double valueTwo) {
+    return Math.sqrt(Math.pow(valueOne, 2) + Math.pow(valueTwo, 2));
+  }
+  public double calculateGravityTorque(double cGAngleRad, double massLb, double cGDistanceIn) {
+    return Math.cos(cGAngleRad) * massLb * cGDistanceIn;
+  }
+  public double calculateCounterBalanceTorque(double cBAngleRad, double springConstantLbIn, double currentLengthIn, double initialLengthIn) {
+    return Math.cos(cBAngleRad) * (springConstantLbIn * (currentLengthIn - initialLengthIn));
+  }
   @Override
   public void periodic() {
-    //calculateArmData();
+    calculateArmData();
     // This method will be called once per scheduler run
   }
 }

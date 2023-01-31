@@ -8,7 +8,10 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.kauailabs.navx.IMUProtocol.YPRUpdate;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -20,6 +23,10 @@ public class ArmStageOne extends SubsystemBase {
   private TalonSRX armMotorSecondary;
   private double encoderOffset = ArmConstants.kStageOne_AbsEncoderInitialOffset;
   private double setpointRad = encoderOffset;
+  private double kcG[];
+  private double relativeCG[];
+  private double relativeCB[];
+  private double angle;
 
   /** Creates a new ArmStageOne. */
   public ArmStageOne() {
@@ -47,11 +54,27 @@ public class ArmStageOne extends SubsystemBase {
   }
   //Config
   //Getters
-  public double getCGAngle() {
+  public void calculateStageData() {
+    relativeCG = calculateRelativeCG();
+    relativeCB = calculateRelativeCB();
 
   }
-  public double getMass() {
+  public double[] calculateRelvativeCB() {
     
+  }
+  public double[] calculateRelativeCG() {
+    /*
+    x, y -> angle
+    angle + angle
+    angle -> x, y
+    x, y * magnitude
+    */
+    Rotation2d relativeCGAngle = new Rotation2d(new Rotation2d(kcG[0], kcG[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kcG[0], 2) + Math.pow(kcG[1], 2));
+    return new double[] {relativeCGAngle.getCos() * magnitude, relativeCGAngle.getSin() * magnitude, kcG[2]};
+  }
+  public double[] getRelativeCG() {
+    return relativeCG;
   }
   public double getEncoderRad() {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
@@ -67,6 +90,7 @@ public class ArmStageOne extends SubsystemBase {
 
   @Override
   public void periodic() {
+    calculateStageData();
     // This method will be called once per scheduler run
     //armMotorPrimary.set(TalonSRXControlMode.PercentOutput,pid.calculate(getAbsoluteEncoderRad())); //replace this with internal PID
   }

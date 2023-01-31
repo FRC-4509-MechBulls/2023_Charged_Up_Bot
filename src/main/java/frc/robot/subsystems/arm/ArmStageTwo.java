@@ -53,11 +53,22 @@ public class ArmStageTwo extends SubsystemBase {
 
 
   }
-  public double getCGAngle() {
-
+  public void calculateStageData() {
+    relativeCG = calculateRelativeCG();
   }
-  public double getMass() {
-    
+  public double[] calculateRelativeCG() {
+    /*
+    x, y -> angle
+    angle + angle
+    angle -> x, y
+    x, y * magnitude
+    */
+    Rotation2d relativeCGAngle = new Rotation2d(new Rotation2d(kcG[0], kcG[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kcG[0], 2) + Math.pow(kcG[1], 2));
+    return new double[] {relativeCGAngle.getCos() * magnitude, relativeCGAngle.getSin() * magnitude, kcG[2]};
+  }
+  public double[] getRelativeCG() {
+    return relativeCG;
   }
   public void setAFF(double AFF) {
     this.AFF = AFF;
