@@ -27,13 +27,13 @@ public class ArmStageOne extends SubsystemBase {
     armMotorPrimary = new TalonSRX(ArmConstants.kStageOne_MotorLeftID);
     armMotorSecondary = new TalonSRX(ArmConstants.kStageOne_MotorRightID);
 
-    armMotorPrimary.configFactoryDefault();
-    armMotorSecondary.configFactoryDefault();
+    armMotorPrimary.configFactoryDefault(1000);
+    armMotorSecondary.configFactoryDefault(1000);
 
     armMotorSecondary.follow(armMotorPrimary);
     armMotorSecondary.setInverted(InvertType.OpposeMaster);
 
-    armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,30);
+    armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
 
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,30);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,30);
