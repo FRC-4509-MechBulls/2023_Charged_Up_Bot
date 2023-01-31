@@ -21,29 +21,41 @@ public class Grabber extends SubsystemBase {
     this.armStageTwo = armStageTwo;
     this.endEffectorSubsystem = endEffectorSubsystem;
   }
-  public enum ArmModes {INTAKING_CUBE,INTAKING_CONE_UPRIGHT,INTAKING_CONE_FALLEN,HOLDING_CONE,HOLDING_CUBE,PLACINGLVL1,PLACINGLVL2,PLACINGLVL3}
+  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
+  public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE, PLACING_CONE}
 
   public void setArmPosition(ArmModes armMode){
     switch(armMode){
       case INTAKING_CUBE: setArmPosition(ArmConstants.intakingCubesArmPos); break;
       case INTAKING_CONE_UPRIGHT: setArmPosition(ArmConstants.intakingConesUprightArmPos); break;
       case INTAKING_CONE_FALLEN: setArmPosition(ArmConstants.intakingConesFallenArmPos); break;
-      case HOLDING_CONE:
-        case HOLDING_CUBE: setArmPosition(ArmConstants.holdingArmPos); break;
-      case PLACINGLVL1: setArmPosition(ArmConstants.placingArmPosOne); break;
-      case PLACINGLVL2: setArmPosition(ArmConstants.placingArmPosTwo); break;
-      case PLACINGLVL3: setArmPosition(ArmConstants.placingArmPosThree); break;
+      case HOLDING: setArmPosition(ArmConstants.holdingArmPos); break;
+
+      case PLACING_CONE_LVL1: setArmPosition(ArmConstants.placingConeArmPosOne); break;
+      case PLACING_CONE_LVL2: setArmPosition(ArmConstants.placingConeArmPosTwo); break;
+      case PLACING_CONE_LVL3: setArmPosition(ArmConstants.placingConeArmPosThree); break;
+
+      case PLACING_CUBE_LVL1: setArmPosition(ArmConstants.placingCubeArmPosOne); break;
+      case PLACING_CUBE_LVL2: setArmPosition(ArmConstants.placingCubeArmPosTwo); break;
+      case PLACING_CUBE_LVL3: setArmPosition(ArmConstants.placingCubeArmPosThree); break;
     }
   }
 
-  public void setEndEffectorMode(ArmModes armMode){
-    switch(armMode){
+  public void setEndEffectorMode(EFModes effectorMode){
+    switch(effectorMode){
       case INTAKING_CUBE: endEffectorSubsystem.intakeCube(); break;
-      case INTAKING_CONE_UPRIGHT:
-        case INTAKING_CONE_FALLEN: endEffectorSubsystem.intakeCone(); break;
-      case HOLDING_CONE: endEffectorSubsystem.holdCone();
-      case HOLDING_CUBE: endEffectorSubsystem.holdCube();
-      case PLACINGLVL1: case PLACINGLVL2: case PLACINGLVL3: endEffectorSubsystem.placeCone();
+      case INTAKING_CONE: endEffectorSubsystem.intakeCone(); break;
+      case HOLDING_CONE: endEffectorSubsystem.holdCone(); break;
+      case HOLDING_CUBE: endEffectorSubsystem.holdCube(); break;
+      case PLACING_CONE: endEffectorSubsystem.placeCone(); break;
+      case PLACING_CUBE: endEffectorSubsystem.placeCube(); break;
+    }
+
+
+    int i = 0;
+    switch(i){
+      case 0: break;
+      case 1:
     }
   }
 
@@ -53,11 +65,10 @@ public class Grabber extends SubsystemBase {
     armStageOne.setArmPositionRad(armPosition[1]);
   }
 
-
-  public void setGripperMode(ArmModes armMode){
-    setEndEffectorMode(armMode);
-    setArmPosition(armMode);
+  public void setArmAndEFModes(ArmModes armMode, EFModes efMode){
+   
   }
+
 
   @Override
   public void periodic() {

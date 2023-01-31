@@ -79,9 +79,13 @@ public final class Constants {
         public static final double[] intakingCubesArmPos = {0,0}; //undecided
         public static final double[] holdingArmPos = {0,0}; //undecided
         public static final double[] aimingArmPos = {0,0}; //undecided
-        public static final double[] placingArmPosOne = {0,0}; //undecided
-        public static final double[] placingArmPosTwo = {0,0}; //undecided
-        public static final double[] placingArmPosThree = {0,0}; //undecided
+        public static final double[] placingConeArmPosOne = {0,0}; //undecided
+        public static final double[] placingConeArmPosTwo = {0,0}; //undecided
+        public static final double[] placingConeArmPosThree = {0,0}; //undecided
+
+        public static final double[] placingCubeArmPosOne = {0,0}; //undecided
+        public static final double[] placingCubeArmPosTwo = {0,0}; //undecided
+        public static final double[] placingCubeArmPosThree = {0,0}; //undecided
     }
 
 
