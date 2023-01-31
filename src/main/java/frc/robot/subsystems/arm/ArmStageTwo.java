@@ -24,7 +24,6 @@ public class ArmStageTwo extends SubsystemBase {
   private SparkMaxPIDController pidController;
 
   private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
-  private PIDController pid = new PIDController(ArmConstants.stageTwo_kP,ArmConstants.stageTwo_kI,ArmConstants.stageTwo_kD);
   private double setpointRad = encoderOffset;
 
   /** Creates a new ArmStageTwo. */
@@ -72,7 +71,6 @@ public class ArmStageTwo extends SubsystemBase {
   }
 
   public void setArmPositionRad(double setpoint){
-    pid.setSetpoint(setpoint);
     pidController.setReference(getSetpointRaw(), CANSparkMax.ControlType.kPosition);
   }
 

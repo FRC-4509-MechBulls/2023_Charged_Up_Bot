@@ -19,7 +19,6 @@ public class ArmStageOne extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
   private double encoderOffset = ArmConstants.kStageOne_AbsEncoderInitialOffset;
-  private PIDController pid = new PIDController(ArmConstants.stageOne_kP,ArmConstants.stageOne_kI,ArmConstants.stageOne_kD);
   private double setpointRad = encoderOffset;
 
   /** Creates a new ArmStageOne. */
@@ -68,7 +67,6 @@ public class ArmStageOne extends SubsystemBase {
   }
 
   public void setArmPositionRad(double setpoint){
-    pid.setSetpoint(setpoint);
     armMotorPrimary.set(TalonSRXControlMode.Position, getSetpointRaw());
   }
 
