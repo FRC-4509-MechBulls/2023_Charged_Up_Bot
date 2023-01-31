@@ -74,6 +74,14 @@ public final class Constants {
 
         public static final double kStageTwo_LimitSwitchAngleRad = 0; //undecided
 
+        public static final double[] intakingConesUprightArmPos = {0,0}; //undecided
+        public static final double[] intakingConesFallenArmPos = {0,0}; //undecided
+        public static final double[] intakingCubesArmPos = {0,0}; //undecided
+        public static final double[] holdingArmPos = {0,0}; //undecided
+        public static final double[] aimingArmPos = {0,0}; //undecided
+        public static final double[] placingArmPosOne = {0,0}; //undecided
+        public static final double[] placingArmPosTwo = {0,0}; //undecided
+        public static final double[] placingArmPosThree = {0,0}; //undecided
     }
 
 
