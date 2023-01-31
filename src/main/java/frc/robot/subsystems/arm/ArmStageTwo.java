@@ -22,6 +22,7 @@ public class ArmStageTwo extends SubsystemBase {
   private CANSparkMax armMotorSecondary;
 
   private SparkMaxPIDController pidController;
+  private RelativeEncoder encoder;
 
   private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
   private double setpointRad = encoderOffset;
@@ -31,6 +32,7 @@ public class ArmStageTwo extends SubsystemBase {
     armMotorPrimary = new CANSparkMax(ArmConstants.kStageTwo_MotorLeftChannel, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
     armMotorSecondary = new CANSparkMax(ArmConstants.kStageTwo_MotorRightChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+    encoder =  armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
 
     armMotorPrimary.restoreFactoryDefaults();
     armMotorSecondary.restoreFactoryDefaults();
@@ -40,6 +42,7 @@ public class ArmStageTwo extends SubsystemBase {
     armMotorSecondary.setInverted(true);
 
     pidController = armMotorPrimary.getPIDController();
+    pidController.setFeedbackDevice(encoder);
     pidController.setP(ArmConstants.stageTwo_kP);
     pidController.setI(ArmConstants.stageTwo_kI);
     pidController.setD(ArmConstants.stageTwo_kD);
