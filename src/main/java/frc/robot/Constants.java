@@ -39,6 +39,43 @@ public final class Constants {
         public static final double kPlaceCubeOutput = -0.8; //not yet decided 
     }
 
+    public static final class ArmConstants{
+        public static final double stageOne_kP = 0.5; //undecided
+        public static final double stageOne_kI = 0; //undecided
+        public static final double stageOne_kD = 0; //undecided
+
+        public static final double stageTwo_kP = 0.5; //undecided
+        public static final double stageTwo_kI = 0; //undecided
+        public static final double stageTwo_kD = 0; //undecided
+
+        public static final double kstageOne_encoderTicksToRadians =  Math.PI * 2;
+        public static final double kstageTwo_encoderTicksToRadians = 1 * Math.PI * 2;
+
+
+        public static final int kStageOne_MotorLeftID = 0; //undecided
+        public static final int kStageOne_MotorRightID = 0; //undecided
+        public static final int kStageOne_MagEncoderID = 0; //undecided
+
+        public static final double kAbsToRadians = 2.0 * Math.PI;
+
+        public static final boolean kStageOne_AbsEncoderReversed = false; //undecided
+
+        public static final double kStageOne_AbsEncoderInitialOffset = 0; //undecided
+
+        public static final double kStageOne_LimitSwitchAngleRad = 0; //undecided
+
+
+        public static final int kStageTwo_MotorLeftChannel = 0; //undecided
+        public static final int kStageTwo_MotorRightChannel = 1; //undecided
+
+        public static final boolean kStageTwo_AbsEncoderReversed = false; //undecided
+
+        public static final double kStageTwo_AbsEncoderInitialOffset = 0; //undecided
+
+        public static final double kStageTwo_LimitSwitchAngleRad = 0; //undecided
+
+    }
+
 
     public static final class ModuleConstants {
         //Physical
