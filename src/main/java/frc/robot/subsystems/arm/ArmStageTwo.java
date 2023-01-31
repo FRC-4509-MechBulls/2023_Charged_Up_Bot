@@ -37,8 +37,8 @@ public class ArmStageTwo extends SubsystemBase {
     armMotorSecondary.restoreFactoryDefaults();
 
 
-    armMotorPrimary.follow(armMotorSecondary);
-    armMotorPrimary.setInverted(true);
+    armMotorSecondary.follow(armMotorPrimary);
+    armMotorSecondary.setInverted(true);
 
     pidController = armMotorPrimary.getPIDController();
     pidController.setP(ArmConstants.stageTwo_kP);
