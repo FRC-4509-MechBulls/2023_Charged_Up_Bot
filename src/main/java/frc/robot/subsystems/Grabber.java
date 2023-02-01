@@ -90,9 +90,8 @@ public class Grabber extends SubsystemBase {
 
 
   public void setArmPosition(double[] armPosition){
-    if(armPosition.length<2) return;
     armStageOne.setArmPositionRad(armPosition[0]);
-    armStageOne.setArmPositionRad(armPosition[1]);
+    armStageTwo.setArmPositionRad(armPosition[1]);
   }
 
   public void setDesiredArmAndEFModes(ArmModes armMode, EFModes efMode){
