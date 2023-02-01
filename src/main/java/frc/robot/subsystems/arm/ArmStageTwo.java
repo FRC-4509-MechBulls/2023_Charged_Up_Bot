@@ -27,6 +27,11 @@ public class ArmStageTwo extends SubsystemBase {
   private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
   private double setpointRad = encoderOffset;
   private double AFF;
+  private double relativeCG;
+  private double relativeCB;
+  private double kCG[];
+  private double kCB[];
+  private double angle;
 
   /** Creates a new ArmStageTwo. */
   public ArmStageTwo() {
@@ -55,6 +60,7 @@ public class ArmStageTwo extends SubsystemBase {
   }
   public void calculateStageData() {
     relativeCG = calculateRelativeCG();
+    relativeCB = calculateRelaticeCB();
   }
   public double[] calculateRelativeCG() {
     /*
@@ -69,6 +75,9 @@ public class ArmStageTwo extends SubsystemBase {
   }
   public double[] getRelativeCG() {
     return relativeCG;
+  }
+  public double[] getRelativeCB() {
+    return relativeCB;
   }
   public void setAFF(double AFF) {
     this.AFF = AFF;

@@ -68,9 +68,10 @@ public class Grabber extends SubsystemBase {
    
   public void calculateArmData() {
     stageOneAFF = calculateAFF(calculateFusedCG(calculateRelativeCoordinate(armStageTwo.getRelativeCG(), armStageOne.getRelativeCG()), armStageTwo.getRelativeCG()), armStageOne.getRelativeCB());
+    stageTwoAFF = calculateAFF(armStageTwo.getRelativeCG(), armStageTwo.getRelativeCB());
   }
   public double calculateAFF(double[] cG, double[] cB) {
-    return calculateGravityTorque(cGAngleRad new Rotation2d(stageOneCG[0], stage), massLb, cGDistanceIn) - calculateCounterBalanceTorque(cBAngleRad, springConstantLbIn, currentLengthIn, initialLengthIn);
+    return calculateGravityTorque(new Rotation2d(cG[0], cG[1]).getRadians(), cG[2], calculateMagnitude(cG[0], cG[1])) - calculateCounterBalanceTorque(cB[3], cB[2], cB[0], cB[1]);
   }
   public double[] calculateRelativeCoordinate (double[] origin, double[] point) {
     return new double[] {point[0] + origin[0], point[1] + origin[1], point[2]};
@@ -87,9 +88,10 @@ public class Grabber extends SubsystemBase {
   public double calculateGravityTorque(double cGAngleRad, double massLb, double cGDistanceIn) {
     return Math.cos(cGAngleRad) * massLb * cGDistanceIn;
   }
-  public double calculateCounterBalanceTorque(double cBAngleRad, double springConstantLbIn, double currentLengthIn, double initialLengthIn) {
-    return Math.cos(cBAngleRad) * (springConstantLbIn * (currentLengthIn - initialLengthIn));
+  public double calculateCounterBalanceTorque(double cBAngleRad, double springForceLB, double cBx, double cBy) {
+    return Math.sin(cBAngleRad) * springForceLB *  Math.hypot(cBx, cBy);
   }
+
   @Override
   public void periodic() {
     calculateArmData();

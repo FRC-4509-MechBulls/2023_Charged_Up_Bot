@@ -23,7 +23,8 @@ public class ArmStageOne extends SubsystemBase {
   private TalonSRX armMotorSecondary;
   private double encoderOffset = ArmConstants.kStageOne_AbsEncoderInitialOffset;
   private double setpointRad = encoderOffset;
-  private double kcG[];
+  private double kCG[];
+  private double kCB[];
   private double relativeCG[];
   private double relativeCB[];
   private double angle;
@@ -57,10 +58,11 @@ public class ArmStageOne extends SubsystemBase {
   public void calculateStageData() {
     relativeCG = calculateRelativeCG();
     relativeCB = calculateRelativeCB();
-
   }
-  public double[] calculateRelvativeCB() {
-    
+  public double[] calculateRelativeCB() {
+    Rotation2d relativeCBAngle = new Rotation2d(new Rotation2d(kCB[0], kCB[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kCB[0], 2) + Math.pow(kCB[1], 2));
+    return new double[] {relativeCBAngle.getCos() * magnitude, relativeCBAngle.getSin() * magnitude, kCB[2] * (Math.hypot(kCB[4] - relativeCBAngle.getCos(), kCB[5] - relativeCBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - relativeCBAngle.getCos(), kCB[5] - relativeCBAngle.getSin()).getRadians() - relativeCBAngle.getRadians()};
   }
   public double[] calculateRelativeCG() {
     /*
@@ -69,12 +71,15 @@ public class ArmStageOne extends SubsystemBase {
     angle -> x, y
     x, y * magnitude
     */
-    Rotation2d relativeCGAngle = new Rotation2d(new Rotation2d(kcG[0], kcG[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kcG[0], 2) + Math.pow(kcG[1], 2));
-    return new double[] {relativeCGAngle.getCos() * magnitude, relativeCGAngle.getSin() * magnitude, kcG[2]};
+    Rotation2d relativeCGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
+    return new double[] {relativeCGAngle.getCos() * magnitude, relativeCGAngle.getSin() * magnitude, kCG[2]};
   }
   public double[] getRelativeCG() {
     return relativeCG;
+  }
+  public double[] getRelativeCB() {
+    return relativeCB;
   }
   public double getEncoderRad() {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
