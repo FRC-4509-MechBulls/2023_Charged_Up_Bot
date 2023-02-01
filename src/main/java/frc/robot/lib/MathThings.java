@@ -22,23 +22,30 @@ public class MathThings {
        return ang2-ang1;
     }
 
-    public static int[] randomIndexes(int size){
-        int[] out = new int[size];
-        for(int i = 0; i<out.length; i++)
-            out[i] = i;
 
-        for(int i = 0; i<out.length; i++){
-            int rand1 = (int)(Math.random()*out.length);
-            int rand2 = (int)(Math.random()*out.length);
-            int held = out[rand1];
-            out[rand1] = out[rand2];
-            out[rand2] = held;
+
+    public static boolean isWithinRangeOf(double point, double setpoint, double tolerance) {
+        return Math.abs(point - setpoint) < Math.abs(tolerance);
+    }
+
+        public static int[] randomIndexes ( int size){
+            int[] out = new int[size];
+            for (int i = 0; i < out.length; i++)
+                out[i] = i;
+
+            for (int i = 0; i < out.length; i++) {
+                int rand1 = (int) (Math.random() * out.length);
+                int rand2 = (int) (Math.random() * out.length);
+                int held = out[rand1];
+                out[rand1] = out[rand2];
+                out[rand2] = held;
+            }
+            return out;
         }
-        return out;
-    }
 
-    public static double poseDist(Pose2d pose1, Pose2d pose2){
-        return Math.sqrt(Math.pow(pose1.getX() - pose2.getX(),2)+Math.pow(pose1.getY() - pose2.getY(),2));
-    }
+        public static double poseDist (Pose2d pose1, Pose2d pose2){
+            return Math.sqrt(Math.pow(pose1.getX() - pose2.getX(), 2) + Math.pow(pose1.getY() - pose2.getY(), 2));
+
+        }
 
 }
