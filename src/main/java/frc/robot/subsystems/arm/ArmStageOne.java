@@ -34,11 +34,11 @@ public class ArmStageOne extends SubsystemBase {
 
     armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
 
-    armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,30);
-    armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,30);
-    armMotorPrimary.config_kD(0,ArmConstants.stageOne_kD,30);
+    armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
+    armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
+    armMotorPrimary.config_kD(0,ArmConstants.stageOne_kD,1000);
 
-    armMotorPrimary.configClosedLoopPeriod(0, 1, 30);
+    armMotorPrimary.configClosedLoopPeriod(0, 1, 1000);
 
     //magEncoder = new DutyCycleEncoder(ArmConstants.kStageOne_MagEncoderID);
 
@@ -48,6 +48,10 @@ public class ArmStageOne extends SubsystemBase {
 
   public double getEncoderRad() {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
+  }
+
+  public void setFeedForward(){
+    //implement this pls
   }
 
 

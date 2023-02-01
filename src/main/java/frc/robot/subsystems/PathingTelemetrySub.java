@@ -91,6 +91,10 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         double camY = robotPose.getY() + Math.sin(robotAngle + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
         Imgproc.circle(mat,metersPosToPixelsPos(new Point(camX,camY)),2,new Scalar(255,255,255),2);
 
+        /** Draw corner points */
+        for(Pose2d pose : cornerPoints)
+            Imgproc.circle(mat, metersPosToPixelsPos(new Point(pose.getX(), pose.getY())),2,new Scalar(100,100,100),2);
+
 
 //        //draw desired point
 //        double[] navDesiredPointInPixels = metersPosToPixelsPos(NavigationField.getDesiredXY());
@@ -261,5 +265,12 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
     public void periodic(){
     Line2D.Double pathLine = new Line2D.Double(robotPose.getX(), robotPose.getY(), 2, 0.3);
   //  SmartDashboard.putBoolean("Clear path to (2, 0.3)", NavigationField.clearPathOnLine(pathLine));
+    }
+    private ArrayList<Pose2d> cornerPoints = new ArrayList<>();
+    public void updateCornerPoints(ArrayList<Pose2d> cornerPoints){
+        if(dontTouchMe) return;
+        this.cornerPoints.clear();
+        for(Pose2d pose : cornerPoints)
+            this.cornerPoints.add(pose);
     }
 }

@@ -12,6 +12,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import static frc.robot.Constants.FieldConstants.*;
@@ -22,6 +23,8 @@ public class NavigationField extends SubsystemBase {
  ArrayList<FieldLine> fieldLines = new ArrayList<FieldLine>();
  ArrayList<Node> nodes = new ArrayList<Node>();
  ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
+
+ ArrayList<Pose2d> cornerPoints = new ArrayList<Pose2d>();
 
 
 PathingTelemetrySub pTelemetrySub;
@@ -52,6 +55,7 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         if(wasOnRedAlliance!= fmsGetter.isRedAlliance() || queueNodeReset)
         {
             resetNodes();
+            placeCornerPoints();
             wasOnRedAlliance = fmsGetter.isRedAlliance();
             queueNodeReset = false;
         }
@@ -119,31 +123,44 @@ public  boolean barrierOnLine(Line2D.Double line){
 
 
  public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
+    double random = Math.random(); // :)
+     int[] randIndexes = MathThings.randomIndexes(cornerPoints.size());
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
         return new Pose2d[] {myPose,desiredPose};
     if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
         return new Pose2d[] {};
 
-        for (double dist = 0; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
-            for (double ang = 0; ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
-                double branchHeadX = myPose.getX() + dist*Math.cos(ang);
-                double branchHeadY = myPose.getY() + dist*Math.sin(ang);
-                Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
-                Line2D.Double lineToDesiredPose = new Line2D.Double(branchHeadX,branchHeadY,desiredPose.getX(),desiredPose.getY());
-                if(barrierOnLine(lineToTestPoint)) continue;
-             //   if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth+1){
-                    Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
-                    if(lowerLevelOut.length>0){
-                        Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
-                        myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
-                        for(int i = 1; i<myOut.length; i++)
-                            myOut[i] = lowerLevelOut[i-1];
-                        //the issue lies here
-                        return myOut;
-                    }
-             //   }
+    for (double dist = Constants.PathingConstants.lineDistIterator; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
+        for (int angI = -cornerPoints.size(); angI < Constants.PathingConstants.moveAngles; angI += 1) {
+
+            double ang = angI * (Math.PI * 2 / (Constants.PathingConstants.moveAngles));
+            double branchHeadX = myPose.getX() + dist*Math.cos(ang);
+            double branchHeadY = myPose.getY() + dist*Math.sin(ang);
+
+            if(angI<0 && cornerPoints.size()>0 && randIndexes.length>0){ //iterate through every corner point before doing anything else - notice how angI starts at -size
+                //for indexes, use [cornerPoints.size()-ang]
+                int cornerIndex = angI + cornerPoints.size();
+                branchHeadX = cornerPoints.get(randIndexes[cornerIndex]).getX();
+                branchHeadY = cornerPoints.get(randIndexes[cornerIndex]).getY();
 
             }
+
+
+            Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
+
+            if(barrierOnLine(lineToTestPoint)) continue;
+
+            Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
+
+            if(lowerLevelOut.length>0){
+                Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
+                myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
+                for(int i = 1; i<myOut.length; i++)
+                    myOut[i] = lowerLevelOut[i-1];
+                return myOut;
+            }
+
+        }
 
 
 
@@ -161,6 +178,7 @@ private Pose2d desiredPose;
         //updateNavPoses();
     }
 
+    Pose2d lastUsedPose = new Pose2d();
     public void updateNavPoses(){
         boolean poseChangedOld = poseChanged;
         poseChanged = false;
@@ -169,10 +187,11 @@ private Pose2d desiredPose;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
         if(outNavPoses.length<1)
             return;
-        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && (engaged && !poseChangedOld))
+        boolean poseCloseToLast = MathThings.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged ||poseCloseToLast ) && !poseChangedOld))
             return;
 
-
+        lastUsedPose = swerveSubsystem.getEstimatedPosition();
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
@@ -359,6 +378,23 @@ int setPointIndex = 0;
 
         if(setPoints.size()>0)
             setNavPoint(setPoints.get(setPointIndex));
+    }
+
+    public void placeCornerPoints(){
+        cornerPoints.clear();
+
+        cornerPoints.add(new Pose2d(-3,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-3,-0.8, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,-0.8, Rotation2d.fromDegrees(0)));
+        
+        cornerPoints.add(new Pose2d(3,-0.8, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,-0.8, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(3,3, Rotation2d.fromDegrees(0)));
+
+
+        pTelemetrySub.updateCornerPoints(cornerPoints);
     }
 
 

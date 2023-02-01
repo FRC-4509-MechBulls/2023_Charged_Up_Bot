@@ -387,10 +387,10 @@ newY-=camYOffset;
 
     double dirToPose = Math.atan2(yDiff,xDiff);
 
-    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;
-    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;  //sin and cos used to have +rotationDiff for some reason
+    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;
+    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;  //sin and cos used to have +rotationDiff for some reason
     SmartDashboard.putNumber("rotationDiff",rotationDiff);
-    out[2] =  rotationDiff * 1/500.0;
+    out[2] =  rotationDiff * DriveConstants.turnPValue;
 
     if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;
     if(dist<DriveConstants.posTolerance){
@@ -406,14 +406,14 @@ newY-=camYOffset;
 
     double ang = Math.atan2(speeds[1],speeds[0]);
     double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
-    if(mag>0.1){
-      speeds[0] = Math.cos(ang)*0.1;
-      speeds[1] = Math.sin(ang)*0.1;
+    if(mag>DriveConstants.maxPowerOut){
+      speeds[0] = Math.cos(ang)*DriveConstants.maxPowerOut;
+      speeds[1] = Math.sin(ang)*DriveConstants.maxPowerOut;
     }
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
     //speeds[1] = MathThings.absMax(speeds[1],0.2);
-    speeds[2] = MathThings.maxValueCutoff(speeds[2],0.2);
+    speeds[2] = MathThings.maxValueCutoff(speeds[2],DriveConstants.maxTurningPowerOut);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
   }
