@@ -20,4 +20,9 @@ public class MathThings {
        return ang2-ang1;
     }
 
+
+    public static boolean isWithinRangeOf(double point, double setpoint, double tolerance){
+        return Math.abs(point-setpoint) < Math.abs(tolerance);
+    }
+
 }
