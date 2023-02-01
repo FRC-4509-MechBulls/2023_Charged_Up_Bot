@@ -85,6 +85,9 @@ public final class Constants {
         public static final double[] placingCubeArmPosOne = {0,0}; //undecided
         public static final double[] placingCubeArmPosTwo = {0,0}; //undecided
         public static final double[] placingCubeArmPosThree = {0,0}; //undecided
+
+
+        public static final double angleToleranceToUpdateEF = 0.1;
     }
 
 

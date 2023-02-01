@@ -104,13 +104,17 @@ public class Grabber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(getEFMode() != getDesiredEFMode()){
-      if(MathThings.isWithinRangeOf(armStageOne.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],0.1) && MathThings.isWithinRangeOf(armStageTwo.getEncoderRad(), getArmPositions(getDesiredArmMode())[1],0.1)){
+
+    if(getEFMode() != getDesiredEFMode()){ //wait for the arm to be within the tolerance to update the EF mode if intaking or placing
+      boolean armOneAligned = MathThings.isWithinRangeOf(armStageOne.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],ArmConstants.angleToleranceToUpdateEF);
+      boolean armTwoAligned = MathThings.isWithinRangeOf(armStageTwo.getEncoderRad(), getArmPositions(getDesiredArmMode())[1],ArmConstants.angleToleranceToUpdateEF);
+      boolean desiredEFIsHolding = getDesiredEFMode()==EFModes.HOLDING_CONE || getDesiredEFMode()==EFModes.HOLDING_CUBE;  //don't wait if you're switching to a holding mode
+      if((armOneAligned && armTwoAligned) || (desiredEFIsHolding)){
         setEndEffectorMode(desiredEFMode);
       }
     }
 
-    if(getArmMode()!=getDesiredArmMode()){
+    if(getArmMode()!=getDesiredArmMode()){ //instantly set arm position if it doesn't match the desired position
       armMode = getDesiredArmMode();
     }
 
