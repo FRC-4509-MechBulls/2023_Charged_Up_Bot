@@ -68,15 +68,15 @@ public class Grabber extends SubsystemBase {
 
    
   public void calculateArmData() {
-    stageTwoCGRelativeToOrigin = calculateRelativeCG(armStageOne.getRelativeCG(), armStageTwo.getRelativeCG());
-    eFCGRelativeToOrigin = calculateRelativeCG(stageTwoCGRelativeToOrigin, endEffectorSubsystem.getRelativeCG());
-    stageOneAFF = calculateAFF(calculateFusedCG(calculateFusedCG(armStageOne.getRelativeCG(), stageTwoCGRelativeToOrigin), eFCGRelativeToOrigin), armStageOne.getRelativeCB());
-    stageTwoAFF = calculateAFF(calculateFusedCG(armStageTwo.getRelativeCG(), calculateRelativeCG(armStageTwo.getRelativeCG(), endEffectorSubsystem.getRelativeCG())), armStageTwo.getRelativeCB());
+    stageTwoCGRelativeToOrigin = sumCGCoordinates(armStageOne.getCG(), armStageTwo.getCG());
+    eFCGRelativeToOrigin = sumCGCoordinates(stageTwoCGRelativeToOrigin, endEffectorSubsystem.getCG());
+    stageOneAFF = calculateAFF(calculateFusedCG(calculateFusedCG(armStageOne.getCG(), stageTwoCGRelativeToOrigin), eFCGRelativeToOrigin), armStageOne.getCB());
+    stageTwoAFF = calculateAFF(calculateFusedCG(armStageTwo.getCG(), sumCGCoordinates(armStageTwo.getCG(), endEffectorSubsystem.getCG())), armStageTwo.getCB());
   }
   public double calculateAFF(double[] cG, double[] cB) {
     return calculateGravityTorque(new Rotation2d(cG[0], cG[1]).getRadians(), cG[2], calculateMagnitude(cG[0], cG[1])) - calculateCounterBalanceTorque(cB[3], cB[2], cB[0], cB[1]);
   }
-  public double[] calculateRelativeCG (double[] origin, double[] point) {
+  public double[] sumCGCoordinates (double[] origin, double[] point) {
     return new double[] {point[0] + origin[0], point[1] + origin[1], point[2]};
   }
   public double[] calculateFusedCG(double[] cGOne, double[] cGTwo) {

@@ -25,8 +25,8 @@ public class ArmStageOne extends SubsystemBase {
   private double setpointRad = encoderOffset;
   private double kCG[];
   private double kCB[];
-  private double relativeCG[];
-  private double relativeCB[];
+  private double cG[];
+  private double cB[];
   private double angle;
 
   /** Creates a new ArmStageOne. */
@@ -56,30 +56,30 @@ public class ArmStageOne extends SubsystemBase {
   //Config
   //Getters
   public void calculateStageData() {
-    relativeCG = calculateRelativeCG();
-    relativeCB = calculateRelativeCB();
+    cG = calculateCG();
+    cB = calculateCB();
   }
-  public double[] calculateRelativeCB() {
-    Rotation2d relativeCBAngle = new Rotation2d(new Rotation2d(kCB[0], kCB[1]).getRadians() + angle);
+  public double[] calculateCB() {
+    Rotation2d cBAngle = new Rotation2d(new Rotation2d(kCB[0], kCB[1]).getRadians() + angle);
     double magnitude = Math.sqrt(Math.pow(kCB[0], 2) + Math.pow(kCB[1], 2));
-    return new double[] {relativeCBAngle.getCos() * magnitude, relativeCBAngle.getSin() * magnitude, kCB[2] * (Math.hypot(kCB[4] - relativeCBAngle.getCos(), kCB[5] - relativeCBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - relativeCBAngle.getCos(), kCB[5] - relativeCBAngle.getSin()).getRadians() - relativeCBAngle.getRadians()};
+    return new double[] {cBAngle.getCos() * magnitude, cBAngle.getSin() * magnitude, kCB[2] * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
   }
-  public double[] calculateRelativeCG() {
+  public double[] calculateCG() {
     /*
     x, y -> angle
     angle + angle
     angle -> x, y
     x, y * magnitude
     */
-    Rotation2d relativeCGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
+    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
     double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
-    return new double[] {relativeCGAngle.getCos() * magnitude, relativeCGAngle.getSin() * magnitude, kCG[2]};
+    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
   }
-  public double[] getRelativeCG() {
-    return relativeCG;
+  public double[] getCG() {
+    return cG;
   }
-  public double[] getRelativeCB() {
-    return relativeCB;
+  public double[] getCB() {
+    return cB;
   }
   public double getEncoderRad() {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;

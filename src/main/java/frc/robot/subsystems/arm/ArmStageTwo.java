@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.*;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,8 +28,8 @@ public class ArmStageTwo extends SubsystemBase {
   private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
   private double setpointRad = encoderOffset;
   private double AFF;
-  private double relativeCG;
-  private double relativeCB;
+  private double cG[];
+  private double cB[];
   private double kCG[];
   private double kCB[];
   private double angle;
@@ -59,25 +60,30 @@ public class ArmStageTwo extends SubsystemBase {
 
   }
   public void calculateStageData() {
-    relativeCG = calculateRelativeCG();
-    relativeCB = calculateRelaticeCB();
+    cG = calculateCG();
+    cB = calculateCB();
   }
-  public double[] calculateRelativeCG() {
+  public double[] calculateCB() {
+    Rotation2d cBAngle = new Rotation2d(new Rotation2d(kCB[0], kCB[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kCB[0], 2) + Math.pow(kCB[1], 2));
+    return new double[] {cBAngle.getCos() * magnitude, cBAngle.getSin() * magnitude, kCB[2] * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
+  }
+  public double[] calculateCG() {
     /*
     x, y -> angle
     angle + angle
     angle -> x, y
     x, y * magnitude
     */
-    Rotation2d relativeCGAngle = new Rotation2d(new Rotation2d(kcG[0], kcG[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kcG[0], 2) + Math.pow(kcG[1], 2));
-    return new double[] {relativeCGAngle.getCos() * magnitude, relativeCGAngle.getSin() * magnitude, kcG[2]};
+    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
+    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
   }
-  public double[] getRelativeCG() {
-    return relativeCG;
+  public double[] getCG() {
+    return cG;
   }
-  public double[] getRelativeCB() {
-    return relativeCB;
+  public double[] getCB() {
+    return cB;
   }
   public void setAFF(double AFF) {
     this.AFF = AFF;
