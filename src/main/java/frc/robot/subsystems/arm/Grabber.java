@@ -20,8 +20,6 @@ public class Grabber extends SubsystemBase {
   double stageTwoAFF;
   double stageTwoGravityAFF;
   double stageOneGravityAFF;
-  double[] stageTwoCGRelativeToOrigin;
-  double[] eFCGRelativeToOrigin;
   /** Creates a new Grabber. */
   public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem) {
     this.armStageOne = armStageOne;
@@ -68,13 +66,56 @@ public class Grabber extends SubsystemBase {
 
    
   public void calculateArmData() {
-    stageTwoCGRelativeToOrigin = sumCGCoordinates(armStageOne.getCG(), armStageTwo.getCG());
-    eFCGRelativeToOrigin = sumCGCoordinates(stageTwoCGRelativeToOrigin, endEffectorSubsystem.getCG());
-    stageOneAFF = calculateAFF(calculateFusedCG(calculateFusedCG(armStageOne.getCG(), stageTwoCGRelativeToOrigin), eFCGRelativeToOrigin), armStageOne.getCB());
-    stageTwoAFF = calculateAFF(calculateFusedCG(armStageTwo.getCG(), sumCGCoordinates(armStageTwo.getCG(), endEffectorSubsystem.getCG())), armStageTwo.getCB());
+    double[] stageTwoCB = armStageTwo.getCB();
+    double[] stageOneCB = armStageOne.getCB();
+
+    double[] eFCG = endEffectorSubsystem.getCG();
+    double[] stageTwoCG = armStageTwo.getCG();
+    double[] stageOneCG = armStageOne.getCG();
+
+    double[] eFCGRelativeToStageTwo = sumCGCoordinates(stageTwoCG, eFCG);
+    double[] eFStageTwoFusedCG = calculateFusedCG(eFCGRelativeToStageTwo, stageTwoCG);
+
+    double[] eFStageTwoFusedCGRelativeToStageOne = sumCGCoordinates(stageOneCG, eFStageTwoFusedCG);
+    double[] eFStageTwoStageOneFusedCG = calculateFusedCG(eFStageTwoFusedCGRelativeToStageOne, stageOneCG);
+
+    stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoCB);
+    stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneCB);
   }
-  public double calculateAFF(double[] cG, double[] cB) {
-    return calculateGravityTorque(new Rotation2d(cG[0], cG[1]).getRadians(), cG[2], calculateMagnitude(cG[0], cG[1])) - calculateCounterBalanceTorque(cB[3], cB[2], cB[0], cB[1]);
+  public double calculateAFF(double[] cG, double[] cB, double[] transmissionData) {
+    double torque = calculateArmTorque(cG, cB);
+    double torqueCoefficient = calculateTorqueCoefficient(transmissionData);
+
+    return torque * torqueCoefficient;
+  }
+  public double calculateTorqueCoefficient(double[] transmissionData) {
+    double rateOfChangeTWithRespectToV = transmissionData[0];
+    double efficiency = transmissionData[1];
+    double numberOfMotors = transmissionData[2];
+    double gearRatio = transmissionData[3];
+
+    return (1/rateOfChangeTWithRespectToV) * (1/efficiency) * (1/numberOfMotors) * (1/gearRatio);
+  }
+  public double calculateArmTorque(double[] cG, double[] cB) {
+    double cGX = cG[0];
+    double cGY = cG[1];
+    double cGMass = cG[2];
+
+    double cBx = cB[0];
+    double cBy = cB[1];
+    double springForceLB = cB[2];
+    double cBAngle = cB[3];
+
+    double cGAngle = calculateCGAngleRad(cG);
+    double cGDist = Math.hypot(cGX, cGY);
+    
+    double gravityTorque = calculateGravityTorque(cGAngle, cGMass, cGDist);
+    double counterBalanceTorque = calculateCounterBalanceTorque(cBAngle, springForceLB, cBx, cBy);
+
+    return gravityTorque - counterBalanceTorque;
+  }
+  public double calculateCGAngleRad(double[] cG) {
+    return new Rotation2d(cG[0], cG[1]).getRadians();
   }
   public double[] sumCGCoordinates (double[] origin, double[] point) {
     return new double[] {point[0] + origin[0], point[1] + origin[1], point[2]};
