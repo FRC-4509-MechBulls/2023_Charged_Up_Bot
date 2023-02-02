@@ -6,7 +6,6 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.EndEffectorSubsystem;
 
 import static frc.robot.Constants.ArmConstants;
 
@@ -21,6 +20,8 @@ public class Grabber extends SubsystemBase {
   double stageTwoAFF;
   double stageTwoGravityAFF;
   double stageOneGravityAFF;
+  double[] stageTwoCGRelativeToOrigin;
+  double[] eFCGRelativeToOrigin;
   /** Creates a new Grabber. */
   public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem) {
     this.armStageOne = armStageOne;
@@ -67,13 +68,15 @@ public class Grabber extends SubsystemBase {
 
    
   public void calculateArmData() {
-    stageOneAFF = calculateAFF(calculateFusedCG(calculateRelativeCoordinate(armStageTwo.getRelativeCG(), armStageOne.getRelativeCG()), armStageTwo.getRelativeCG()), armStageOne.getRelativeCB());
-    stageTwoAFF = calculateAFF(armStageTwo.getRelativeCG(), armStageTwo.getRelativeCB());
+    stageTwoCGRelativeToOrigin = calculateRelativeCG(armStageOne.getRelativeCG(), armStageTwo.getRelativeCG());
+    eFCGRelativeToOrigin = calculateRelativeCG(stageTwoCGRelativeToOrigin, endEffectorSubsystem.getRelativeCG());
+    stageOneAFF = calculateAFF(calculateFusedCG(calculateFusedCG(armStageOne.getRelativeCG(), stageTwoCGRelativeToOrigin), eFCGRelativeToOrigin), armStageOne.getRelativeCB());
+    stageTwoAFF = calculateAFF(calculateFusedCG(armStageTwo.getRelativeCG(), calculateRelativeCG(armStageTwo.getRelativeCG(), endEffectorSubsystem.getRelativeCG())), armStageTwo.getRelativeCB());
   }
   public double calculateAFF(double[] cG, double[] cB) {
     return calculateGravityTorque(new Rotation2d(cG[0], cG[1]).getRadians(), cG[2], calculateMagnitude(cG[0], cG[1])) - calculateCounterBalanceTorque(cB[3], cB[2], cB[0], cB[1]);
   }
-  public double[] calculateRelativeCoordinate (double[] origin, double[] point) {
+  public double[] calculateRelativeCG (double[] origin, double[] point) {
     return new double[] {point[0] + origin[0], point[1] + origin[1], point[2]};
   }
   public double[] calculateFusedCG(double[] cGOne, double[] cGTwo) {

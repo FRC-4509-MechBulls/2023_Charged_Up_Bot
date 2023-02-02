@@ -21,11 +21,11 @@ import frc.robot.commands.NavToPointCommand;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.lib.FMSGetter;
 import frc.robot.lib.NavigationField;
-import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.GraphicalTelemetrySubsystem;
 import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.arm.EndEffectorSubsystem;
 
 import java.nio.file.Path;
 
