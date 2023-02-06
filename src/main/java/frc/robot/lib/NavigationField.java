@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.SwerveSubsystem;
 import org.opencv.core.Scalar;
@@ -364,7 +365,9 @@ private void resetNodes(){
 
 }
 int setPointIndex = 0;
-    Node.Level nodeLevel = Node.Level.POS1;
+    private int placingLvlIndex = 0;
+    private Node.Level placingLevel = Node.Level.POS1;
+    private static final Node.Level[] nodeLevels = {Node.Level.POS1, Node.Level.POS2,Node.Level.POS3};
 
     public void iterateSetPoint(){
         setPointIndex++;
@@ -374,6 +377,17 @@ int setPointIndex = 0;
         setPointIndex--;
         updateSetPoint();
     }
+
+    public void iteratePlacingLevel(){
+        placingLvlIndex++;
+        updateNodeLevel();
+    }
+    public void decimatePlacingLevel(){
+     placingLvlIndex--;
+     updateNodeLevel();
+    }
+
+
     public void updateSetPoint(){
         if(setPointIndex>=setPoints.size())
             setPointIndex = 0;
@@ -382,6 +396,36 @@ int setPointIndex = 0;
 
         if(setPoints.size()>0)
             setNavPoint(setPoints.get(setPointIndex));
+    }
+
+    public void updateNodeLevel(){
+        if(placingLvlIndex >nodeLevels.length-1)
+            placingLvlIndex = nodeLevels.length - 1;
+        if(placingLvlIndex <0)
+            placingLvlIndex = 0;
+        setPlacingLevel(nodeLevels[placingLvlIndex]);
+    }
+    public void setPlacingLevel(Node.Level placingLevel){
+        this.placingLevel = placingLevel;
+    }
+    public Node.Level getPlacingNodeLevel(){
+        return this.placingLevel;
+    }
+    public Grabber.ArmModes getPlacingArmModeCube(){
+        switch(this.placingLevel){
+            case POS1: return Grabber.ArmModes.PLACING_CUBE_LVL1;
+            case POS2: return Grabber.ArmModes.PLACING_CUBE_LVL2;
+            case POS3: return Grabber.ArmModes.PLACING_CUBE_LVL3;
+        }
+        return null;
+    }
+    public Grabber.ArmModes getPlacingArmModeCone(){
+        switch(this.placingLevel){
+            case POS1: return Grabber.ArmModes.PLACING_CONE_LVL1;
+            case POS2: return Grabber.ArmModes.PLACING_CONE_LVL2;
+            case POS3: return Grabber.ArmModes.PLACING_CONE_LVL3;
+        }
+        return null;
     }
 
     public void placeCornerPoints(){
