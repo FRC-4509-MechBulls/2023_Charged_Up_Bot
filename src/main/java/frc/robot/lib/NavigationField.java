@@ -122,7 +122,10 @@ public  boolean barrierOnLine(Line2D.Double line){
 
 
 
- public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
+ public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth, double startTime, double timeout){
+     if(Timer.getFPGATimestamp() - startTime >timeout)
+         return new Pose2d[]{};
+
     double random = Math.random(); // :)
      int[] randIndexes = MathThings.randomIndexes(cornerPoints.size());
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
@@ -150,7 +153,7 @@ public  boolean barrierOnLine(Line2D.Double line){
 
             if(barrierOnLine(lineToTestPoint)) continue;
 
-            Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
+            Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1,startTime,timeout);
 
             if(lowerLevelOut.length>0){
                 Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
@@ -184,7 +187,7 @@ private Pose2d desiredPose;
         poseChanged = false;
         if(desiredPose == null)
             return;
-        Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
+        Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0,Timer.getFPGATimestamp(),5);
         if(outNavPoses.length<1)
             return;
         boolean poseCloseToLast = MathThings.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
