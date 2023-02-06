@@ -1,7 +1,7 @@
 package frc.robot.lib;
 
 public class Node {
-    public enum Level{GROUND,LVL1,LVL2}
+    public enum Level{POS1, POS2, POS3} //pos1 is ground, pos3 is highest
     public enum NodeType{CUBE,CONE,HYBRID}
 
     private double x;

@@ -12,7 +12,6 @@ import frc.robot.subsystems.SwerveSubsystem;
 import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import static frc.robot.Constants.FieldConstants.*;
@@ -335,13 +334,13 @@ private void resetNodes(){
             for(int x = 0; x<=2; x++)
                 for(int y = 0; y<9; y++){
                     if(x==2){
-                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, Node.Level.GROUND));
+                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, Node.Level.POS1));
                         continue;
                     }
-                    Node.Level level = Node.Level.LVL1;
+                    Node.Level level = Node.Level.POS2;
                     double myNodeX = nodeX2;
                     if(x==1) {
-                        level = Node.Level.LVL2;
+                        level = Node.Level.POS3;
                         myNodeX = nodeX3;
                     }
                     Node.NodeType type = Node.NodeType.CONE;
@@ -365,6 +364,8 @@ private void resetNodes(){
 
 }
 int setPointIndex = 0;
+    Node.Level nodeLevel = Node.Level.POS1;
+
     public void iterateSetPoint(){
         setPointIndex++;
         updateSetPoint();
