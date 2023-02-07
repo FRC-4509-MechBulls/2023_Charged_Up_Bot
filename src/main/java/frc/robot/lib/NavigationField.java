@@ -179,9 +179,11 @@ private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
-        this.desiredPose = desiredPose;
-        if(MathThings.poseDist(desiredPose,this.desiredPose) != 0 && this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees())
+        if(desiredPose!= null && this.desiredPose != null)
+        if(MathThings.poseDist(desiredPose,this.desiredPose) != 0 || this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees()){
             poseChanged = true;
+        }
+        this.desiredPose = desiredPose;
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         //updateNavPoses();
     }
@@ -196,8 +198,10 @@ private Pose2d desiredPose;
         if(outNavPoses.length<1)
             return;
         boolean poseCloseToLast = MathThings.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
-        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged ||poseCloseToLast ) && !poseChangedOld))
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
+            SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
             return;
+        }
 
         lastUsedPose = swerveSubsystem.getEstimatedPosition();
         navPoses.clear();
