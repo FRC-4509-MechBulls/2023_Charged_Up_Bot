@@ -44,8 +44,14 @@ public class MathThings {
         }
 
         public static double poseDist (Pose2d pose1, Pose2d pose2){
+            if(pose1 == null || pose2 == null ) return 0;
             return Math.sqrt(Math.pow(pose1.getX() - pose2.getX(), 2) + Math.pow(pose1.getY() - pose2.getY(), 2));
 
+        }
+
+        public static int indexWrap(int i, int max){ //keeps i within 0 to (max-1), wraps back to the beginning/end if gone too high/below zero
+        if(max == 0) return 0;
+        return (int)(i + Math.abs(i*(Math.floor(max))))%max;
         }
 
 }

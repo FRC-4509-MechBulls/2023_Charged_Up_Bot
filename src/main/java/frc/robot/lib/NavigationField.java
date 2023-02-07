@@ -387,9 +387,8 @@ int setPointIndex = 0;
 
 
     public void updateSetPoint(int i){
-        int adjustedIndex = 0;
-        if(i!=0)
-            adjustedIndex = (i + i*(setPoints.size()/i))%setPoints.size(); //definitely wraps it back around
+        if(setPoints.size()==0) return;
+        int adjustedIndex = MathThings.indexWrap(i, setPoints.size());
         if(setPoints.size()>0)
             setNavPoint(setPoints.get(adjustedIndex));
     }
