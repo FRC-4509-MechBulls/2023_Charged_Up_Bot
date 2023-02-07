@@ -28,6 +28,9 @@ public class ArmStageOne extends SubsystemBase {
   private double cG[];
   private double cB[];
   private double angle;
+  private double kTransmissionData[];
+  private double feedForward;
+  private double kLength;
 
   /** Creates a new ArmStageOne. */
   public ArmStageOne() {
@@ -81,12 +84,21 @@ public class ArmStageOne extends SubsystemBase {
   public double[] getCB() {
     return cB;
   }
+  public double getLength() {
+    return kLength;
+  }
+  public double[] getTransmissionData() {
+    return kTransmissionData;
+  }
   public double getEncoderRad() {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
   }
   //Setters
   public void limitSwitchPassed(){
     armMotorPrimary.setSelectedSensorPosition(ArmConstants.kStageOne_LimitSwitchAngleRad);
+  }
+  public void setAFF(double AFF){
+    this.feedForward = feedForward;
   }
   public void setArmPositionRad(double setpoint){
     armMotorPrimary.set(TalonSRXControlMode.Position, setpoint);

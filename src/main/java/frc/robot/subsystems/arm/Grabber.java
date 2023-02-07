@@ -6,8 +6,7 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.ArmConstants;
 
 
 public class Grabber extends SubsystemBase {
@@ -79,8 +78,11 @@ public class Grabber extends SubsystemBase {
     double[] eFStageTwoFusedCGRelativeToStageOne = sumCGCoordinates(stageOneCG, eFStageTwoFusedCG);
     double[] eFStageTwoStageOneFusedCG = calculateFusedCG(eFStageTwoFusedCGRelativeToStageOne, stageOneCG);
 
-    stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoCB);
-    stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneCB);
+    double[] stageOneTransmissionData = armStageOne.getTransmissionData();
+    double[] stageTwoTransmissionData = armStageTwo.getTransmissionData();
+
+    stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoCB, stageOneTransmissionData);
+    stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneCB, stageTwoTransmissionData);
   }
   public double calculateAFF(double[] cG, double[] cB, double[] transmissionData) {
     double torque = calculateArmTorque(cG, cB);
@@ -135,10 +137,26 @@ public class Grabber extends SubsystemBase {
   public double calculateCounterBalanceTorque(double cBAngleRad, double springForceLB, double cBx, double cBy) {
     return Math.sin(cBAngleRad) * springForceLB *  Math.hypot(cBx, cBy);
   }
+  public void updateArmData() {
+    armStageOne.setAFF(stageOneAFF);
+    armStageTwo.setAFF(stageTwoAFF);
+  }
+
+  public double[] convertXYToThetaOmega(double[] coordinate) {
+    double x = coordinate[0];
+    double y = coordinate[1];
+    double referenceAngle = new Rotation2d(x, y).getRadians();
+    
+    double theta = referenceAngle + Math.acos((Math.pow(armStageOne.getLength(), 2) + Math.pow(Math.hypot(x, y), 2) - Math.pow(armStageTwo.getLength(), 2)) / 2*armStageOne.getLength()*Math.hypot(x, y));
+    double omega = referenceAngle + Math.acos((Math.pow(Math.hypot(x, y), 2) + Math.pow(armStageTwo.getLength(), 2) - Math.pow(armStageOne.getLength(), 2)) / 2*Math.hypot(x, y)*armStageTwo.getLength());
+
+    return new double[] {theta, omega};
+  }
 
   @Override
   public void periodic() {
     calculateArmData();
+    updateArmData();
     // This method will be called once per scheduler run
   }
 }

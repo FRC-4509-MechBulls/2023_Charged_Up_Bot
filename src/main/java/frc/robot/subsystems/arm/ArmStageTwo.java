@@ -32,7 +32,9 @@ public class ArmStageTwo extends SubsystemBase {
   private double cB[];
   private double kCG[];
   private double kCB[];
+  private double kTransmissionData[];
   private double angle;
+  private double kLength;
 
   /** Creates a new ArmStageTwo. */
   public ArmStageTwo() {
@@ -84,6 +86,12 @@ public class ArmStageTwo extends SubsystemBase {
   }
   public double[] getCB() {
     return cB;
+  }
+  public double getLength() {
+    return kLength;
+  }
+  public double[] getTransmissionData() {
+    return kTransmissionData;
   }
   public void setAFF(double AFF) {
     this.AFF = AFF;
