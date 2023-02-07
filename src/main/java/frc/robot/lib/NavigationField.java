@@ -345,13 +345,13 @@ private void resetNodes(){
             for(int x = 0; x<=2; x++)
                 for(int y = 0; y<9; y++){
                     if(x==2){
-                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, Node.Level.POS1));
+                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, StateControllerSubsystem.Level.POS1));
                         continue;
                     }
-                    Node.Level level = Node.Level.POS2;
+                    StateControllerSubsystem.Level level = StateControllerSubsystem.Level.POS2;
                     double myNodeX = nodeX2;
                     if(x==1) {
-                        level = Node.Level.POS3;
+                        level = StateControllerSubsystem.Level.POS3;
                         myNodeX = nodeX3;
                     }
                     Node.NodeType type = Node.NodeType.CONE;
@@ -376,8 +376,8 @@ private void resetNodes(){
 }
 int setPointIndex = 0;
     private int placingLvlIndex = 0;
-    private Node.Level placingLevel = Node.Level.POS1;
-    private static final Node.Level[] nodeLevels = {Node.Level.POS1, Node.Level.POS2,Node.Level.POS3};
+    private StateControllerSubsystem.Level placingLevel = StateControllerSubsystem.Level.POS1;
+    private static final StateControllerSubsystem.Level[] nodeLevels = {StateControllerSubsystem.Level.POS1, StateControllerSubsystem.Level.POS2,StateControllerSubsystem.Level.POS3};
 
 
 
@@ -405,10 +405,10 @@ int setPointIndex = 0;
             placingLvlIndex = 0;
         setPlacingLevel(nodeLevels[placingLvlIndex]);
     }
-    public void setPlacingLevel(Node.Level placingLevel){
+    public void setPlacingLevel(StateControllerSubsystem.Level placingLevel){
         this.placingLevel = placingLevel;
     }
-    public Node.Level getPlacingNodeLevel(){
+    public StateControllerSubsystem.Level getPlacingNodeLevel(){
         return this.placingLevel;
     }
     public Grabber.ArmModes getPlacingArmModeCube(){

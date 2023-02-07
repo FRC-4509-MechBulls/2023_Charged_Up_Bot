@@ -17,6 +17,8 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static frc.robot.subsystems.StateControllerSubsystem.Level.*;
+
 public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
     public PathingTelemetrySub() {super("Pathing");}

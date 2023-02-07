@@ -8,19 +8,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MathThings;
 import frc.robot.subsystems.arm.ArmStageOne;
 import frc.robot.subsystems.arm.ArmStageTwo;
+
+import javax.swing.plaf.nimbus.State;
+
 import static frc.robot.Constants.ArmConstants;
 
 
 public class Grabber extends SubsystemBase {
 
+  StateControllerSubsystem stateController;
   ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:(
   ArmStageTwo armStageTwo;
   EndEffectorSubsystem endEffectorSubsystem;
   /** Creates a new Grabber. */
-  public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem) {
+  public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem, StateControllerSubsystem stateController) {
     this.armStageOne = armStageOne;
     this.armStageTwo = armStageTwo;
     this.endEffectorSubsystem = endEffectorSubsystem;
+    this.stateController = stateController;
   }
   public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
   public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE, PLACING_CONE, STOPPED}
@@ -103,6 +108,8 @@ public class Grabber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    setDesiredArmAndEFModes(stateController.getArmMode(), stateController.getEFMode());
+
 
     if(getEFMode() != getDesiredEFMode()){ //wait for the arm to be within the tolerance to update the EF mode if intaking or placing
       boolean armOneAligned = MathThings.isWithinRangeOf(armStageOne.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],ArmConstants.angleToleranceToUpdateEF);
