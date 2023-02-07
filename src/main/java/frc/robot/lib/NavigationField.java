@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.PathingTelemetrySub;
+import frc.robot.subsystems.StateControllerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import org.opencv.core.Scalar;
 
@@ -20,6 +21,7 @@ import static frc.robot.Constants.FieldConstants.*;
 
 public class NavigationField extends SubsystemBase {
 
+    StateControllerSubsystem stateControllerSub;
  ArrayList<FieldLine> fieldLines = new ArrayList<FieldLine>();
  ArrayList<Node> nodes = new ArrayList<Node>();
  ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
@@ -31,10 +33,11 @@ PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
  Thread pathingThread;
  FMSGetter fmsGetter;
-public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter){
+public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter, StateControllerSubsystem stateControllerSub){
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
     this.fmsGetter = fmsGetter;
+    this.stateControllerSub = stateControllerSub;
 
     createAndStartPathingThread();
     createBarriers();
@@ -62,6 +65,7 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         lastAllianceCheck = Timer.getFPGATimestamp();
     }
     SmartDashboard.putBoolean("poseChanged",poseChanged);
+    updateSetPoint(stateControllerSub.getSetpointIndex());
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
@@ -369,14 +373,7 @@ int setPointIndex = 0;
     private Node.Level placingLevel = Node.Level.POS1;
     private static final Node.Level[] nodeLevels = {Node.Level.POS1, Node.Level.POS2,Node.Level.POS3};
 
-    public void iterateSetPoint(){
-        setPointIndex++;
-        updateSetPoint();
-    }
-    public void decimateSetPoint(){
-        setPointIndex--;
-        updateSetPoint();
-    }
+
 
     public void iteratePlacingLevel(){
         placingLvlIndex++;
@@ -388,14 +385,12 @@ int setPointIndex = 0;
     }
 
 
-    public void updateSetPoint(){
-        if(setPointIndex>=setPoints.size())
-            setPointIndex = 0;
-        if(setPointIndex<0)
-            setPointIndex = setPoints.size()-1;
-
+    public void updateSetPoint(int i){
+        int adjustedIndex = 0;
+        if(i!=0)
+            adjustedIndex = (i + i*(setPoints.size()/i))%setPoints.size(); //definitely wraps it back around
         if(setPoints.size()>0)
-            setNavPoint(setPoints.get(setPointIndex));
+            setNavPoint(setPoints.get(adjustedIndex));
     }
 
     public void updateNodeLevel(){

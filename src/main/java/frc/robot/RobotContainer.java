@@ -21,11 +21,7 @@ import frc.robot.commands.NavToPointCommand;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.lib.FMSGetter;
 import frc.robot.lib.NavigationField;
-import frc.robot.subsystems.EndEffectorSubsystem;
-import frc.robot.subsystems.GraphicalTelemetrySubsystem;
-import frc.robot.subsystems.PathingTelemetrySub;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.*;
 
 import java.nio.file.Path;
 
@@ -36,10 +32,11 @@ import java.nio.file.Path;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+  private final StateControllerSubsystem stateControllerSubsystem = new StateControllerSubsystem();
   private final FMSGetter fmsGetter = new FMSGetter();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub();
-  private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter);
+  private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
   private final EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
 
@@ -54,8 +51,8 @@ public class RobotContainer {
   private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint()),swerveSubsystem);
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
 
-  private final Command nav_iterateSetPoint = new InstantCommand(navigationField::iterateSetPoint);
-  private final Command nav_decimateSetPoint = new InstantCommand(navigationField::decimateSetPoint);
+  private final Command nav_iterateSetPoint = new InstantCommand(stateControllerSubsystem::iterateSetPoint);
+  private final Command nav_decimateSetPoint = new InstantCommand(stateControllerSubsystem::decimateSetPoint);
 
   private final Command ef_stop = new RunCommand(()-> endEffectorSubsystem.stopMotors(), endEffectorSubsystem);
 
