@@ -180,7 +180,8 @@ private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
         this.desiredPose = desiredPose;
-        poseChanged = true;
+        if(MathThings.poseDist(desiredPose,this.desiredPose) != 0 && this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees())
+            poseChanged = true;
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         //updateNavPoses();
     }
