@@ -50,6 +50,7 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
 boolean wasOnRedAlliance = true;
 double lastAllianceCheck = Timer.getFPGATimestamp();
 boolean queueNodeReset = true;
+int oldSetpointIndex = 0;
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
 Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
@@ -65,7 +66,11 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         lastAllianceCheck = Timer.getFPGATimestamp();
     }
     SmartDashboard.putBoolean("poseChanged",poseChanged);
-    updateSetPoint(stateControllerSub.getSetpointIndex());
+    if(oldSetpointIndex != stateControllerSub.getSetpointIndex()){
+        updateSetPoint(stateControllerSub.getSetpointIndex());
+        oldSetpointIndex = stateControllerSub.getSetpointIndex();
+    }
+
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
