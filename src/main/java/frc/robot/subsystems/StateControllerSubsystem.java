@@ -14,12 +14,22 @@ public class StateControllerSubsystem extends SubsystemBase {
   }
 
   int setPointIndex = 0;
-  AgnosticGrabberMode agnosticGrabberMode = AgnosticGrabberMode.HOLDING;
-  ItemType itemType = ItemType.NONE;
-  ItemFallen itemFallen = ItemFallen.NOT_FALLEN;
-  Level placingLevel = Level.POS1;
+  private AgnosticGrabberMode agnosticGrabberMode = AgnosticGrabberMode.HOLDING;
+  private ItemType itemType = ItemType.NONE;
+  private ItemFallen itemFallen = ItemFallen.NOT_FALLEN;
+  private Level placingLevel = Level.POS1;
 
-public int getSetpointIndex(){
+  public void setAgnosticGrabberMode(AgnosticGrabberMode agnosticGrabberMode){this.agnosticGrabberMode = agnosticGrabberMode;}
+  public void setItemType(ItemType itemType){this.itemType = itemType;}
+  public void setItemFallen(ItemFallen itemFallen){this.itemFallen = itemFallen;}
+  public void setPlacingLevel(Level placingLevel){this.placingLevel = placingLevel;}
+
+  public AgnosticGrabberMode getAgnosticGrabberMode(){return agnosticGrabberMode;}
+  public ItemType getItemType(){return itemType;}
+  public ItemFallen getItemFallen(){return itemFallen;}
+  public Level getPlacingLevel(){return placingLevel;}
+
+  public int getSetpointIndex(){
     return setPointIndex;
 }
 public void setSetpointIndex(int setPointIndex){this.setPointIndex = setPointIndex;}
