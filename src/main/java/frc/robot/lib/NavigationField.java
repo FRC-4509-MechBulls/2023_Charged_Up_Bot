@@ -324,7 +324,7 @@ private void createAndStartPathingThread(){
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
                     });
     pathingThread.setDaemon(true);
-    pathingThread.setName("LH_PathingThread");
+    pathingThread.setName("MB_PathingThread");
     pathingThread.setPriority(1); //low priority I hope?
     pathingThread.start();
 }
