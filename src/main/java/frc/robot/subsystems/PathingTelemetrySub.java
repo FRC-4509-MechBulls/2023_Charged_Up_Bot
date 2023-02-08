@@ -17,6 +17,8 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import static frc.robot.subsystems.StateControllerSubsystem.Level.*;
+
 public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
     public PathingTelemetrySub() {super("Pathing");}
@@ -56,9 +58,9 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
                 case HYBRID: color = new Scalar(46,162,0); break; //green?
             }
             switch(node.getLevel()){
-                case GROUND: radius = 3; break;
-                case LVL1: radius = 4; break;
-                case LVL2: radius = 5; break;
+                case POS1: radius = 3; break;
+                case POS2: radius = 4; break;
+                case POS3: radius = 5; break;
             }
             Imgproc.circle(mat, metersPosToPixelsPos(new Point(node.getX(),node.getY())),radius,color,2);
         }

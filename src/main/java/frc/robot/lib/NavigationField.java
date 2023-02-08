@@ -7,12 +7,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Grabber;
 import frc.robot.subsystems.PathingTelemetrySub;
+import frc.robot.subsystems.StateControllerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import static frc.robot.Constants.FieldConstants.*;
@@ -20,6 +21,7 @@ import static frc.robot.Constants.FieldConstants.*;
 
 public class NavigationField extends SubsystemBase {
 
+    StateControllerSubsystem stateControllerSub;
  ArrayList<FieldLine> fieldLines = new ArrayList<FieldLine>();
  ArrayList<Node> nodes = new ArrayList<Node>();
  ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
@@ -31,10 +33,11 @@ PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
  Thread pathingThread;
  FMSGetter fmsGetter;
-public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter){
+public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter, StateControllerSubsystem stateControllerSub){
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
     this.fmsGetter = fmsGetter;
+    this.stateControllerSub = stateControllerSub;
 
     createAndStartPathingThread();
     createBarriers();
@@ -47,6 +50,7 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
 boolean wasOnRedAlliance = true;
 double lastAllianceCheck = Timer.getFPGATimestamp();
 boolean queueNodeReset = true;
+int oldSetpointIndex = 0;
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
 Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
@@ -62,6 +66,11 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         lastAllianceCheck = Timer.getFPGATimestamp();
     }
     SmartDashboard.putBoolean("poseChanged",poseChanged);
+    if(oldSetpointIndex != stateControllerSub.getSetpointIndex()){
+        updateSetPoint(stateControllerSub.getSetpointIndex());
+        oldSetpointIndex = stateControllerSub.getSetpointIndex();
+    }
+
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
@@ -175,8 +184,11 @@ private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
+        if(desiredPose!= null && this.desiredPose != null)
+        if(MathThings.poseDist(desiredPose,this.desiredPose) != 0 || this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees()){
+            poseChanged = true;
+        }
         this.desiredPose = desiredPose;
-        poseChanged = true;
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         //updateNavPoses();
     }
@@ -191,8 +203,10 @@ private Pose2d desiredPose;
         if(outNavPoses.length<1)
             return;
         boolean poseCloseToLast = MathThings.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
-        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged ||poseCloseToLast ) && !poseChangedOld))
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
+            SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
             return;
+        }
 
         lastUsedPose = swerveSubsystem.getEstimatedPosition();
         navPoses.clear();
@@ -310,6 +324,7 @@ private void createAndStartPathingThread(){
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
                     });
     pathingThread.setDaemon(true);
+    pathingThread.setName("LH_PathingThread");
     pathingThread.setPriority(1); //low priority I hope?
     pathingThread.start();
 }
@@ -335,13 +350,13 @@ private void resetNodes(){
             for(int x = 0; x<=2; x++)
                 for(int y = 0; y<9; y++){
                     if(x==2){
-                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, Node.Level.GROUND));
+                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, StateControllerSubsystem.Level.POS1));
                         continue;
                     }
-                    Node.Level level = Node.Level.LVL1;
+                    StateControllerSubsystem.Level level = StateControllerSubsystem.Level.POS2;
                     double myNodeX = nodeX2;
                     if(x==1) {
-                        level = Node.Level.LVL2;
+                        level = StateControllerSubsystem.Level.POS3;
                         myNodeX = nodeX3;
                     }
                     Node.NodeType type = Node.NodeType.CONE;
@@ -365,22 +380,57 @@ private void resetNodes(){
 
 }
 int setPointIndex = 0;
-    public void iterateSetPoint(){
-        setPointIndex++;
-        updateSetPoint();
-    }
-    public void decimateSetPoint(){
-        setPointIndex--;
-        updateSetPoint();
-    }
-    public void updateSetPoint(){
-        if(setPointIndex>=setPoints.size())
-            setPointIndex = 0;
-        if(setPointIndex<0)
-            setPointIndex = setPoints.size()-1;
+    private int placingLvlIndex = 0;
+    private StateControllerSubsystem.Level placingLevel = StateControllerSubsystem.Level.POS1;
+    private static final StateControllerSubsystem.Level[] nodeLevels = {StateControllerSubsystem.Level.POS1, StateControllerSubsystem.Level.POS2,StateControllerSubsystem.Level.POS3};
 
+
+
+    public void iteratePlacingLevel(){
+        placingLvlIndex++;
+        updateNodeLevel();
+    }
+    public void decimatePlacingLevel(){
+     placingLvlIndex--;
+     updateNodeLevel();
+    }
+
+
+    public void updateSetPoint(int i){
+        if(setPoints.size()==0) return;
+        int adjustedIndex = MathThings.indexWrap(i, setPoints.size());
         if(setPoints.size()>0)
-            setNavPoint(setPoints.get(setPointIndex));
+            setNavPoint(setPoints.get(adjustedIndex));
+    }
+
+    public void updateNodeLevel(){
+        if(placingLvlIndex >nodeLevels.length-1)
+            placingLvlIndex = nodeLevels.length - 1;
+        if(placingLvlIndex <0)
+            placingLvlIndex = 0;
+        setPlacingLevel(nodeLevels[placingLvlIndex]);
+    }
+    public void setPlacingLevel(StateControllerSubsystem.Level placingLevel){
+        this.placingLevel = placingLevel;
+    }
+    public StateControllerSubsystem.Level getPlacingNodeLevel(){
+        return this.placingLevel;
+    }
+    public Grabber.ArmModes getPlacingArmModeCube(){
+        switch(this.placingLevel){
+            case POS1: return Grabber.ArmModes.PLACING_CUBE_LVL1;
+            case POS2: return Grabber.ArmModes.PLACING_CUBE_LVL2;
+            case POS3: return Grabber.ArmModes.PLACING_CUBE_LVL3;
+        }
+        return null;
+    }
+    public Grabber.ArmModes getPlacingArmModeCone(){
+        switch(this.placingLevel){
+            case POS1: return Grabber.ArmModes.PLACING_CONE_LVL1;
+            case POS2: return Grabber.ArmModes.PLACING_CONE_LVL2;
+            case POS3: return Grabber.ArmModes.PLACING_CONE_LVL3;
+        }
+        return null;
     }
 
     public void placeCornerPoints(){

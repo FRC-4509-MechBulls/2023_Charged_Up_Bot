@@ -204,7 +204,7 @@ public final class Constants {
         public static final double drivePValue = 0.5; //% speed for every meter away from target
         public static final double turnPValue = 1/180.0; //% speed for every degree away from target
 
-        public static final double maxPowerOut = 0.3;
+        public static final double maxPowerOut = 0.8;
         public static final double maxTurningPowerOut = 0.3;
 
     }
