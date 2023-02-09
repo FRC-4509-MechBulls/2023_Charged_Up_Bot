@@ -35,7 +35,7 @@ public class RobotContainer {
   private final StateControllerSubsystem stateControllerSubsystem = new StateControllerSubsystem();
   private final FMSGetter fmsGetter = new FMSGetter();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub();
+  private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
   private final EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
