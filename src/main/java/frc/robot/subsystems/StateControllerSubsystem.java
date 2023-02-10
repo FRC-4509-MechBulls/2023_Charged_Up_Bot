@@ -4,20 +4,25 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.FMSGetter;
 
 public class StateControllerSubsystem extends SubsystemBase {
   /** Creates a new StateControllerSubsystem. */
-  public StateControllerSubsystem() {
-    
+  FMSGetter fmsGetter;
+  public StateControllerSubsystem(FMSGetter fmsGetter) {
+    this.fmsGetter = fmsGetter;
   }
 
   int setPointIndex = 0;
+  int placingLevelIndex = 0;
   private AgnosticGrabberMode agnosticGrabberMode = AgnosticGrabberMode.HOLDING;
   private ItemType itemType = ItemType.NONE;
   private ItemFallen itemFallen = ItemFallen.NOT_FALLEN;
   private Level placingLevel = Level.POS1;
+  private Level[] placingLevels = {Level.POS1,Level.POS2,Level.POS3};
 
   public void setAgnosticGrabberMode(AgnosticGrabberMode agnosticGrabberMode){this.agnosticGrabberMode = agnosticGrabberMode;}
   public void setItemType(ItemType itemType){this.itemType = itemType;}
@@ -38,6 +43,29 @@ public void setSetpointIndex(int setPointIndex){this.setPointIndex = setPointInd
   }
   public void decimateSetPoint(){
     setPointIndex--;
+  }
+
+  public void iteratePlacingLevel(){placingLevelIndex++; updatePlacingLevelFromIndex();}
+  public void decimatePlacingLevel(){placingLevelIndex--; updatePlacingLevelFromIndex();}
+
+int lastPlacingPOV = -1;
+  void placingPOVPressed(int pov){
+    switch (pov){
+      case 270: if(fmsGetter.isRedAlliance()) decimateSetPoint(); else iterateSetPoint(); break;
+      case 90: if(fmsGetter.isRedAlliance()) iterateSetPoint(); else decimateSetPoint(); break;
+      case 180: iteratePlacingLevel(); break;
+      case 0: decimatePlacingLevel(); break;
+    }
+  }
+  public void processRawJoystickValues(int placingPOV){
+    if(lastPlacingPOV == -1 && placingPOV!=-1)
+      placingPOVPressed(placingPOV);
+lastPlacingPOV = placingPOV;
+  }
+  public void updatePlacingLevelFromIndex(){
+    if(placingLevelIndex<0) placingLevelIndex = 0;
+    if(placingLevelIndex>placingLevels.length-1) placingLevelIndex = placingLevels.length-1;
+    placingLevel = placingLevels[placingLevelIndex];
   }
 
   public enum ItemType{CUBE,CONE,NONE}
@@ -74,6 +102,7 @@ public void setSetpointIndex(int setPointIndex){this.setPointIndex = setPointInd
 
     return Grabber.ArmModes.HOLDING;
   }
+
   public Grabber.EFModes getEFMode(){
     if(agnosticGrabberMode == AgnosticGrabberMode.INTAKING){
       switch (itemType){
@@ -96,6 +125,10 @@ public void setSetpointIndex(int setPointIndex){this.setPointIndex = setPointInd
   return Grabber.EFModes.STOPPED;
   }
 
+
+  public void itemCubeButton(){itemType = ItemType.CUBE; itemFallen = ItemFallen.NOT_FALLEN;}
+  public void itemConeFallenButton(){itemType = ItemType.CONE; itemFallen = ItemFallen.FALLEN_CONE;}
+  public void itemConeUprightButton(){itemType = ItemType.CONE; itemFallen = ItemFallen.NOT_FALLEN;}
 
   @Override
   public void periodic() {

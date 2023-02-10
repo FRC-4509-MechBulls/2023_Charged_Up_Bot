@@ -67,7 +67,7 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
             }
             if(node.getLevel() == stateControllerSubsystem.getPlacingLevel())
                 //if(Timer.getFPGATimestamp()%1 > 0.5)
-                    color = new Scalar(color.val[0]-50,color.val[1]-50,color.val[2]+100);
+                    color = new Scalar(color.val[0]-175,color.val[1]-175,color.val[2]+175);
             Imgproc.circle(mat, metersPosToPixelsPos(new Point(node.getX(),node.getY())),radius,color,2);
         }
 
@@ -168,7 +168,8 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
                 new Point(26,14)
         ));
         Imgproc.fillPoly(mat,box1,coneOrCubeColor);
-        Imgproc.putText(mat,stateControllerSubsystem.getItemType().toString(),new Point(32,26),5,0.5,new Scalar(255,255,255));
+        String fallenString = ""; if(stateControllerSubsystem.getItemFallen() == StateControllerSubsystem.ItemFallen.FALLEN_CONE) fallenString = "_FALLEN";
+        Imgproc.putText(mat,stateControllerSubsystem.getItemType().toString()+fallenString,new Point(32,26),5,0.5,new Scalar(255,255,255));
 
         Scalar agnosticGrabberColor = new Scalar(200,200,200);
         switch(stateControllerSubsystem.getAgnosticGrabberMode()){

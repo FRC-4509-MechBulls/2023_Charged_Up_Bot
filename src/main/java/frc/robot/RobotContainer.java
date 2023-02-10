@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.NavToPointCommand;
 import frc.robot.commands.SwerveJoystickCmd;
@@ -32,8 +33,8 @@ import java.nio.file.Path;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  private final StateControllerSubsystem stateControllerSubsystem = new StateControllerSubsystem();
   private final FMSGetter fmsGetter = new FMSGetter();
+  private final StateControllerSubsystem stateControllerSubsystem = new StateControllerSubsystem(fmsGetter);
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
@@ -44,6 +45,7 @@ public class RobotContainer {
   private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
   private final XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
   private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
+  private final Command stateController_processInputs = new RunCommand(()-> stateControllerSubsystem.processRawJoystickValues(operatorController.getPOV()),stateControllerSubsystem);
   private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
   private final Command rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
   private final Command rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
@@ -51,10 +53,9 @@ public class RobotContainer {
   private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint()),swerveSubsystem);
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
 
-  private final Command nav_iterateSetPoint = new InstantCommand(stateControllerSubsystem::iterateSetPoint);
-  private final Command nav_decimateSetPoint = new InstantCommand(stateControllerSubsystem::decimateSetPoint);
 
-  private final Command ef_stop = new RunCommand(()-> endEffectorSubsystem.stopMotors(), endEffectorSubsystem);
+
+
 
   SendableChooser<Command> autoChooser = new SendableChooser<>();
 
@@ -62,7 +63,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     swerveSubsystem.setDefaultCommand(rc_drive);
-    endEffectorSubsystem.setDefaultCommand(ef_stop);
+    stateControllerSubsystem.setDefaultCommand(stateController_processInputs);
 
     //pathingTelemSub.setDefaultCommand(new RunCommand(()->pathingTelemSub.periodic(),pathingTelemSub));
   //  (PathingTelemetrySub)pathingTelemSub.set
@@ -99,6 +100,7 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
+  private POVButton[] dpad = new POVButton[]{new POVButton(operatorController,0),new POVButton(operatorController,90),new POVButton(operatorController,180),new POVButton(operatorController,270)};
   private void configureButtonBindings() {
     new JoystickButton(driverController, XboxController.Button.kBack.value).whenPressed(() -> swerveSubsystem.zeroHeading());
     new JoystickButton(driverController, XboxController.Button.kY.value).whenHeld(rc_goToTag);
@@ -112,9 +114,9 @@ public class RobotContainer {
     new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(navigationField::engageNav));
     new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onFalse(new InstantCommand(navigationField::disengageNav));
 
-
-    new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value).onTrue(nav_iterateSetPoint);
-    new JoystickButton(operatorController, XboxController.Button.kRightBumper.value).onTrue(nav_decimateSetPoint);
+    new JoystickButton(operatorController, XboxController.Button.kX.value).onTrue(new InstantCommand(stateControllerSubsystem::itemCubeButton));
+    new JoystickButton(operatorController,XboxController.Button.kA.value).onTrue(new InstantCommand(stateControllerSubsystem::itemConeFallenButton));
+    new JoystickButton(operatorController,XboxController.Button.kB.value).onTrue(new InstantCommand(stateControllerSubsystem::itemConeUprightButton));
 
   }
 
