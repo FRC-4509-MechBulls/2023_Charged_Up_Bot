@@ -35,6 +35,8 @@ public class ArmStageTwo extends SubsystemBase {
   private double kTransmissionData[];
   private double angle;
   private double kLength;
+  private double kPivotCoordinate[];
+  private double cBTorque;
 
   /** Creates a new ArmStageTwo. */
   public ArmStageTwo() {
@@ -61,16 +63,18 @@ public class ArmStageTwo extends SubsystemBase {
 
 
   }
-  public void calculateStageData() {
+
+  private void calculateStageData() {
     cG = calculateCG();
     cB = calculateCB();
   }
-  public double[] calculateCB() {
+
+  private double[] calculateCB() {
     Rotation2d cBAngle = new Rotation2d(new Rotation2d(kCB[0], kCB[1]).getRadians() + angle);
     double magnitude = Math.sqrt(Math.pow(kCB[0], 2) + Math.pow(kCB[1], 2));
     return new double[] {cBAngle.getCos() * magnitude, cBAngle.getSin() * magnitude, kCB[2] * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
   }
-  public double[] calculateCG() {
+  private double[] calculateCG() {
     /*
     x, y -> angle
     angle + angle
@@ -96,8 +100,11 @@ public class ArmStageTwo extends SubsystemBase {
   public void setAFF(double AFF) {
     this.AFF = AFF;
   }
-  public double getEncoderRad() {
+  private double getEncoderRad() {
     return armMotorPrimary.getEncoder().getPosition() * ArmConstants.kstageTwo_encoderTicksToRadians;
+  }
+  public double[] getPivotCoordinate() {
+    return kPivotCoordinate;
   }
 
 
@@ -105,13 +112,14 @@ public class ArmStageTwo extends SubsystemBase {
     armMotorPrimary.getEncoder().setPosition(ArmConstants.kStageTwo_LimitSwitchAngleRad / Math.PI / 2.0);
   }
 
-  public void setArmPositionRad(double setpoint){
+  private void setArmPositionRad(double setpoint){
     pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
   }
 
 
   @Override
   public void periodic() {
+    calculateStageData();
     // This method will be called once per scheduler run
     //armMotorPrimary.set(TalonSRXControlMode.PercentOutput,pid.calculate(getAbsoluteEncoderRad())); //replace this with internal PID
   }

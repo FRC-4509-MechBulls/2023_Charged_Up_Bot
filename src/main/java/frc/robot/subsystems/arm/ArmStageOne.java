@@ -31,6 +31,7 @@ public class ArmStageOne extends SubsystemBase {
   private double kTransmissionData[];
   private double feedForward;
   private double kLength;
+  private double kPivotCoordinate[];
 
   /** Creates a new ArmStageOne. */
   public ArmStageOne() {
@@ -92,6 +93,9 @@ public class ArmStageOne extends SubsystemBase {
   }
   public double getEncoderRad() {
     return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
+  }
+  public double[] getPivotCoordinate() {
+    return kPivotCoordinate;
   }
   //Setters
   public void limitSwitchPassed(){

@@ -11,14 +11,14 @@ import frc.robot.Constants.ArmConstants;
 
 public class Grabber extends SubsystemBase {
 
-  ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:( //can we name the variable "stageOne" cus I dont feel like typing arm for no reason
-  ArmStageTwo armStageTwo;
-  EndEffectorSubsystem endEffectorSubsystem;
+  private ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:( //can we name the variable "stageOne" cus I dont feel like typing arm for no reason
+  private ArmStageTwo armStageTwo;
+  private EndEffectorSubsystem endEffectorSubsystem;
 
-  double stageOneAFF;
-  double stageTwoAFF;
-  double stageTwoGravityAFF;
-  double stageOneGravityAFF;
+  private double stageOneAFF;
+  private double stageTwoAFF;
+  private double stageTwoGravityAFF;
+  private double stageOneGravityAFF;
   /** Creates a new Grabber. */
   public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem) {
     this.armStageOne = armStageOne;
@@ -84,11 +84,20 @@ public class Grabber extends SubsystemBase {
     stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoCB, stageOneTransmissionData);
     stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneCB, stageTwoTransmissionData);
   }
-  public double calculateAFF(double[] cG, double[] cB, double[] transmissionData) {
+  public void updateArmData() {
+    armStageOne.setAFF(stageOneAFF);
+    armStageTwo.setAFF(stageTwoAFF);
+  }
+  public double calculateAFF(double[] armCG, double[] armCB, double[] transmissionData) {
+    double[] cG = armCG;
+    double[] cB = armCB;
+
     double torque = calculateArmTorque(cG, cB);
     double torqueCoefficient = calculateTorqueCoefficient(transmissionData);
 
-    return torque * torqueCoefficient;
+    double voltage = torque * torqueCoefficient;
+
+    return voltage;
   }
   public double calculateTorqueCoefficient(double[] transmissionData) {
     double rateOfChangeTWithRespectToV = transmissionData[0];
@@ -137,20 +146,68 @@ public class Grabber extends SubsystemBase {
   public double calculateCounterBalanceTorque(double cBAngleRad, double springForceLB, double cBx, double cBy) {
     return Math.sin(cBAngleRad) * springForceLB *  Math.hypot(cBx, cBy);
   }
-  public void updateArmData() {
-    armStageOne.setAFF(stageOneAFF);
-    armStageTwo.setAFF(stageTwoAFF);
+
+  public double[] subtractCoordinates(double[] coordinate, double[] origin) { //difference between two coordinates as a coordinate
+    double coordinateX = coordinate[0];
+    double coordinateY = coordinate[1];
+
+    double originX = origin[0];
+    double originY = origin[1];
+
+    double x = coordinateX-originX;
+    double y = coordinateY-originY;
+
+    return new double[] {x, y};
   }
 
-  public double[] convertXYToThetaOmega(double[] coordinate) {
+  public double[] sumCoordinates(double[] coordinate, double[] origin) { //difference between two coordinates as a coordinate
+    double coordinateX = coordinate[0];
+    double coordinateY = coordinate[1];
+
+    double originX = origin[0];
+    double originY = origin[1];
+
+    double x = coordinateX + originX;
+    double y = coordinateY + originY;
+
+    return new double[] {x, y};
+  }
+
+  public double calculateCoordinateMagnitude(double[] coordinate) {
     double x = coordinate[0];
     double y = coordinate[1];
-    double referenceAngle = new Rotation2d(x, y).getRadians();
+
+    double magnitude = Math.hypot(x, y);
+
+    return magnitude;
+  }
+
+  public double[] convertGrabberXYToThetaOmega(double[] coordinate) {
+    double[] rawCoordinate = coordinate;
+
+    double[] pivotOne = armStageOne.getPivotCoordinate();
+
+    double[] coordinateRelativeToPivotOne = subtractCoordinates(rawCoordinate, pivotOne);
+
+    double x = coordinateRelativeToPivotOne[0]; //coordinates relative to pivot
+    double y = coordinateRelativeToPivotOne[1];
+
+    double referenceAngle = new Rotation2d(x, y).getRadians(); //overall angle
+    double stageOneLength = armStageOne.getLength();
+    double stageTwoLength = armStageTwo.getLength();
+    double totalLength = calculateCoordinateMagnitude(coordinateRelativeToPivotOne); //overall length
     
-    double theta = referenceAngle + Math.acos((Math.pow(armStageOne.getLength(), 2) + Math.pow(Math.hypot(x, y), 2) - Math.pow(armStageTwo.getLength(), 2)) / 2*armStageOne.getLength()*Math.hypot(x, y));
-    double omega = referenceAngle + Math.acos((Math.pow(Math.hypot(x, y), 2) + Math.pow(armStageTwo.getLength(), 2) - Math.pow(armStageOne.getLength(), 2)) / 2*Math.hypot(x, y)*armStageTwo.getLength());
+    double theta = referenceAngle + Math.acos((Math.pow(stageOneLength, 2) + Math.pow(totalLength, 2) - Math.pow(stageTwoLength, 2)) / (2*stageOneLength*totalLength)); //law of cosines
+    double omega = referenceAngle + Math.acos((Math.pow(stageTwoLength, 2) + Math.pow(stageOneLength, 2) - Math.pow(totalLength, 2)) / (2*stageTwoLength*stageOneLength)); //law of cosines
 
     return new double[] {theta, omega};
+  }
+
+  public double getStageOneAFF() {
+    return stageOneAFF;
+  }
+  public double getStageTwoAFF() {
+    return stageTwoAFF;
   }
 
   @Override
