@@ -98,7 +98,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
         //allows gyro to calibrate for 1 sec before requesting to reset^^
-    SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
+    //SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
   }
 
 
@@ -126,8 +126,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // 3.55. P loops to create accurate outputs
     //turning
-    //Debug intput: 
-    turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
+    //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(getAngularVelocity(), turningSpeed);
 
 //4 - Convert and send chasis speeds
