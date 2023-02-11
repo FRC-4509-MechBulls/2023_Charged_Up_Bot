@@ -59,7 +59,7 @@ public class SwerveSubsystem extends SubsystemBase {
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
                                                             DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
   //Gyro
-    private WPI_Pigeon2 gyro = new WPI_Pigeon2(9);
+    private WPI_Pigeon2 gyro = new WPI_Pigeon2(40);
   public final AHRS navx = new AHRS(SPI.Port.kMXP);
 
   //Odometry
@@ -77,6 +77,11 @@ public class SwerveSubsystem extends SubsystemBase {
   Rotation2d translationDirection;
   Rotation2d rotationDirection;
 
+  private SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+  private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
+  private SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+  private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
@@ -93,12 +98,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
         //allows gyro to calibrate for 1 sec before requesting to reset^^
+    //SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
   }
-
-  SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-  SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-  SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
-  PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
 
 
   public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean limited, boolean fieldOriented){
@@ -241,7 +242,7 @@ public class SwerveSubsystem extends SubsystemBase {
     if(DriveConstants.kUseNavXOverPigeon)
       return navx.getRate() * DriveConstants.kDegreesToRadians;
 
-    return -gyro.getRate() * DriveConstants.kDegreesToRadians;
+    return gyro.getRate() * DriveConstants.kDegreesToRadians;
   }
 
   //since wpilib often wants heading in format of Rotation2d
