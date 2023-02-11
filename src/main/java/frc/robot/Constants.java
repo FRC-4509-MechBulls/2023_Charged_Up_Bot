@@ -248,7 +248,7 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final double kMaxAmbiguity = 0.2;
+        public static final double kMaxAmbiguity = 0.05;
         public static final double kCamXOffset = Units.inchesToMeters(15.5-20.5);
         public static final double kCamYOffset = Units.inchesToMeters(15.5-10);
         public static final double camDirFromCenter = Math.atan2(kCamYOffset,kCamXOffset);
