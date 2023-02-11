@@ -213,7 +213,7 @@ private Pose2d desiredPose;
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
         pTelemetrySub.updateDestinationPose(this.desiredPose);
-        pTelemetrySub.updateNavPoses(navPoses);
+    //    pTelemetrySub.updateNavPoses(navPoses);
     }
     boolean poseChanged = false;
     private double getPathLengthFromBot(Pose2d[] path){
@@ -237,7 +237,7 @@ private Pose2d desiredPose;
 
 public Pose2d getNextNavPoint(){
     if(navPoses.size()<1) return swerveSubsystem.getEstimatedPosition();
-    pTelemetrySub.updateNavPoses(navPoses);
+//    pTelemetrySub.updateNavPoses(navPoses);
     Pose2d botPose = swerveSubsystem.getEstimatedPosition();
     while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedInBetweenPointThreshold)
         navPoses.remove(0);
@@ -319,6 +319,7 @@ private void createAndStartPathingThread(){
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                 SmartDashboard.putNumber("pathingCompTime",compTime);
                               //  Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
+                                pTelemetrySub.updateNavPoses(navPoses);
                                 Thread.sleep(Constants.PathingConstants.minPathingDelay);
                             }
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
