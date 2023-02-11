@@ -6,6 +6,7 @@ package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.math.controller.PIDController;
@@ -29,8 +30,13 @@ public class ArmStageOne extends SubsystemBase {
     armMotorPrimary.configFactoryDefault(1000);
     armMotorSecondary.configFactoryDefault(1000);
 
+    armMotorPrimary.setNeutralMode(NeutralMode.Brake);
+    armMotorSecondary.setNeutralMode(NeutralMode.Brake);
+
     armMotorSecondary.follow(armMotorPrimary);
     armMotorSecondary.setInverted(InvertType.OpposeMaster);
+
+
 
     armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
 

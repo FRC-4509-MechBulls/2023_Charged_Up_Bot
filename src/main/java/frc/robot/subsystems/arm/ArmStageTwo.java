@@ -37,6 +37,9 @@ public class ArmStageTwo extends SubsystemBase {
     armMotorPrimary.restoreFactoryDefaults();
     armMotorSecondary.restoreFactoryDefaults();
 
+    armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
 
     armMotorSecondary.follow(armMotorPrimary);
     armMotorSecondary.setInverted(true);
