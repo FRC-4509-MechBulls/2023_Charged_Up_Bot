@@ -61,12 +61,6 @@ public class ArmStageOne extends SubsystemBase {
   //Getters
   public void calculateStageData() {
     cG = calculateCG();
-    cB = calculateCB();
-  }
-  public double[] calculateCB() {
-    Rotation2d cBAngle = new Rotation2d(new Rotation2d(kCB[0], kCB[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kCB[0], 2) + Math.pow(kCB[1], 2));
-    return new double[] {cBAngle.getCos() * magnitude, cBAngle.getSin() * magnitude, kCB[2] * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
   }
   public double[] calculateCG() {
     /*
@@ -79,11 +73,11 @@ public class ArmStageOne extends SubsystemBase {
     double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
     return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
   }
+  public double[] getkCB() {
+    return kCB;
+  }
   public double[] getCG() {
     return cG;
-  }
-  public double[] getCB() {
-    return cB;
   }
   public double getLength() {
     return kLength;

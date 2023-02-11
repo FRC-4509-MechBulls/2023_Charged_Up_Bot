@@ -84,6 +84,37 @@ public class Grabber extends SubsystemBase {
     stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoCB, stageOneTransmissionData);
     stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneCB, stageTwoTransmissionData);
   }
+
+  public double calculateCB(double armAngle) {
+    double referenceAngle = armAngle;
+
+    double kCBSpringConstant = ;
+    double[] kCBCoordinate = ;
+    double kCBSpringRestLength = ;
+
+    double kCBX = kCBCoordinate[0];
+    double kCBY = kCBCoordinate[1];
+    double kCBAngle = new Rotation2d(kCBCoordinate[0], kCBCoordinate[1]).getRadians();
+
+    double cBMountCoordinate = ;
+    double cBRedirectCoordinate = ;
+    double cBSpringCurrentLength = ;
+
+    double cBAngle = referenceAngle + kCBAngle;
+    double cBMagnitude = calculateMagnitude(kCBX, kCBY);
+
+    double cBX = Math.cos(cBAngle) * cBMagnitude;
+    double cBY = Math.sin(cBAngle) * cBMagnitude;
+
+    double cBGrossForce = ;
+    double cBRealForce = ;
+    double cBTorque = ;
+
+    double[] cB = {cBX, cBY, kCBSpringConstant * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
+
+    return new double cBTorque;
+  }
+
   public void updateArmData() {
     armStageOne.setAFF(stageOneAFF);
     armStageTwo.setAFF(stageTwoAFF);
@@ -197,10 +228,17 @@ public class Grabber extends SubsystemBase {
     double stageTwoLength = armStageTwo.getLength();
     double totalLength = calculateCoordinateMagnitude(coordinateRelativeToPivotOne); //overall length
     
-    double theta = referenceAngle + Math.acos((Math.pow(stageOneLength, 2) + Math.pow(totalLength, 2) - Math.pow(stageTwoLength, 2)) / (2*stageOneLength*totalLength)); //law of cosines
-    double omega = referenceAngle + Math.acos((Math.pow(stageTwoLength, 2) + Math.pow(stageOneLength, 2) - Math.pow(totalLength, 2)) / (2*stageTwoLength*stageOneLength)); //law of cosines
+    double theta = referenceAngle + calculateLawOfCosines(stageOneLength, stageTwoLength, totalLength);
+    double omega = referenceAngle + calculateLawOfCosines(stageTwoLength, totalLength, stageOneLength);
 
     return new double[] {theta, omega};
+  }
+
+  public double calculateLawOfCosines(double clockwiseAdjacentLength, double oppositeLength, double counterclockwiseAdjacentLength) {
+    double a = clockwiseAdjacentLength;
+    double b = oppositeLength;
+    double c = counterclockwiseAdjacentLength;
+    return Math.acos((Math.pow(a, 2) + Math.pow(c, 2) - Math.pow(b, 2)) / (2*a*c));
   }
 
   public double getStageOneAFF() {
