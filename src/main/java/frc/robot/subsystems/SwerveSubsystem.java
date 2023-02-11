@@ -243,7 +243,7 @@ public class SwerveSubsystem extends SubsystemBase {
     if(DriveConstants.kUseNavXOverPigeon)
       return navx.getRate() * DriveConstants.kDegreesToRadians;
 
-    return -gyro.getRate() * DriveConstants.kDegreesToRadians;
+    return gyro.getRate() * DriveConstants.kDegreesToRadians;
   }
 
   //since wpilib often wants heading in format of Rotation2d
