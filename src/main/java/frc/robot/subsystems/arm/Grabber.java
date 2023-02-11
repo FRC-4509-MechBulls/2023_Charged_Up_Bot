@@ -95,11 +95,7 @@ public class Grabber extends SubsystemBase {
     double kCBX = kCBCoordinate[0];
     double kCBY = kCBCoordinate[1];
     double kCBAngle = new Rotation2d(kCBCoordinate[0], kCBCoordinate[1]).getRadians();
-
-    double cBMountCoordinate = ;
-    double[] cBRedirectCoordinate = ;
-    double cBSpringCurrentLength = ;
-
+    
     double cBAngle = referenceAngle + kCBAngle;
     double cBMagnitude = calculateMagnitude(kCBX, kCBY);
 
@@ -107,6 +103,13 @@ public class Grabber extends SubsystemBase {
     double cBY = Math.sin(cBAngle) * cBMagnitude;
 
     double[] cBCoordinate = {cBX, cBY};
+
+
+    double cBMountCoordinate = ;
+    double[] cBRedirectCoordinate = ;
+    double springMountRedirectDistance = ;
+    double springRedirectCBDistance = calculateMagnitude(, );
+    double cBSpringCurrentLength = springMountRedirectDistance + springRedirectCBDistance;
 
     double[] springVector = subtractCoordinates(cBCoordinate, cBRedirectCoordinate);
 
