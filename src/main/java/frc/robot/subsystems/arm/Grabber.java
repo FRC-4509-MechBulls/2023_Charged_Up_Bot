@@ -97,7 +97,7 @@ public class Grabber extends SubsystemBase {
     double kCBAngle = new Rotation2d(kCBCoordinate[0], kCBCoordinate[1]).getRadians();
 
     double cBMountCoordinate = ;
-    double cBRedirectCoordinate = ;
+    double[] cBRedirectCoordinate = ;
     double cBSpringCurrentLength = ;
 
     double cBAngle = referenceAngle + kCBAngle;
@@ -106,13 +106,27 @@ public class Grabber extends SubsystemBase {
     double cBX = Math.cos(cBAngle) * cBMagnitude;
     double cBY = Math.sin(cBAngle) * cBMagnitude;
 
-    double cBGrossForce = ;
-    double cBRealForce = ;
-    double cBTorque = ;
+    double[] cBCoordinate = {cBX, cBY};
+
+    double[] springVector = subtractCoordinates(cBCoordinate, cBRedirectCoordinate);
+
+    double springVectorX = springVector[0];
+    double springVectorY = springVector[1];
+    
+    double springAngle = new Rotation2d(springVectorX, springVectorY).getRadians();
+
+    double approachAngle = cBAngle - springAngle;
+
+    double springDisplacement = cBSpringCurrentLength - kCBSpringRestLength;
+
+    double cBGrossForce = springDisplacement * kCBSpringConstant;
+    double cBRealForce = Math.cos(approachAngle) * cBGrossForce;
 
     double[] cB = {cBX, cBY, kCBSpringConstant * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
 
-    return new double cBTorque;
+    double cBTorque = cBRealForce * cBMagnitude;
+
+    return cBTorque;
   }
 
   public void updateArmData() {
