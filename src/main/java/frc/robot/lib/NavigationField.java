@@ -217,7 +217,7 @@ private Pose2d desiredPose;
     }
     boolean poseChanged = false;
     private double getPathLengthFromBot(Pose2d[] path){
-        if(path.length==0)
+        if(path.length==0 || path[0] == null)
             return Integer.MAX_VALUE;
         double botX = swerveSubsystem.getEstimatedPosition().getX();
         double botY = swerveSubsystem.getEstimatedPosition().getY();
@@ -229,7 +229,7 @@ private Pose2d desiredPose;
     }
     private  double getPathLengthFromBot(ArrayList<Pose2d> path){
         Pose2d[] newPath = new Pose2d[path.size()];
-        for(int i = 0; i<newPath.length; i++)
+        for(int i = 0; i<Math.min(path.size(),newPath.length); i++)
             newPath[i] = path.get(i);
         return getPathLengthFromBot(newPath);
     }
