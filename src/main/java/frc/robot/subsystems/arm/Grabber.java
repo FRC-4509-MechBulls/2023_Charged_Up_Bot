@@ -97,26 +97,30 @@ public class Grabber extends SubsystemBase {
     double kCBAngle = new Rotation2d(kCBCoordinate[0], kCBCoordinate[1]).getRadians();
     
     double cBAngle = referenceAngle + kCBAngle;
-    double cBMagnitude = calculateMagnitude(kCBX, kCBY);
+    double cBRadius = calculateMagnitude(kCBX, kCBY);
 
-    double cBX = Math.cos(cBAngle) * cBMagnitude;
-    double cBY = Math.sin(cBAngle) * cBMagnitude;
+    double cBX = Math.cos(cBAngle) * cBRadius;
+    double cBY = Math.sin(cBAngle) * cBRadius;
 
     double[] cBCoordinate = {cBX, cBY};
 
 
-    double cBMountCoordinate = ;
-    double[] cBRedirectCoordinate = ;
-    double springMountRedirectDistance = ;
-    double springRedirectCBDistance = calculateMagnitude(, );
+    double[] cBMountCoordinate = ;
+    double cBRedirectX = ;
+    double cBRedirectY = ;
+    double[] cBRedirectCoordinate = {cBRedirectX, cBRedirectY};
+    double[] springMountRedirectVector = subtractCoordinates(cBRedirectCoordinate, cBMountCoordinate);
+    double springMountRedirectX = springMountRedirectVector[0];
+    double springMountRedirectY = springMountRedirectVector[1];
+    double springMountRedirectDistance = calculateMagnitude(springMountRedirectX, springMountRedirectY);
+    double[] springRedirectCBVector = subtractCoordinates(cBCoordinate, cBRedirectCoordinate);
+    double springRedirectCBX = springRedirectCBVector[0];
+    double springRedirectCBY = springRedirectCBVector[1];
+    double springRedirectCBDistance = calculateMagnitude(springRedirectCBX, springRedirectCBY);
     double cBSpringCurrentLength = springMountRedirectDistance + springRedirectCBDistance;
 
-    double[] springVector = subtractCoordinates(cBCoordinate, cBRedirectCoordinate);
-
-    double springVectorX = springVector[0];
-    double springVectorY = springVector[1];
     
-    double springAngle = new Rotation2d(springVectorX, springVectorY).getRadians();
+    double springAngle = new Rotation2d(springRedirectCBX, springRedirectCBY).getRadians();
 
     double approachAngle = cBAngle - springAngle;
 
@@ -127,7 +131,7 @@ public class Grabber extends SubsystemBase {
 
     double[] cB = {cBX, cBY, kCBSpringConstant * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
 
-    double cBTorque = cBRealForce * cBMagnitude;
+    double cBTorque = cBRealForce * cBRadius;
 
     return cBTorque;
   }
