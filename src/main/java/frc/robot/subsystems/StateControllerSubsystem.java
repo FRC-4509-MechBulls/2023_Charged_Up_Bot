@@ -4,9 +4,7 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.lib.FMSGetter;
 
 public class StateControllerSubsystem extends SubsystemBase {
@@ -49,6 +47,7 @@ public void setSetpointIndex(int setPointIndex){this.setPointIndex = setPointInd
   public void decimatePlacingLevel(){placingLevelIndex--; updatePlacingLevelFromIndex();}
 
 int lastPlacingPOV = -1;
+  double lastFallenConeTriggerVal = 0;
   void placingPOVPressed(int pov){
     switch (pov){
       case 270: if(fmsGetter.isRedAlliance()) decimateSetPoint(); else iterateSetPoint(); break;
@@ -57,9 +56,11 @@ int lastPlacingPOV = -1;
       case 0: decimatePlacingLevel(); break;
     }
   }
-  public void processRawJoystickValues(int placingPOV){
+  public void processRawAxisValues(int placingPOV, double fallenConeTriggerVal){
     if(lastPlacingPOV == -1 && placingPOV!=-1)
       placingPOVPressed(placingPOV);
+    if(fallenConeTriggerVal>0.8)
+      itemConeFallenButton();
 lastPlacingPOV = placingPOV;
   }
   public void updatePlacingLevelFromIndex(){
@@ -129,6 +130,11 @@ lastPlacingPOV = placingPOV;
   public void itemCubeButton(){itemType = ItemType.CUBE; itemFallen = ItemFallen.NOT_FALLEN;}
   public void itemConeFallenButton(){itemType = ItemType.CONE; itemFallen = ItemFallen.FALLEN_CONE;}
   public void itemConeUprightButton(){itemType = ItemType.CONE; itemFallen = ItemFallen.NOT_FALLEN;}
+
+  public void setAgArmToIntake(){agnosticGrabberMode = AgnosticGrabberMode.INTAKING;}
+  public void setAgArmToHolding(){agnosticGrabberMode = AgnosticGrabberMode.HOLDING;}
+
+  public void setAgArmToPlacing(){agnosticGrabberMode = AgnosticGrabberMode.PLACING;}
 
   @Override
   public void periodic() {
