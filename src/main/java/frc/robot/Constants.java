@@ -22,7 +22,7 @@ public final class Constants {
 
     public static final class SimulationConstants{
         public static final boolean simulationEnabled = false;
-        public static final double speedMultiplier = 0.6;
+        public static final double speedMultiplier = 1.5;
         public static final double turningSpeedMultiplier = 50;
 
     }
@@ -226,9 +226,9 @@ public final class Constants {
     }
 
     public static final class PathingConstants{
-        public static final double ROBOT_LENGTH = Units.inchesToMeters(46);
-        public static final double ROBOT_WIDTH = Units.inchesToMeters(38);
-        public static final double kRobotRadius = Math.sqrt(Math.pow(ROBOT_LENGTH /2,2)+Math.pow(ROBOT_WIDTH /2,2));
+        public static final double ROBOT_LENGTH = Units.inchesToMeters(34);
+        public static final double ROBOT_WIDTH = Units.inchesToMeters(34);
+        public static final double kRobotRadius =  Math.sqrt(Math.pow(ROBOT_LENGTH /2,2)+Math.pow(ROBOT_WIDTH /2,2));
 
         public static final double maxLineDist = 8.0;
         public static final double lineDistIterator = 1.5;
@@ -239,7 +239,7 @@ public final class Constants {
         public static final double reachedInBetweenPointThreshold = Units.inchesToMeters(2);
 
       //  public static final double maxCPUTime = 0.30; //max fraction of thread time to spend on pathing
-        public static final int minPathingDelay = 50; //min time to take in ms
+        public static final int minPathingDelay = 10; //min time to take in ms
 
         public static final double recalcThreshold = Units.inchesToMeters(2); // max distance to travel before recalculating trajectory
 

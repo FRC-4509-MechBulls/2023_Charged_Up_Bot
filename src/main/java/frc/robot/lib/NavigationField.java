@@ -437,15 +437,15 @@ int setPointIndex = 0;
     public void placeCornerPoints(){
         cornerPoints.clear();
 
-        cornerPoints.add(new Pose2d(-3,3, Rotation2d.fromDegrees(0)));
-        cornerPoints.add(new Pose2d(-3,-0.8, Rotation2d.fromDegrees(0)));
-        cornerPoints.add(new Pose2d(-6,3, Rotation2d.fromDegrees(0)));
-        cornerPoints.add(new Pose2d(-6,-0.8, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-2.75,3.25, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-2.75,-0.7, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,3.25, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,-0.7, Rotation2d.fromDegrees(0)));
         
-        cornerPoints.add(new Pose2d(3,-0.8, Rotation2d.fromDegrees(0)));
-        cornerPoints.add(new Pose2d(6,3, Rotation2d.fromDegrees(0)));
-        cornerPoints.add(new Pose2d(6,-0.8, Rotation2d.fromDegrees(0)));
-        cornerPoints.add(new Pose2d(3,3, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(2.75,-0.7, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,3.25, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,-0.7, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(2.75,3.25, Rotation2d.fromDegrees(0)));
 
 
         pTelemetrySub.updateCornerPoints(cornerPoints);
