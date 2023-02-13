@@ -9,20 +9,16 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.kauailabs.navx.IMUProtocol.YPRUpdate;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 import static frc.robot.Constants.ArmConstants;
 
-public class ArmStageOne extends SubsystemBase {
+public class StageOneSub extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
-  private double encoderOffset = ArmConstants.kStageOne_AbsEncoderInitialOffset;
+  private double encoderOffset = ArmConstants.STAGE_ONE_ABS_ENCODER_INITIAL_OFFSET;
   private double setpointRad = encoderOffset;
   private double kCG[];
   private double kCB[];
@@ -41,9 +37,9 @@ public class ArmStageOne extends SubsystemBase {
   private double kSpringConstant;
 
   /** Creates a new ArmStageOne. */
-  public ArmStageOne() {
-    armMotorPrimary = new TalonSRX(ArmConstants.kStageOne_MotorLeftID);
-    armMotorSecondary = new TalonSRX(ArmConstants.kStageOne_MotorRightID);
+  public StageOneSub() {
+    armMotorPrimary = new TalonSRX(ArmConstants.STAGE_ONE_MOTOR_LEFT_ID);
+    armMotorSecondary = new TalonSRX(ArmConstants.STAGE_ONE_MOTOR_RIGHT_ID);
 
     armMotorPrimary.configFactoryDefault(1000);
     armMotorSecondary.configFactoryDefault(1000);
@@ -105,7 +101,7 @@ public class ArmStageOne extends SubsystemBase {
     return kTransmissionData;
   }
   public double getEncoderRad() {
-    return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.kstageOne_encoderTicksToRadians;
+    return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.STAGE_ONE_ENCODER_TICKS_TO_RADIANS;
   }
   public double[] getPivotCoordinate() {
     return kPivotCoordinate;
@@ -133,7 +129,7 @@ public class ArmStageOne extends SubsystemBase {
   }
   //Setters
   public void limitSwitchPassed(){
-    armMotorPrimary.setSelectedSensorPosition(ArmConstants.kStageOne_LimitSwitchAngleRad);
+    armMotorPrimary.setSelectedSensorPosition(ArmConstants.STAGE_ONE_LIMIT_SWITCH_ANGLE_RAD);
   }
   public void setAFF(double AFF){
     this.feedForward = feedForward;

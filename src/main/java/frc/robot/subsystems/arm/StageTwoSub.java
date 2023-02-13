@@ -4,28 +4,20 @@
 
 package frc.robot.subsystems.arm;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.*;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 import static frc.robot.Constants.ArmConstants;
 
-public class ArmStageTwo extends SubsystemBase {
+public class StageTwoSub extends SubsystemBase {
   private CANSparkMax armMotorPrimary;
   private CANSparkMax armMotorSecondary;
 
   private SparkMaxPIDController pidController;
   private RelativeEncoder encoder;
 
-  private double encoderOffset = ArmConstants.kStageTwo_AbsEncoderInitialOffset;
+  private double encoderOffset = ArmConstants.STAGE_TWO_ABS_ENCODER_INITIAL_OFFSET;
   private double setpointRad = encoderOffset;
   private double AFF;
   private double cG[];
@@ -44,9 +36,9 @@ public class ArmStageTwo extends SubsystemBase {
   private double kSpringConstant;
 
   /** Creates a new ArmStageTwo. */
-  public ArmStageTwo() {
-    armMotorPrimary = new CANSparkMax(ArmConstants.kStageTwo_MotorLeftChannel, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
-    armMotorSecondary = new CANSparkMax(ArmConstants.kStageTwo_MotorRightChannel, CANSparkMaxLowLevel.MotorType.kBrushless);
+  public StageTwoSub() {
+    armMotorPrimary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_LEFT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
+    armMotorSecondary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_RIGHT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     encoder =  armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
 
@@ -138,7 +130,7 @@ public class ArmStageTwo extends SubsystemBase {
     this.AFF = AFF;
   }
   public double getEncoderRad() {
-    return armMotorPrimary.getEncoder().getPosition() * ArmConstants.kstageTwo_encoderTicksToRadians;
+    return armMotorPrimary.getEncoder().getPosition() * ArmConstants.STAGE_TWO_ENCODER_TICKS_TO_RADIANS;
   }
   public double[] getPivotCoordinate() {
     return kPivotCoordinate;
@@ -149,7 +141,7 @@ public class ArmStageTwo extends SubsystemBase {
   }
 
   public void limitSwitchPassed(){
-    armMotorPrimary.getEncoder().setPosition(ArmConstants.kStageTwo_LimitSwitchAngleRad / Math.PI / 2.0);
+    armMotorPrimary.getEncoder().setPosition(ArmConstants.STAGE_TWO_LIMIT_SWITCH_ANGLE_RAD / Math.PI / 2.0);
   }
 
   void setArmPositionRad(double setpoint){

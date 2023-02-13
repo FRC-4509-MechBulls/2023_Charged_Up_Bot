@@ -17,10 +17,14 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.NavToPointCommand;
-import frc.robot.lib.FMSGetter;
-import frc.robot.lib.NavigationField;
-import frc.robot.subsystems.*;
-import frc.robot.subsystems.arm.EndEffectorSubsystem;
+import frc.robot.subsystems.state.FMSGetter;
+import frc.robot.subsystems.drive.SwerveSubsystem;
+import frc.robot.subsystems.nav.NavigationField;
+import frc.robot.subsystems.arm.EFSub;
+import frc.robot.subsystems.nav.GraphicalTelemetrySubsystem;
+import frc.robot.subsystems.nav.PathingTelemetrySub;
+import frc.robot.subsystems.nav.VisionSubsystem;
+import frc.robot.subsystems.state.StateControllerSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,11 +39,11 @@ public class RobotContainer {
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
-  private final EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
+  private final EFSub endEffectorSubsystem = new EFSub();
 
 
-  private final XboxController driverController = new XboxController(OIConstants.kDriverControllerPort);
-  private final XboxController operatorController = new XboxController(OIConstants.kOperatorControllerPort);
+  private final XboxController driverController = new XboxController(OIConstants.DRIVER_CONTROLLER_PORT);
+  private final XboxController operatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER_PORT);
   private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
   private final Command stateController_processInputs = new RunCommand(()-> stateControllerSubsystem.processRawAxisValues(operatorController.getPOV(), operatorController.getRightTriggerAxis()),stateControllerSubsystem);
   private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);

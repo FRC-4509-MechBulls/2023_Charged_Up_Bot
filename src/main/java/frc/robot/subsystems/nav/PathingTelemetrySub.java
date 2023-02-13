@@ -1,24 +1,23 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
-import frc.robot.lib.FieldLine;
-import frc.robot.lib.FieldTag;
-import frc.robot.lib.Node;
+import frc.robot.lib.FieldObjects.FieldLine;
+import frc.robot.lib.FieldObjects.FieldTag;
+import frc.robot.lib.FieldObjects.Node;
+import frc.robot.subsystems.state.StateControllerSubsystem;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
+public class PathingTelemetrySub extends GraphicalTelemetrySubsystem {
     private StateControllerSubsystem stateControllerSubsystem;
     public PathingTelemetrySub(StateControllerSubsystem stateControllerSubsystem) {
         super("Pathing");

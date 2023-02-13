@@ -1,4 +1,4 @@
-package frc.robot.lib;
+package frc.robot.lib.FieldObjects;
 
 import edu.wpi.first.math.geometry.Pose2d;
 

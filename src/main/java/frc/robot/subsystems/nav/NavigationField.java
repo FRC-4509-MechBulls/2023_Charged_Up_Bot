@@ -1,4 +1,4 @@
-package frc.robot.lib;
+package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,10 +7,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.*;
+import frc.robot.lib.FieldObjects.FieldLine;
+import frc.robot.lib.FieldObjects.Node;
+import frc.robot.subsystems.state.FMSGetter;
 import frc.robot.subsystems.arm.Grabber;
-import frc.robot.subsystems.PathingTelemetrySub;
-import frc.robot.subsystems.StateControllerSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.state.StateControllerSubsystem;
+import frc.robot.subsystems.drive.SwerveSubsystem;
 import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
@@ -77,11 +80,11 @@ public  boolean barrierOnLine(Line2D.Double line){
     double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
     double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
-    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius; //why do I need to multiply by 2??
-    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius; //because your visualization was not to scale 😉
+    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS; //why do I need to multiply by 2??
+    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS; //because your visualization was not to scale 😉
 
-    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
-    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
+    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS;
+    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS;
 
     double destEdgePtX1 = edgePtX1 + (line.getX2() - line.getX1());
     double destEdgePtY1 = edgePtY1 + (line.getY2() - line.getY1());
@@ -136,7 +139,7 @@ public  boolean barrierOnLine(Line2D.Double line){
          return new Pose2d[]{};
 
     double random = Math.random(); // :)
-     int[] randIndexes = MathThings.randomIndexes(cornerPoints.size());
+     int[] randIndexes = MB_Math.randomIndexes(cornerPoints.size());
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
         return new Pose2d[] {myPose,desiredPose};
     if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
@@ -185,7 +188,7 @@ private Pose2d desiredPose;
 
     public void setNavPoint(Pose2d desiredPose){
         if(desiredPose!= null && this.desiredPose != null)
-        if(MathThings.poseDist(desiredPose,this.desiredPose) != 0 || this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees()){
+        if(MB_Math.poseDist(desiredPose,this.desiredPose) != 0 || this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees()){
             poseChanged = true;
         }
         this.desiredPose = desiredPose;
@@ -202,7 +205,7 @@ private Pose2d desiredPose;
         Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0,Timer.getFPGATimestamp(),5);
         if(outNavPoses.length<1)
             return;
-        boolean poseCloseToLast = MathThings.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
+        boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
         if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
             SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
             return;
@@ -400,7 +403,7 @@ int setPointIndex = 0;
 
     public void updateSetPoint(int i){
         if(setPoints.size()==0) return;
-        int adjustedIndex = MathThings.indexWrap(i, setPoints.size());
+        int adjustedIndex = MB_Math.indexWrap(i, setPoints.size());
         if(setPoints.size()>0)
             setNavPoint(setPoints.get(adjustedIndex));
     }

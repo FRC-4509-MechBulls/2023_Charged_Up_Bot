@@ -2,10 +2,10 @@ package frc.robot.lib;
 //Taken from https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
 public class LineIntersection {
 
-    static class Point
+    public static class Point
     {
-        double x;
-        double y;
+        public double x;
+        public double y;
 
         public Point(double x, double y)
         {
@@ -45,7 +45,7 @@ public class LineIntersection {
 
     // The main function that returns true if line segment 'p1q1'
 // and 'p2q2' intersect.
-    static boolean doIntersect(Point p1, Point q1, Point p2, Point q2)
+    public static boolean doIntersect(Point p1, Point q1, Point p2, Point q2)
     {
         // Find the four orientations needed for general and
         // special cases

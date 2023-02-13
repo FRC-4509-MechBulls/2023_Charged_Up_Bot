@@ -1,8 +1,6 @@
-package frc.robot.lib;
+package frc.robot.lib.FieldObjects;
 
-import frc.robot.subsystems.StateControllerSubsystem;
-
-import static frc.robot.subsystems.StateControllerSubsystem.Level.*;
+import frc.robot.subsystems.state.StateControllerSubsystem;
 
 public class Node {
 

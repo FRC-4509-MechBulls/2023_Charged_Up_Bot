@@ -7,13 +7,8 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.lib.MathThings;
-import frc.robot.subsystems.StateControllerSubsystem;
-import frc.robot.subsystems.arm.ArmStageOne;
-import frc.robot.subsystems.arm.ArmStageTwo;
-import frc.robot.subsystems.arm.EndEffectorSubsystem;
-
-import javax.swing.plaf.nimbus.State;
+import frc.robot.lib.MB_Math;
+import frc.robot.subsystems.state.StateControllerSubsystem;
 
 import static frc.robot.Constants.ArmConstants;
 
@@ -21,9 +16,9 @@ import static frc.robot.Constants.ArmConstants;
 public class Grabber extends SubsystemBase {
 
   StateControllerSubsystem stateController;
-  ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:(
-  ArmStageTwo armStageTwo;
-  EndEffectorSubsystem endEffectorSubsystem;
+  StageOneSub stageOneSub; //refactor this to armStageOneSubsystem >:(
+  StageTwoSub stageTwoSub;
+  EFSub endEffectorSubsystem;
 
 
   private double stageOneAFF;
@@ -32,9 +27,9 @@ public class Grabber extends SubsystemBase {
   private double stageOneGravityAFF;
 
   /** Creates a new Grabber. */
-  public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem, StateControllerSubsystem stateController) {
-    this.armStageOne = armStageOne;
-    this.armStageTwo = armStageTwo;
+  public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController) {
+    this.stageOneSub = stageOneSub;
+    this.stageTwoSub = stageTwoSub;
     this.endEffectorSubsystem = endEffectorSubsystem;
     this.stateController = stateController;
   }
@@ -106,8 +101,8 @@ public class Grabber extends SubsystemBase {
 
 
   public void setArmPosition(double[] armPosition){
-    armStageOne.setArmPositionRad(armPosition[0]);
-    armStageTwo.setArmPositionRad(armPosition[1]);
+    stageOneSub.setArmPositionRad(armPosition[0]);
+    stageTwoSub.setArmPositionRad(armPosition[1]);
   }
 
   public void setDesiredArmAndEFModes(ArmModes armMode, EFModes efMode){
@@ -117,25 +112,25 @@ public class Grabber extends SubsystemBase {
 
 
   public void calculateArmData() {
-    double stageTwoArmAngle = armStageTwo.getAngle();
-    boolean stageTwoRedirected = armStageTwo.getRedirected();
-    double[] stageTwoSpringMountCoordinate = armStageTwo.getSpringMountCoordinate();
-    double[] stageTwoSpringRedirectCoordinate = armStageTwo.getSpringRedirectCoordinate();
-    double stageTwoSpringRestLength = armStageTwo.getSpringRestLength();
-    double[] stageTwoKcBCoordinate = armStageTwo.getkCBCoordinate();
-    double stageTwoSpringConstant = armStageTwo.getSpringConstant();
+    double stageTwoArmAngle = stageTwoSub.getAngle();
+    boolean stageTwoRedirected = stageTwoSub.getRedirected();
+    double[] stageTwoSpringMountCoordinate = stageTwoSub.getSpringMountCoordinate();
+    double[] stageTwoSpringRedirectCoordinate = stageTwoSub.getSpringRedirectCoordinate();
+    double stageTwoSpringRestLength = stageTwoSub.getSpringRestLength();
+    double[] stageTwoKcBCoordinate = stageTwoSub.getkCBCoordinate();
+    double stageTwoSpringConstant = stageTwoSub.getSpringConstant();
 
-    double stageOneArmAngle = armStageOne.getAngle();
-    boolean stageOneRedirected = armStageOne.getRedirected();
-    double[] stageOneSpringMountCoordinate = armStageOne.getSpringMountCoordinate();
-    double[] stageOneSpringRedirectCoordinate = armStageOne.getSpringRedirectCoordinate();
-    double stageOneSpringRestLength = armStageOne.getSpringRestLength();
-    double[] stageOneKcBCoordinate = armStageOne.getkCBCoordinate();
-    double stageOneSpringConstant = armStageOne.getSpringConstant();
+    double stageOneArmAngle = stageOneSub.getAngle();
+    boolean stageOneRedirected = stageOneSub.getRedirected();
+    double[] stageOneSpringMountCoordinate = stageOneSub.getSpringMountCoordinate();
+    double[] stageOneSpringRedirectCoordinate = stageOneSub.getSpringRedirectCoordinate();
+    double stageOneSpringRestLength = stageOneSub.getSpringRestLength();
+    double[] stageOneKcBCoordinate = stageOneSub.getkCBCoordinate();
+    double stageOneSpringConstant = stageOneSub.getSpringConstant();
 
     double[] eFCG = endEffectorSubsystem.getCG();
-    double[] stageTwoCG = armStageTwo.getCG();
-    double[] stageOneCG = armStageOne.getCG();
+    double[] stageTwoCG = stageTwoSub.getCG();
+    double[] stageOneCG = stageOneSub.getCG();
 
     double[] eFCGRelativeToStageTwo = sumCGCoordinates(stageTwoCG, eFCG);
     double[] eFStageTwoFusedCG = calculateFusedCG(eFCGRelativeToStageTwo, stageTwoCG);
@@ -143,8 +138,8 @@ public class Grabber extends SubsystemBase {
     double[] eFStageTwoFusedCGRelativeToStageOne = sumCGCoordinates(stageOneCG, eFStageTwoFusedCG);
     double[] eFStageTwoStageOneFusedCG = calculateFusedCG(eFStageTwoFusedCGRelativeToStageOne, stageOneCG);
 
-    double[] stageOneTransmissionData = armStageOne.getTransmissionData();
-    double[] stageTwoTransmissionData = armStageTwo.getTransmissionData();
+    double[] stageOneTransmissionData = stageOneSub.getTransmissionData();
+    double[] stageTwoTransmissionData = stageTwoSub.getTransmissionData();
 
     stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoArmAngle, stageTwoRedirected, stageTwoSpringMountCoordinate, stageTwoSpringRedirectCoordinate, stageTwoSpringRestLength, stageTwoKcBCoordinate, stageTwoSpringConstant, stageOneTransmissionData);
     stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneArmAngle, stageOneRedirected, stageOneSpringMountCoordinate, stageOneSpringRedirectCoordinate, stageOneSpringRestLength, stageOneKcBCoordinate, stageOneSpringConstant, stageTwoTransmissionData);
@@ -209,8 +204,8 @@ public class Grabber extends SubsystemBase {
   }
 
   public void updateArmData() {
-    armStageOne.setAFF(stageOneAFF);
-    armStageTwo.setAFF(stageTwoAFF);
+    stageOneSub.setAFF(stageOneAFF);
+    stageTwoSub.setAFF(stageTwoAFF);
   }
 
   public double calculateAFF(double[] armCG, double kArmAngle, boolean kRedirected, double[] kSpringMountCoordinate, double[] kSpringRedirectCoordinate, double kSpringRestLength, double[] kCBCoordinate, double kSpringConstant, double[] transmissionData) {
@@ -316,7 +311,7 @@ public class Grabber extends SubsystemBase {
   public double[] convertGrabberXYToThetaOmega(double[] coordinate) {
     double[] rawCoordinate = coordinate;
 
-    double[] pivotOne = armStageOne.getPivotCoordinate();
+    double[] pivotOne = stageOneSub.getPivotCoordinate();
 
     double[] coordinateRelativeToPivotOne = subtractCoordinates(rawCoordinate, pivotOne);
 
@@ -324,8 +319,8 @@ public class Grabber extends SubsystemBase {
     double y = coordinateRelativeToPivotOne[1];
 
     double referenceAngle = new Rotation2d(x, y).getRadians(); //overall angle
-    double stageOneLength = armStageOne.getLength();
-    double stageTwoLength = armStageTwo.getLength();
+    double stageOneLength = stageOneSub.getLength();
+    double stageTwoLength = stageTwoSub.getLength();
     double totalLength = calculateCoordinateMagnitude(coordinateRelativeToPivotOne); //overall length
 
     double theta = referenceAngle + calculateLawOfCosines(stageOneLength, stageTwoLength, totalLength);
@@ -356,8 +351,8 @@ public class Grabber extends SubsystemBase {
 
 
     if(getEFMode() != getDesiredEFMode()){ //wait for the arm to be within the tolerance to update the EF mode if intaking or placing
-      boolean armOneAligned = MathThings.isWithinRangeOf(armStageOne.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],ArmConstants.angleToleranceToUpdateEF);
-      boolean armTwoAligned = MathThings.isWithinRangeOf(armStageTwo.getEncoderRad(), getArmPositions(getDesiredArmMode())[1],ArmConstants.angleToleranceToUpdateEF);
+      boolean armOneAligned = MB_Math.isWithinRangeOf(stageOneSub.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],ArmConstants.angleToleranceToUpdateEF);
+      boolean armTwoAligned = MB_Math.isWithinRangeOf(stageTwoSub.getEncoderRad(), getArmPositions(getDesiredArmMode())[1],ArmConstants.angleToleranceToUpdateEF);
       boolean desiredEFIsHolding = getDesiredEFMode()==EFModes.HOLDING_CONE || getDesiredEFMode()==EFModes.HOLDING_CUBE;  //don't wait if you're switching to a holding mode
       if((armOneAligned && armTwoAligned) || (desiredEFIsHolding)){
         setEndEffectorMode(desiredEFMode);

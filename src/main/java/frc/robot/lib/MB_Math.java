@@ -2,7 +2,7 @@ package frc.robot.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
 
-public class MathThings {
+public class MB_Math {
     public static double maxValueCutoff(double input, double max){ //This probably exists somewhere else 😋
         max = Math.abs(max);
         if(Math.abs(input)>max){

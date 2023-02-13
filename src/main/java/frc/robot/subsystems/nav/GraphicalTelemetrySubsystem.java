@@ -2,22 +2,17 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.nav;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
-import edu.wpi.first.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.TimedRobot;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +41,7 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
                           try {Thread.sleep(80);} catch (InterruptedException e) {}
                       }
                     });
-    m_visionThread.setName("LH_"+name+"TelemetryThread");
+    m_visionThread.setName("MB_"+name+"TelemetryThread");
     m_visionThread.setPriority(1);
     m_visionThread.setDaemon(true);
     m_visionThread.start();

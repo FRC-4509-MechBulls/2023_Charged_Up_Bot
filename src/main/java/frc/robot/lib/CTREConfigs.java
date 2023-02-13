@@ -34,26 +34,26 @@ public class CTREConfigs {
   public void configSwerveDriveMotor() {
     swerveDriveMotor.slot0.kF = ModuleConstants.kFDrive;
     swerveDriveMotor.slot0.kP = ModuleConstants.kPDrive;
-    swerveDriveMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
+    swerveDriveMotor.voltageCompSaturation = RobotConstants.ROBOT_NOMINAL_VOLTAGE;
     swerveDriveMotor.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
     swerveDriveMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveDriveMotor.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 40, 40, 0);
     swerveDriveMotor.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 40, 40, 0);
-    swerveDriveMotor.neutralDeadband = ModuleConstants.kNeutralDeadband;
+    swerveDriveMotor.neutralDeadband = ModuleConstants.NEUTRAL_DEADBAND;
   }
   public void configSwerveTurnMotor() {
     swerveTurnMotor.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
     swerveTurnMotor.initializationStrategy = SensorInitializationStrategy.BootToZero;
     swerveTurnMotor.slot0.kP = ModuleConstants.kPTurning;
-    swerveTurnMotor.voltageCompSaturation = RobotConstants.kRobotNominalVoltage;
+    swerveTurnMotor.voltageCompSaturation = RobotConstants.ROBOT_NOMINAL_VOLTAGE;
     swerveTurnMotor.statorCurrLimit = new StatorCurrentLimitConfiguration(false, 40, 40, 0);
     swerveTurnMotor.supplyCurrLimit = new SupplyCurrentLimitConfiguration(false, 40, 40, 0);
-    swerveTurnMotor.neutralDeadband = ModuleConstants.kNeutralDeadband;
+    swerveTurnMotor.neutralDeadband = ModuleConstants.NEUTRAL_DEADBAND;
   }
   public void configGyro() {
-    gyro.ZAxisGyroError = DriveConstants.kGyroZError;
-    gyro.MountPosePitch = DriveConstants.kGyroMountPosePitch;
-    gyro.MountPoseYaw = DriveConstants.kGyroMountPoseYaw;
-    gyro.MountPoseRoll = DriveConstants.kGyroMountPoseRoll;
+    gyro.ZAxisGyroError = DriveConstants.GYRO_Z_ERROR;
+    gyro.MountPosePitch = DriveConstants.GYRO_MOUNT_POSE_PITCH;
+    gyro.MountPoseYaw = DriveConstants.GYRO_MOUNT_POSE_YAW;
+    gyro.MountPoseRoll = DriveConstants.GYRO_MOUNT_POSE_ROLL;
   }
 }

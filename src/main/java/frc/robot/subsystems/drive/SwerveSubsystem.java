@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
@@ -25,39 +25,39 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
-import frc.robot.lib.FieldTag;
-import frc.robot.lib.MathThings;
+import frc.robot.lib.FieldObjects.FieldTag;
+import frc.robot.lib.MB_Math;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
-    private final SwerveModule frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, 
-                                                            DriveConstants.kFrontLeftTurningMotorPort, 
-                                                            DriveConstants.kFrontLeftDriveEncoderReversed, 
-                                                            DriveConstants.kFrontLeftTurningEncoderReversed, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
-    private final SwerveModule frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort, 
-                                                            DriveConstants.kFrontRightTurningMotorPort, 
-                                                            DriveConstants.kFrontRightDriveEncoderReversed, 
-                                                            DriveConstants.kFrontRightTurningEncoderReversed, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
-    private final SwerveModule backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort, 
-                                                          DriveConstants.kBackLeftTurningMotorPort, 
-                                                          DriveConstants.kBackLeftDriveEncoderReversed, 
-                                                          DriveConstants.kBackLeftTurningEncoderReversed, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
-    private final SwerveModule backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort, 
-                                                            DriveConstants.kBackRightTurningMotorPort, 
-                                                            DriveConstants.kBackRightDriveEncoderReversed, 
-                                                            DriveConstants.kBackRightTurningEncoderReversed, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+    private final SwerveModule frontLeft = new SwerveModule(DriveConstants.FRONT_LEFT_DRIVE_MOTOR_PORT,
+                                                            DriveConstants.FRONT_LEFT_TURNING_MOTOR_PORT,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_LEFT_TURNING_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
+    private final SwerveModule frontRight = new SwerveModule(DriveConstants.FRONT_RIGHT_DRIVE_MOTOR_PORT,
+                                                            DriveConstants.FRONT_RIGHT_TURNING_MOTOR_PORT,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_RIGHT_TURNING_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
+    private final SwerveModule backLeft = new SwerveModule(DriveConstants.BACK_LEFT_DRIVE_MOTOR_PORT,
+                                                          DriveConstants.BACK_LEFT_TURNING_MOTOR_PORT,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ENCODER_REVERSED,
+                                                          DriveConstants.BACK_LEFT_TURNING_ENCODER_REVERSED,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
+    private final SwerveModule backRight = new SwerveModule(DriveConstants.BACK_RIGHT_DRIVE_MOTOR_PORT,
+                                                            DriveConstants.BACK_RIGHT_TURNING_MOTOR_PORT,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ENCODER_REVERSED,
+                                                            DriveConstants.BACK_RIGHT_TURNING_ENCODER_REVERSED,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
   //Gyro
     private WPI_Pigeon2 gyro = new WPI_Pigeon2(40);
   public final AHRS navx = new AHRS(SPI.Port.kMXP);
@@ -77,9 +77,9 @@ public class SwerveSubsystem extends SubsystemBase {
   Rotation2d translationDirection;
   Rotation2d rotationDirection;
 
-  private SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-  private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-  private SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+  private SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
+  private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
+  private SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ANGULAR_ACCELERATION_UNITS_PER_SECOND);
   private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
 
 
@@ -109,9 +109,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //  Make the driving smoother, no sudden acceleration from sudden inputs
     if(limited) {
-      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
+      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.TELE_DRIVE_MAX_SPEED_METERS_PER_SECOND);
+      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.TELE_DRIVE_MAX_SPEED_METERS_PER_SECOND);
+      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.TELE_DRIVE_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND);
     }
     // Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;
@@ -159,13 +159,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //1.55 scale magnitudes to reflect deadzone
     //Translation
-    translationMagnitudeScaled = (1/(1- Constants.OIConstants.kDeadband))*(translationMagnitude - Constants.OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
+    translationMagnitudeScaled = (1/(1- Constants.OIConstants.DEADBAND))*(translationMagnitude - Constants.OIConstants.DEADBAND); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
     //Rotation
-    scaledMagnitudeRotation = (1/(1- Constants.OIConstants.kDeadband))*(rotationMagnitude- Constants.OIConstants.kDeadband); //same algorithm as scaled magnitude translation
+    scaledMagnitudeRotation = (1/(1- Constants.OIConstants.DEADBAND))*(rotationMagnitude- Constants.OIConstants.DEADBAND); //same algorithm as scaled magnitude translation
 
     //2.0 deadzone and construct outputs
     //Translation
-    if (translationMagnitude > Constants.OIConstants.kDeadband) {
+    if (translationMagnitude > Constants.OIConstants.DEADBAND) {
       ySpeed = translationDirection.getCos() * translationMagnitudeScaled; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
       xSpeed = translationDirection.getSin() * translationMagnitudeScaled;
     } else {
@@ -173,7 +173,7 @@ public class SwerveSubsystem extends SubsystemBase {
       ySpeed = 0.0; //zero inputs < deadzone
     }
     //Rotation
-    if (rotationMagnitude > Constants.OIConstants.kDeadband) {
+    if (rotationMagnitude > Constants.OIConstants.DEADBAND) {
       turningSpeed = rotationDirection.getCos() * scaledMagnitudeRotation; //same as above for translation
     } else {
       turningSpeed = 0.0; //zero inputs < deadzone
@@ -211,7 +211,7 @@ public class SwerveSubsystem extends SubsystemBase {
     if(Constants.SimulationConstants.simulationEnabled)
       return Math.IEEEremainder(simHeading, 360);
 
-    if(DriveConstants.kUseNavXOverPigeon)
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
       return Math.IEEEremainder(navx.getYaw(), 360);
 
     return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
@@ -239,10 +239,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
   // get rotational velocity for closed loop
   public double getAngularVelocity() {
-    if(DriveConstants.kUseNavXOverPigeon)
-      return navx.getRate() * DriveConstants.kDegreesToRadians;
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
+      return navx.getRate() * DriveConstants.DEGREES_TO_RADIANS;
 
-    return gyro.getRate() * DriveConstants.kDegreesToRadians;
+    return gyro.getRate() * DriveConstants.DEGREES_TO_RADIANS;
   }
 
   //since wpilib often wants heading in format of Rotation2d
@@ -258,7 +258,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.PHYSICAL_MAX_SPEED_METERS_PER_SECOND);
     // normalizes wheel speeds in case max speed reached^^
     frontLeft.setDesiredState(desiredStates[0]);
     frontRight.setDesiredState(desiredStates[1]);
@@ -354,7 +354,7 @@ public Pose2d getEstimatedPosition(){
     // Vision stuff
 
 public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
-  if(ambiguity>Constants.VisionConstants.kMaxAmbiguity) return;
+  if(ambiguity>Constants.VisionConstants.MAX_AMBIGUITY) return;
 
   //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
     Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
@@ -382,7 +382,7 @@ newY-=camYOffset;
     double[] out = new double[3];
     if(pose == null) return null;
    // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
-    double rotationDiff = MathThings.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
+    double rotationDiff = MB_Math.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
     double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;
     double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY()) * 1.5;
     double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
@@ -415,7 +415,7 @@ newY-=camYOffset;
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
     //speeds[1] = MathThings.absMax(speeds[1],0.2);
-    speeds[2] = MathThings.maxValueCutoff(speeds[2],DriveConstants.maxTurningPowerOut);
+    speeds[2] = MB_Math.maxValueCutoff(speeds[2],DriveConstants.maxTurningPowerOut);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
   }

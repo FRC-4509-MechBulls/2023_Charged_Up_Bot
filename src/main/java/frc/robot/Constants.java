@@ -28,15 +28,15 @@ public final class Constants {
     }
 
     public static final class EndEffectorConstants {
-        public static final int kEFMotorTopID = 14; //not yet decided
-        public static final int kEFMotorBottomID = 12; //not yet decided
+        public static final int EF_MOTOR_TOP_ID = 14; //not yet decided
+        public static final int EF_MOTOR_BOTTOM_ID = 12; //not yet decided
 
-        public static final double kIntakeConeOutput = 0.8; //not yet decided, might make separate speeds for motors
-        public static final double kIntakeCubeOutput = 0.8; //not yet decided, might make separate speeds for motors
-        public static final double kHoldConeOutput = 0.1; //not yet decided
-        public static final double kHoldCubeOutput = 0.1; //not yet decided
-        public static final double kPlaceConeOutput = -0.8; //not yet decided
-        public static final double kPlaceCubeOutput = -0.8; //not yet decided 
+        public static final double INTAKE_CONE_OUTPUT = 0.8; //not yet decided, might make separate speeds for motors
+        public static final double INTAKE_CUBE_OUTPUT = 0.8; //not yet decided, might make separate speeds for motors
+        public static final double HOLD_CONE_OUTPUT = 0.1; //not yet decided
+        public static final double HOLD_CUBE_OUTPUT = 0.1; //not yet decided
+        public static final double PLACE_CONE_OUTPUT = -0.8; //not yet decided
+        public static final double PLACE_CUBE_OUTPUT = -0.8; //not yet decided
     }
 
     public static final class ArmConstants{
@@ -48,30 +48,30 @@ public final class Constants {
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 
-        public static final double kstageOne_encoderTicksToRadians =  Math.PI * 2;
-        public static final double kstageTwo_encoderTicksToRadians = 1 * Math.PI * 2;
+        public static final double STAGE_ONE_ENCODER_TICKS_TO_RADIANS =  Math.PI * 2;
+        public static final double STAGE_TWO_ENCODER_TICKS_TO_RADIANS = 1 * Math.PI * 2;
 
 
-        public static final int kStageOne_MotorLeftID = 11; //undecided
-        public static final int kStageOne_MotorRightID = 12; //undecided
+        public static final int STAGE_ONE_MOTOR_LEFT_ID = 11; //undecided
+        public static final int STAGE_ONE_MOTOR_RIGHT_ID = 12; //undecided
 
-        public static final double kAbsToRadians = 2.0 * Math.PI;
+        public static final double ABS_TO_RADIANS = 2.0 * Math.PI;
 
-        public static final boolean kStageOne_AbsEncoderReversed = false; //undecided
+        public static final boolean STAGE_ONE_ABS_ENCODER_REVERSED = false; //undecided
 
-        public static final double kStageOne_AbsEncoderInitialOffset = 0; //undecided
+        public static final double STAGE_ONE_ABS_ENCODER_INITIAL_OFFSET = 0; //undecided
 
-        public static final double kStageOne_LimitSwitchAngleRad = 0; //undecided
+        public static final double STAGE_ONE_LIMIT_SWITCH_ANGLE_RAD = 0; //undecided
 
 
-        public static final int kStageTwo_MotorLeftChannel = 1; //undecided
-        public static final int kStageTwo_MotorRightChannel = 2; //undecided
+        public static final int STAGE_TWO_MOTOR_LEFT_CHANNEL = 1; //undecided
+        public static final int STAGE_TWO_MOTOR_RIGHT_CHANNEL = 2; //undecided
 
-        public static final boolean kStageTwo_AbsEncoderReversed = false; //undecided
+        public static final boolean STAGE_TWO_ABS_ENCODER_REVERSED = false; //undecided
 
-        public static final double kStageTwo_AbsEncoderInitialOffset = 0; //undecided
+        public static final double STAGE_TWO_ABS_ENCODER_INITIAL_OFFSET = 0; //undecided
 
-        public static final double kStageTwo_LimitSwitchAngleRad = 0; //undecided
+        public static final double STAGE_TWO_LIMIT_SWITCH_ANGLE_RAD = 0; //undecided
 
         public static final double[] intakingConesUprightArmPos = {0,0}; //undecided
         public static final double[] intakingConesFallenArmPos = {0,0}; //undecided
@@ -125,14 +125,14 @@ public final class Constants {
         public static final double kTurningMotorGearRatio = 21.4286;
 
         //Conversions
-        public static final double kFalconTicks = 2048;
-        public static final double kRadiansToFalcon = kFalconTicks / (2 * Math.PI);
-        public static final double kRadiansToTurning = kRadiansToFalcon * kTurningMotorGearRatio;
-        public static final double kWheelCircumference = kWheelDiameterMeters * Math.PI;
-        public static final double kMetersToRotations = (1 / kWheelCircumference);
-        public static final double kMetersToDrive = kMetersToRotations * kDriveMotorGearRatio * kFalconTicks;
-        public static final double kMetersToDriveVelocity = kMetersToDrive / 10;
-        public static final double kAbsToRadians = 2.0 * Math.PI;
+        public static final double FALCON_TICKS = 2048;
+        public static final double RADIANS_TO_FALCON = FALCON_TICKS / (2 * Math.PI);
+        public static final double RADIANS_TO_TURNING = RADIANS_TO_FALCON * kTurningMotorGearRatio;
+        public static final double WHEEL_CIRCUMFERENCE = kWheelDiameterMeters * Math.PI;
+        public static final double METERS_TO_ROTATIONS = (1 / WHEEL_CIRCUMFERENCE);
+        public static final double METERS_TO_DRIVE = METERS_TO_ROTATIONS * kDriveMotorGearRatio * FALCON_TICKS;
+        public static final double METERS_TO_DRIVE_VELOCITY = METERS_TO_DRIVE / 10;
+        public static final double ABS_TO_RADIANS = 2.0 * Math.PI;
 
         //Gains
             //Turn
@@ -142,91 +142,91 @@ public final class Constants {
             public static final double kFDrive = .045012; //0.04390375 //0.03751 //.045012
             public static final double kPDrive = 0.02; //0.08 //0.02
 
-        public static final double kNeutralDeadband = 0.01;
+        public static final double NEUTRAL_DEADBAND = 0.01;
     }
 
     public static final class DriveConstants {
 
-        public static final double kTrackWidth = Units.inchesToMeters(23.625); //need to find
+        public static final double TRACK_WIDTH = Units.inchesToMeters(23.625); //need to find
         // Distance between right and left wheels
-        public static final double kWheelBase = Units.inchesToMeters(23.625); //need to find
+        public static final double WHEEL_BASE = Units.inchesToMeters(23.625); //need to find
 
 
         // Distance between front and back wheels
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
+            new Translation2d(WHEEL_BASE / 2, TRACK_WIDTH / 2),
+            new Translation2d(WHEEL_BASE / 2, -TRACK_WIDTH / 2),
+            new Translation2d(-WHEEL_BASE / 2, TRACK_WIDTH / 2),
+            new Translation2d(-WHEEL_BASE / 2, -TRACK_WIDTH / 2)
         );
 
         //TBD
-        public static final int kFrontLeftDriveMotorPort = 3;
-        public static final int kFrontRightDriveMotorPort = 5;
-        public static final int kBackLeftDriveMotorPort = 7;
-        public static final int kBackRightDriveMotorPort = 9;
+        public static final int FRONT_LEFT_DRIVE_MOTOR_PORT = 3;
+        public static final int FRONT_RIGHT_DRIVE_MOTOR_PORT = 5;
+        public static final int BACK_LEFT_DRIVE_MOTOR_PORT = 7;
+        public static final int BACK_RIGHT_DRIVE_MOTOR_PORT = 9;
 
         //TBD
-        public static final int kFrontLeftTurningMotorPort = 4;
-        public static final int kFrontRightTurningMotorPort = 6;
-        public static final int kBackLeftTurningMotorPort = 8;
-        public static final int kBackRightTurningMotorPort = 10;
+        public static final int FRONT_LEFT_TURNING_MOTOR_PORT = 4;
+        public static final int FRONT_RIGHT_TURNING_MOTOR_PORT = 6;
+        public static final int BACK_LEFT_TURNING_MOTOR_PORT = 8;
+        public static final int BACK_RIGHT_TURNING_MOTOR_PORT = 10;
 
-        public static final boolean kFrontLeftDriveEncoderReversed = false;
-        public static final boolean kFrontRightDriveEncoderReversed = true;
-        public static final boolean kBackLeftDriveEncoderReversed = false;
-        public static final boolean kBackRightDriveEncoderReversed = true;
+        public static final boolean FRONT_LEFT_DRIVE_ENCODER_REVERSED = false;
+        public static final boolean FRONT_RIGHT_DRIVE_ENCODER_REVERSED = true;
+        public static final boolean BACK_LEFT_DRIVE_ENCODER_REVERSED = false;
+        public static final boolean BACK_RIGHT_DRIVE_ENCODER_REVERSED = true;
 
-        public static final boolean kFrontLeftTurningEncoderReversed = true;
-        public static final boolean kFrontRightTurningEncoderReversed = true;
-        public static final boolean kBackLeftTurningEncoderReversed = true;
-        public static final boolean kBackRightTurningEncoderReversed = true;
+        public static final boolean FRONT_LEFT_TURNING_ENCODER_REVERSED = true;
+        public static final boolean FRONT_RIGHT_TURNING_ENCODER_REVERSED = true;
+        public static final boolean BACK_LEFT_TURNING_ENCODER_REVERSED = true;
+        public static final boolean BACK_RIGHT_TURNING_ENCODER_REVERSED = true;
 
         //TBD
-        public static final int kFrontLeftDriveAbsoluteEncoderPort = 0;
-        public static final int kFrontRightDriveAbsoluteEncoderPort = 1;
-        public static final int kBackLeftDriveAbsoluteEncoderPort = 2;
-        public static final int kBackRightDriveAbsoluteEncoderPort = 3;
+        public static final int FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_PORT = 0;
+        public static final int FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_PORT = 1;
+        public static final int BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_PORT = 2;
+        public static final int BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_PORT = 3;
 
         //sort of calculated
-        public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad = -2.260 +Math.PI; //-2.29+Math.PI
-        public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = -6.087+Math.PI; //-6.06+Math.PI
-        public static final double kBackLeftDriveAbsoluteEncoderOffsetRad = -5.420+Math.PI; //-2.25
-        public static final double kBackRightDriveAbsoluteEncoderOffsetRad = -3.925+Math.PI; //-0.75
+        public static final double FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD = -2.260 +Math.PI; //-2.29+Math.PI
+        public static final double FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD = -6.087+Math.PI; //-6.06+Math.PI
+        public static final double BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD = -5.420+Math.PI; //-2.25
+        public static final double BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD = -3.925+Math.PI; //-0.75
 
-        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
-        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
-        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
-        public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
+        public static final boolean FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_REVERSED = false;
+        public static final boolean FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_REVERSED = false;
+        public static final boolean BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_REVERSED = false;
+        public static final boolean BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_REVERSED = false;
 
-        public static final double kRadius = Units.inchesToMeters(32/2);
+        public static final double RADIUS = Units.inchesToMeters(32/2);
 
-        public static final double kPhysicalMaxSpeedMetersPerSecond = 4.8; //13.3 adjusted, 16.4 free //empirical 4.8 meters when not on ground
-        public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = kPhysicalMaxSpeedMetersPerSecond / kRadius;
+        public static final double PHYSICAL_MAX_SPEED_METERS_PER_SECOND = 4.8; //13.3 adjusted, 16.4 free //empirical 4.8 meters when not on ground
+        public static final double PHYSICAL_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = PHYSICAL_MAX_SPEED_METERS_PER_SECOND / RADIUS;
 
-        public static final double kTeleDriveMaxAccelerationUnitsPerSecond = Units.feetToMeters(100); //10 //100 for testing
-        public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond * 2 * Math.PI; //idk
-        public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
-        public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond;
+        public static final double TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND = Units.feetToMeters(100); //10 //100 for testing
+        public static final double TELE_DRIVE_MAX_ANGULAR_ACCELERATION_UNITS_PER_SECOND = PHYSICAL_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND * 2 * Math.PI; //idk
+        public static final double TELE_DRIVE_MAX_SPEED_METERS_PER_SECOND = PHYSICAL_MAX_SPEED_METERS_PER_SECOND;
+        public static final double TELE_DRIVE_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = PHYSICAL_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND;
 
-        public static final double kDegreesToRadians = (2*Math.PI) / 360;
+        public static final double DEGREES_TO_RADIANS = (2*Math.PI) / 360;
 
         public static final double kPTurning = 0.0015; //0.0015 low-no oscillation
         public static final double kDTurning = 0.0; //0.0 unnecissary
 
         public static final double kPFudge = 0.02; //0.2 seems pretty close
 
-        public static final boolean kUseNavXOverPigeon = false;
+        public static final boolean USE_NAV_X_OVER_PIGEON = false;
 
 
         public static final double posTolerance = Units.inchesToMeters(0.5);
         public static final double rotationTolerance = 2;
 
         
-        public static final double kGyroZError = 0.674; //.674
-        public static final double kGyroMountPosePitch = 0;
-        public static final double kGyroMountPoseYaw = 0;
-        public static final double kGyroMountPoseRoll = 0;
+        public static final double GYRO_Z_ERROR = 0.674; //.674
+        public static final double GYRO_MOUNT_POSE_PITCH = 0;
+        public static final double GYRO_MOUNT_POSE_YAW = 0;
+        public static final double GYRO_MOUNT_POSE_ROLL = 0;
 
         public static final double drivePValue = 0.5; //% speed for every meter away from target
         public static final double turnPValue = 1/180.0; //% speed for every degree away from target
@@ -237,26 +237,26 @@ public final class Constants {
     }
 
     public static final class OIConstants {
-        public static final int kDriverControllerPort = 0;
-        public static final int kOperatorControllerPort = 1;
+        public static final int DRIVER_CONTROLLER_PORT = 0;
+        public static final int OPERATOR_CONTROLLER_PORT = 1;
 
-        public static final int kDriverYAxis = XboxController.Axis.kLeftY.value;
-        public static final int kDriverXAxis = XboxController.Axis.kLeftX.value;
-        public static final int kDriverRotAxis = XboxController.Axis.kRightX.value;
-        public static final int kDriverFieldOrientedButtonIdx = XboxController.Button.kRightBumper.value;
+        public static final int DRIVER_Y_AXIS = XboxController.Axis.kLeftY.value;
+        public static final int DRIVER_X_AXIS = XboxController.Axis.kLeftX.value;
+        public static final int DRIVER_ROT_AXIS = XboxController.Axis.kRightX.value;
+        public static final int DRIVER_FIELD_ORIENTED_BUTTON_IDX = XboxController.Button.kRightBumper.value;
 
-        public static final double kDeadband = 0.06; //0.0275-0.03 //0.06
+        public static final double DEADBAND = 0.06; //0.0275-0.03 //0.06
     }
 
     public static final class RobotConstants {
-        public static final double kMainLoopPeriod = 0.02;
-        public static final double kRobotNominalVoltage = 12.0;
+        public static final double MAIN_LOOP_PERIOD = 0.02;
+        public static final double ROBOT_NOMINAL_VOLTAGE = 12.0;
     }
 
     public static final class PathingConstants{
         public static final double ROBOT_LENGTH = Units.inchesToMeters(34);
         public static final double ROBOT_WIDTH = Units.inchesToMeters(34);
-        public static final double kRobotRadius =  Math.sqrt(Math.pow(ROBOT_LENGTH /2,2)+Math.pow(ROBOT_WIDTH /2,2));
+        public static final double ROBOT_RADIUS =  Math.sqrt(Math.pow(ROBOT_LENGTH /2,2)+Math.pow(ROBOT_WIDTH /2,2));
 
         public static final double maxLineDist = 8.0;
         public static final double lineDistIterator = 1.5;
@@ -276,11 +276,11 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final double kMaxAmbiguity = 0.05;
-        public static final double kCamXOffset = Units.inchesToMeters(15.5-20.5);
-        public static final double kCamYOffset = Units.inchesToMeters(15.5-10);
-        public static final double camDirFromCenter = Math.atan2(kCamYOffset,kCamXOffset);
-        public static final double camDistFromCenter = Math.sqrt(Math.pow(kCamXOffset,2)+Math.pow(kCamYOffset,2));
+        public static final double MAX_AMBIGUITY = 0.05;
+        public static final double CAM_X_OFFSET = Units.inchesToMeters(15.5-20.5);
+        public static final double CAM_Y_OFFSET = Units.inchesToMeters(15.5-10);
+        public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
+        public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
 
     }
 

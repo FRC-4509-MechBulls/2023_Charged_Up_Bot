@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.EndEffectorConstants;
 
-public class EndEffectorSubsystem extends SubsystemBase {
+public class EFSub extends SubsystemBase {
   private TalonSRX efMotorTop;
   private TalonSRX efMotorBottom;
 
@@ -23,9 +23,9 @@ public class EndEffectorSubsystem extends SubsystemBase {
   private double angle;
 
   /** Creates a new EndEffectorSubsystem. */
-  public EndEffectorSubsystem() {
-    efMotorTop = new TalonSRX(EndEffectorConstants.kEFMotorTopID);
-    efMotorBottom = new TalonSRX(EndEffectorConstants.kEFMotorBottomID);
+  public EFSub() {
+    efMotorTop = new TalonSRX(EndEffectorConstants.EF_MOTOR_TOP_ID);
+    efMotorBottom = new TalonSRX(EndEffectorConstants.EF_MOTOR_BOTTOM_ID);
 
     // setting motors to brake mode so they immediately stop moving when voltage stops being sent
     efMotorTop.setNeutralMode(NeutralMode.Brake);
@@ -72,41 +72,41 @@ public class EndEffectorSubsystem extends SubsystemBase {
     // sets motors to run opposite of each other at set percent output
     // intakes cone into the end effector
     // the direction of the motors might need to be reversed, we'll see
-    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kIntakeConeOutput);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.kIntakeConeOutput);
+    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.INTAKE_CONE_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.INTAKE_CONE_OUTPUT);
   }
 
   public void intakeCube() {
     // sets motors to run in the same direction at set percent output
     // intakes cube into the end effector
-    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kIntakeCubeOutput);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kIntakeCubeOutput);
+    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.INTAKE_CUBE_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.INTAKE_CUBE_OUTPUT);
   }
 
   public void holdCone() {
     // sets motors at enough percent output to hold cone in end effector
     // motors run in opposite directions
-    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kHoldConeOutput);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.kHoldConeOutput);
+    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.HOLD_CONE_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.HOLD_CONE_OUTPUT);
   }
 
   public void holdCube() {
     // sets motors at enough percent output to hold cube in end effector
-    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kHoldCubeOutput);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kHoldCubeOutput);
+    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.HOLD_CUBE_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.HOLD_CUBE_OUTPUT);
   }
 
   public void placeCone() {
     // reverses direction of motors to place cone
     // motors run in opposite directions
-    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kPlaceConeOutput);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.kPlaceConeOutput);
+    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CONE_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.PLACE_CONE_OUTPUT);
   }
 
   public void placeCube() {
     // reverses direction of motors to place cube
-    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kPlaceCubeOutput);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.kPlaceCubeOutput);
+    efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CUBE_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CUBE_OUTPUT);
   }
 
   public void stopMotors() {
