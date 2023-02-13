@@ -2,19 +2,25 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.EndEffectorConstants;
 
 public class EndEffectorSubsystem extends SubsystemBase {
-  TalonSRX efMotorTop;
-  TalonSRX efMotorBottom;
+  private TalonSRX efMotorTop;
+  private TalonSRX efMotorBottom;
+
+  private double kCG[];
+  private double cG[];
+  private double angle;
 
   /** Creates a new EndEffectorSubsystem. */
   public EndEffectorSubsystem() {
@@ -40,6 +46,26 @@ public class EndEffectorSubsystem extends SubsystemBase {
       10, // Limit (amp)
       15, // Trigger Threshold (amp)
       0.5)); // Trigger Threshold Time(s)
+    
+    kCG = ArmConstants.endEffectorCG;
+  }
+
+  public void calculateStageData() {
+    cG = calculateCG();
+  }
+  public double[] calculateCG() {
+    /*
+    x, y -> angle
+    angle + angle
+    angle -> x, y
+    x, y * magnitude
+    */
+    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
+    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
+  }
+  public double[] getCG() {
+    return cG;
   }
 
   public void intakeCone() {
@@ -90,6 +116,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    calculateStageData();
     // This method will be called once per scheduler run
   }
 }

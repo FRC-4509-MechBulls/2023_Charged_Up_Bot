@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Grabber;
+import frc.robot.subsystems.arm.Grabber;
 import frc.robot.subsystems.PathingTelemetrySub;
 import frc.robot.subsystems.StateControllerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -240,7 +240,8 @@ public Pose2d getNextNavPoint(){
 //    pTelemetrySub.updateNavPoses(navPoses);
     Pose2d botPose = swerveSubsystem.getEstimatedPosition();
     while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedInBetweenPointThreshold)
-        navPoses.remove(0);
+        if(navPoses.size()>1)
+            navPoses.remove(0);
     if(navPoses.size()>0)
         return navPoses.get(0);
     return swerveSubsystem.getEstimatedPosition();

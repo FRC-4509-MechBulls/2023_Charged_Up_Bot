@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.FMSGetter;
+import frc.robot.subsystems.arm.Grabber;
 
 public class StateControllerSubsystem extends SubsystemBase {
   /** Creates a new StateControllerSubsystem. */
