@@ -380,6 +380,7 @@ newY-=camYOffset;
   public double[] getDesiredSpeeds(Pose2d pose){
     //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
+    if(pose == null) return null;
    // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
     double rotationDiff = MathThings.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
     double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;

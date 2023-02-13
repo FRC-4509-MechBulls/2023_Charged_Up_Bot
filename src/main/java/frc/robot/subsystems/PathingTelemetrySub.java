@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.lib.FieldLine;
@@ -18,11 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
-
-    public PathingTelemetrySub() {super("Pathing");}
+    private StateControllerSubsystem stateControllerSubsystem;
+    public PathingTelemetrySub(StateControllerSubsystem stateControllerSubsystem) {
+        super("Pathing");
+        this.stateControllerSubsystem = stateControllerSubsystem;
+    }
 
 
     protected void drawThings(Mat mat){
+        clearScreen(mat);
         dontTouchMe = true;
        /* List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
         pointList2.add(new MatOfPoint(
@@ -60,6 +65,9 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
                 case POS2: radius = 4; break;
                 case POS3: radius = 5; break;
             }
+            if(node.getLevel() == stateControllerSubsystem.getPlacingLevel())
+                //if(Timer.getFPGATimestamp()%1 > 0.5)
+                    color = new Scalar(color.val[0]-175,color.val[1]-175,color.val[2]+175);
             Imgproc.circle(mat, metersPosToPixelsPos(new Point(node.getX(),node.getY())),radius,color,2);
         }
 
@@ -138,11 +146,93 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
 
 
         //coords and heading
-        Imgproc.putText(mat,"("+(Math.floor(robotPose.getX()*100)/100.0)+", "+(Math.floor(robotPose.getY()*100)/100.0)+")",new Point(0,20),5,1,new Scalar(255,255,255));
-        Imgproc.putText(mat,(Math.floor(robotPose.getRotation().getDegrees()*10)/10.0) + "*",new Point(0,40),5,1,new Scalar(255,255,255));
+        Imgproc.putText(mat,"("+(Math.floor(robotPose.getX()*100)/100.0)+", "+(Math.floor(robotPose.getY()*100)/100.0)+")",new Point(128,20),5,1,new Scalar(255,255,255));
+        Imgproc.putText(mat,(Math.floor(robotPose.getRotation().getDegrees()*10)/10.0) + "*",new Point(128,40),5,1,new Scalar(255,255,255));
 
         //   SmartDashboard.putNumber("point?",barriers.size());
+        drawStateTelem(mat);
         dontTouchMe = false;
+    }
+
+    void drawStateTelem(Mat mat){
+        Scalar coneOrCubeColor = new Scalar(200,200,200); //gray
+        switch(stateControllerSubsystem.getItemType()){
+            case CONE: coneOrCubeColor = new Scalar(0,222,255); break;
+            case CUBE: coneOrCubeColor = new Scalar(181,0,175); break;
+        }
+        List<MatOfPoint> box1 = new ArrayList<MatOfPoint>();
+        box1.add(new MatOfPoint(
+                new Point(8,14),
+                new Point(8,32),
+                new Point(26,32),
+                new Point(26,14)
+        ));
+        Imgproc.fillPoly(mat,box1,coneOrCubeColor);
+        String fallenString = ""; if(stateControllerSubsystem.getItemFallen() == StateControllerSubsystem.ItemFallen.FALLEN_CONE) fallenString = "_FALLEN";
+        Imgproc.putText(mat,stateControllerSubsystem.getItemType().toString()+fallenString,new Point(32,26),5,0.5,new Scalar(255,255,255));
+
+        Scalar agnosticGrabberColor = new Scalar(200,200,200);
+        switch(stateControllerSubsystem.getAgnosticGrabberMode()){
+            case INTAKING: agnosticGrabberColor = new Scalar(0,255,0); break;
+            case PLACING: agnosticGrabberColor = new Scalar(0,0,255); break;
+        }
+        List<MatOfPoint> box2 = new ArrayList<MatOfPoint>();
+        box2.add(new MatOfPoint(
+                new Point(8,14+26),
+                new Point(8,32+26),
+                new Point(26,32+26),
+                new Point(26,14+26)
+        ));
+        Imgproc.fillPoly(mat,box2,agnosticGrabberColor);
+        Imgproc.putText(mat,stateControllerSubsystem.getAgnosticGrabberMode().toString(),new Point(32,26+26),5,0.5,new Scalar(255,255,255));
+
+
+        /* //bro, stop.
+        drawArm(mat,64,200,20,Math.PI/5,12,-Math.PI/2.5,30,10);
+
+        //show intaking, outtaking, or holding
+        double arrowAngleDeg = 90;
+        Scalar arrowColor = new Scalar(255,255,255);
+        switch(stateControllerSubsystem.getAgnosticGrabberMode()){
+            case PLACING: arrowAngleDeg = 0; arrowColor = new Scalar(0,0,255); break;
+            case INTAKING: arrowAngleDeg = 180; arrowColor = new Scalar(0,255,0); break;
+        }
+
+        Imgproc.rectangle(mat, new Point(10,50),new Point(50,100),new Scalar(255,255,255),2);
+        drawArrow(mat,75,75,Math.toRadians(arrowAngleDeg),20,arrowColor);
+        */
+
+    }
+
+    public void drawArm(Mat mat,double x, double y, double len1, double ang1, double len2, double ang2,double baseWidth, double startingHeight){
+        Scalar color = new Scalar(255,255,255);
+        double armBaseX = x;
+        double armBaseY = y-startingHeight;
+        double arm1EndX = armBaseX + len1*Math.cos(ang1);
+        double arm1EndY = armBaseY - len1*Math.sin(ang1);
+        double arm2EndX = arm1EndX + len2*Math.cos(ang2);
+        double arm2EndY = arm1EndY - len2*Math.sin(ang2);
+
+        Imgproc.line(mat, new Point(x-baseWidth/2, y),new Point(x+baseWidth/2, y),color,2); //base
+        Imgproc.line(mat, new Point(x, y),new Point(armBaseX,armBaseY),color,2); //base
+        Imgproc.line(mat, new Point(armBaseX, armBaseY),new Point(arm1EndX,arm1EndY),color,2); //arm1
+        Imgproc.line(mat, new Point(arm1EndX, arm1EndY),new Point(arm2EndX,arm2EndY),color,2); //arm2
+
+
+    }
+    public void drawArrow(Mat mat, double x, double y, double angle, double length, Scalar color){
+        double startX = x- length/2*Math.cos(angle);
+        double startY = y+ length/2*Math.sin(angle);
+        double endX = x+ length/2*Math.cos(angle);
+        double endY = y- length/2*Math.sin(angle);
+        double branch1X = endX + length/2.5*Math.cos(angle+Math.toRadians(135));
+        double branch1Y = endY - length/2.5*Math.sin(angle+Math.toRadians(135));
+        double branch2X = endX + length/2.5*Math.cos(angle-Math.toRadians(135));
+        double branch2Y = endY - length/2.5*Math.sin(angle-Math.toRadians(135));
+
+        Imgproc.line(mat, new Point(startX,startY),new Point(endX,endY),color,2);
+        Imgproc.line(mat, new Point(endX,endY),new Point(branch1X,branch1Y),color,2);
+        Imgproc.line(mat, new Point(endX,endY),new Point(branch2X,branch2Y),color,2);
     }
 
     public void drawRotatedRect(Mat mat, double centerX, double centerY, double l, double w, Rotation2d angle, Scalar color, int thickness){
@@ -165,6 +255,28 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem{
         pointList2.add(new MatOfPoint(robotPts[0],robotPts[1],robotPts[2],robotPts[3])); //ew gross
         Imgproc.polylines(mat,pointList2 ,true,color,thickness);
     }
+
+    void clearScreen(Mat mat){
+        List<MatOfPoint> pointList1 = new ArrayList<MatOfPoint>();
+        pointList1.add(new MatOfPoint(
+                new Point(0,0),
+                new Point(0,480),
+                new Point(768,480),
+                new Point(768,0)
+        ));
+        Imgproc.fillPoly(mat,pointList1,new Scalar(0,0,0));
+
+
+        List<MatOfPoint> pointList2 = new ArrayList<MatOfPoint>();
+        pointList2.add(new MatOfPoint(
+                new Point(0,0),
+                new Point(0,480),
+                new Point(128,480),
+                new Point(128,0)
+        ));
+        Imgproc.fillPoly(mat,pointList2,new Scalar(42,42,42));
+    }
+
 
     private ArrayList<FieldLine> fieldLines = new ArrayList<>();
     private ArrayList<Node> nodes = new ArrayList<Node>();
@@ -245,6 +357,9 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
         outX = centerX + dist * Math.cos(dir+ang);
         outY = centerY + dist * Math.sin(dir+ang);
 
+        outX+=128;
+        if(outX<128)
+            outX = 128;
         return new Point (outX,outY);
     }
 
@@ -263,7 +378,7 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
     }
 
     public void periodic(){
-    Line2D.Double pathLine = new Line2D.Double(robotPose.getX(), robotPose.getY(), 2, 0.3);
+   // Line2D.Double pathLine = new Line2D.Double(robotPose.getX(), robotPose.getY(), 2, 0.3);
   //  SmartDashboard.putBoolean("Clear path to (2, 0.3)", NavigationField.clearPathOnLine(pathLine));
     }
     private ArrayList<Pose2d> cornerPoints = new ArrayList<>();
