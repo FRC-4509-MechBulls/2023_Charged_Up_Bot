@@ -82,6 +82,30 @@ public final class Constants {
         public static final double[] placingArmPosOne = {0,0}; //undecided
         public static final double[] placingArmPosTwo = {0,0}; //undecided
         public static final double[] placingArmPosThree = {0,0}; //undecided
+
+        public static final double[] stageOneCG = {6, 0, 10.64};
+        public static final double[] stageOneTransmissionData = {1/((2.41/12)*(8.8507457916 )), 0.46, 2, 421.88}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
+        public static final double stageOneLength = 28.75;
+        public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
+        public static final boolean stageOneRedirected = true;
+        public static final double[] stageOneSpringMountCoordinate = {9.636, 14};
+        public static final double[] stageOneSpringRedirectCoordinate = {-0.7145, 8.125};
+        public static final double stageOneSpringRestLength = 0; //undecided
+        public static final double[] stageOneCBCoordinate = {12.14, 1.723};
+        public static final double stageOneSpringConstant = 0; //undecided
+        
+        public static final double[] stageTwoCG = {10.9, 0, 2};
+        public static final double[] stageTwoTransmissionData = {1/((3.28/12/12)*(8.8507457916 )), 0.46, 2, 145.45}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
+        public static final double stageTwoLength = 28.75;
+        public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
+        public static final boolean stageTwoRedirected = false;
+        public static final double[] stageTwoSpringMountCoordinate = {-16.61, 1.723};
+        public static final double[] stageTwoSpringRedirectCoordinate = {0, 0};
+        public static final double stageTwoSpringRestLength = 0; //undecided
+        public static final double[] stageTwoCBCoordinate = {-3.5, 0.3895};
+        public static final double stageTwoSpringConstant = 0; //undecided
+
+        public static final double[] endEffectorCG = {6.75, 0.75, 12.7};
     }
 
 

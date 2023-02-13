@@ -36,7 +36,12 @@ public class ArmStageTwo extends SubsystemBase {
   private double angle;
   private double kLength;
   private double kPivotCoordinate[];
-  private double cBTorque;
+  private boolean kRedirected;
+  private double kSpringMountCoordinate[];
+  private double kSpringRedirectCoordinate[];
+  private double kSpringRestLength;
+  private double kCBCoordinate[];
+  private double kSpringConstant;
 
   /** Creates a new ArmStageTwo. */
   public ArmStageTwo() {
@@ -59,9 +64,16 @@ public class ArmStageTwo extends SubsystemBase {
     pidController.setD(ArmConstants.stageTwo_kD);
     pidController.setOutputRange(-1,1);
 
-
-
-
+    kCG = ArmConstants.stageTwoCG;
+    kTransmissionData = ArmConstants.stageTwoTransmissionData;
+    kLength = ArmConstants.stageTwoLength;
+    kPivotCoordinate = ArmConstants.stageTwoPivotCoordinate;
+    kRedirected = ArmConstants.stageTwoRedirected;
+    kSpringMountCoordinate = ArmConstants.stageTwoSpringMountCoordinate;
+    kSpringRedirectCoordinate = ArmConstants.stageTwoSpringRedirectCoordinate;
+    kSpringRestLength = ArmConstants.stageTwoSpringRestLength;
+    kCBCoordinate = ArmConstants.stageTwoCBCoordinate;
+    kSpringConstant = ArmConstants.stageTwoSpringConstant;  
   }
 
   private void calculateStageData() {
@@ -97,6 +109,28 @@ public class ArmStageTwo extends SubsystemBase {
   public double[] getTransmissionData() {
     return kTransmissionData;
   }
+  public double getAngle() {
+    return angle;
+  }
+  public boolean getRedirected() {
+    return kRedirected;
+  }
+  public double[] getSpringMountCoordinate() {
+    return kSpringMountCoordinate;
+  }
+  public double[] getSpringRedirectCoordinate() {
+    return kSpringRedirectCoordinate;
+  }
+  public double getSpringRestLength() {
+    return kSpringRestLength;
+  }
+  public double[] getkCBCoordinate() {
+    return kCBCoordinate;
+  }
+  public double getSpringConstant() {
+    return kSpringConstant;
+  }
+
   public void setAFF(double AFF) {
     this.AFF = AFF;
   }

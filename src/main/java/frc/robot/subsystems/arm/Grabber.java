@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.arm;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
@@ -65,8 +66,21 @@ public class Grabber extends SubsystemBase {
 
    
   public void calculateArmData() {
-    double[] stageTwoCB = armStageTwo.getCB();
-    double[] stageOneCB = armStageOne.getCB();
+    double stageTwoArmAngle = armStageTwo.getAngle();
+    boolean stageTwoRedirected = armStageTwo.getRedirected();
+    double[] stageTwoSpringMountCoordinate = armStageTwo.getSpringMountCoordinate();
+    double[] stageTwoSpringRedirectCoordinate = armStageTwo.getSpringRedirectCoordinate();
+    double stageTwoSpringRestLength = armStageTwo.getSpringRestLength();
+    double[] stageTwoKcBCoordinate = armStageTwo.getkCBCoordinate();
+    double stageTwoSpringConstant = armStageTwo.getSpringConstant();
+
+    double stageOneArmAngle = armStageOne.getAngle();
+    boolean stageOneRedirected = armStageOne.getRedirected();
+    double[] stageOneSpringMountCoordinate = armStageOne.getSpringMountCoordinate();
+    double[] stageOneSpringRedirectCoordinate = armStageOne.getSpringRedirectCoordinate();
+    double stageOneSpringRestLength = armStageOne.getSpringRestLength();
+    double[] stageOneKcBCoordinate = armStageOne.getkCBCoordinate();
+    double stageOneSpringConstant = armStageOne.getSpringConstant();
 
     double[] eFCG = endEffectorSubsystem.getCG();
     double[] stageTwoCG = armStageTwo.getCG();
@@ -81,16 +95,18 @@ public class Grabber extends SubsystemBase {
     double[] stageOneTransmissionData = armStageOne.getTransmissionData();
     double[] stageTwoTransmissionData = armStageTwo.getTransmissionData();
 
-    stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoCB, stageOneTransmissionData);
-    stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneCB, stageTwoTransmissionData);
+    stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoArmAngle, stageTwoRedirected, stageTwoSpringMountCoordinate, stageTwoSpringRedirectCoordinate, stageTwoSpringRestLength, stageTwoKcBCoordinate, stageTwoSpringConstant, stageOneTransmissionData);
+    stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneArmAngle, stageOneRedirected, stageOneSpringMountCoordinate, stageOneSpringRedirectCoordinate, stageOneSpringRestLength, stageOneKcBCoordinate, stageOneSpringConstant, stageTwoTransmissionData);
   }
 
-  public double calculateCB(double armAngle) {
+  public double calculateCounterBalanceTorque(double armAngle, boolean redirected, double[] springMountCoordinate, double[] springRedirectCoordinate, double springRestLength, double[] kcBCoordinate, double springConstant) {
+    boolean springRedirected = redirected;
     double referenceAngle = armAngle;
-
-    double kCBSpringConstant = ;
-    double[] kCBCoordinate = ;
-    double kCBSpringRestLength = ;
+    double kSpringConstant = springConstant;
+    double[] kCBCoordinate = kcBCoordinate; //coordinate relative to pivot point and arm where spring attaches to arm
+    double kSpringRestLength = springRestLength;
+    double[] kSpringRedirectCoordinate = springRedirectCoordinate;
+    double[] kSpringMountCoordinate = springMountCoordinate;
 
     double kCBX = kCBCoordinate[0];
     double kCBY = kCBCoordinate[1];
@@ -102,34 +118,38 @@ public class Grabber extends SubsystemBase {
     double cBX = Math.cos(cBAngle) * cBRadius;
     double cBY = Math.sin(cBAngle) * cBRadius;
 
-    double[] cBCoordinate = {cBX, cBY};
+    double[] cBCoordinate = {cBX, cBY}; //coordinate relative to pivot point and ground where spring attaches to arm
 
+    double springCurrentLength;
+    double springAngle;
+    if (springRedirected) {
+      double[] springMountRedirectVector = subtractCoordinates(kSpringRedirectCoordinate, kSpringMountCoordinate);
+      double springMountRedirectX = springMountRedirectVector[0];
+      double springMountRedirectY = springMountRedirectVector[1];
+      double springMountRedirectDistance = calculateMagnitude(springMountRedirectX, springMountRedirectY);
+      double[] springRedirectCBVector = subtractCoordinates(cBCoordinate, kSpringRedirectCoordinate);
+      double springRedirectCBX = springRedirectCBVector[0];
+      double springRedirectCBY = springRedirectCBVector[1];
+      double springRedirectCBDistance = calculateMagnitude(springRedirectCBX, springRedirectCBY);  
+      springCurrentLength = springMountRedirectDistance + springRedirectCBDistance;
+      springAngle = new Rotation2d(springRedirectCBX, springRedirectCBY).getRadians();
+    } else {
+      double[] springMountCBVector = subtractCoordinates(cBCoordinate, kSpringMountCoordinate);
+      double springMountCBX = springMountCBVector[0];
+      double springMountCBY = springMountCBVector[1];
+      double springMountCBDistance = calculateMagnitude(springMountCBX, springMountCBY);
+      springCurrentLength = springMountCBDistance;
+      springAngle = new Rotation2d(springMountCBX, springMountCBY).getRadians();
+    }
 
-    double[] cBMountCoordinate = ;
-    double cBRedirectX = ;
-    double cBRedirectY = ;
-    double[] cBRedirectCoordinate = {cBRedirectX, cBRedirectY};
-    double[] springMountRedirectVector = subtractCoordinates(cBRedirectCoordinate, cBMountCoordinate);
-    double springMountRedirectX = springMountRedirectVector[0];
-    double springMountRedirectY = springMountRedirectVector[1];
-    double springMountRedirectDistance = calculateMagnitude(springMountRedirectX, springMountRedirectY);
-    double[] springRedirectCBVector = subtractCoordinates(cBCoordinate, cBRedirectCoordinate);
-    double springRedirectCBX = springRedirectCBVector[0];
-    double springRedirectCBY = springRedirectCBVector[1];
-    double springRedirectCBDistance = calculateMagnitude(springRedirectCBX, springRedirectCBY);
-    double cBSpringCurrentLength = springMountRedirectDistance + springRedirectCBDistance;
+    double springApproachAngle = Math.abs(MathUtil.angleModulus(cBAngle - springAngle));
 
-    
-    double springAngle = new Rotation2d(springRedirectCBX, springRedirectCBY).getRadians();
+    double springDisplacement = springCurrentLength - kSpringRestLength;
 
-    double approachAngle = cBAngle - springAngle;
+    double springGrossForce = springDisplacement * kSpringConstant;
+    double cBRealForce = Math.cos(springApproachAngle) * springGrossForce;
 
-    double springDisplacement = cBSpringCurrentLength - kCBSpringRestLength;
-
-    double cBGrossForce = springDisplacement * kCBSpringConstant;
-    double cBRealForce = Math.cos(approachAngle) * cBGrossForce;
-
-    double[] cB = {cBX, cBY, kCBSpringConstant * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
+    //double[] cB = {cBX, cBY, kSpringConstant * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
 
     double cBTorque = cBRealForce * cBRadius;
 
@@ -140,11 +160,18 @@ public class Grabber extends SubsystemBase {
     armStageOne.setAFF(stageOneAFF);
     armStageTwo.setAFF(stageTwoAFF);
   }
-  public double calculateAFF(double[] armCG, double[] armCB, double[] transmissionData) {
-    double[] cG = armCG;
-    double[] cB = armCB;
 
-    double torque = calculateArmTorque(cG, cB);
+  public double calculateAFF(double[] armCG, double kArmAngle, boolean kRedirected, double[] kSpringMountCoordinate, double[] kSpringRedirectCoordinate, double kSpringRestLength, double[] kCBCoordinate, double kSpringConstant, double[] transmissionData) {
+    double[] cG = armCG;
+    double armAngle = kArmAngle;
+    boolean redirected = kRedirected;
+    double[] springMountCoordinate = kSpringMountCoordinate;
+    double[] springRedirectCoordinate = kSpringRedirectCoordinate;
+    double springRestLength = kSpringRestLength;
+    double[] kcBCoordinate = kCBCoordinate;
+    double springConstant = kSpringConstant;
+
+    double torque = calculateArmTorque(cG, armAngle, redirected, springMountCoordinate, springRedirectCoordinate, springRestLength, kcBCoordinate, springConstant);
     double torqueCoefficient = calculateTorqueCoefficient(transmissionData);
 
     double voltage = torque * torqueCoefficient;
@@ -159,21 +186,24 @@ public class Grabber extends SubsystemBase {
 
     return (1/rateOfChangeTWithRespectToV) * (1/efficiency) * (1/numberOfMotors) * (1/gearRatio);
   }
-  public double calculateArmTorque(double[] cG, double[] cB) {
+  public double calculateArmTorque(double[] cG, double kArmAngle, boolean kRedirected, double[] kSpringMountCoordinate, double[] kSpringRedirectCoordinate, double kSpringRestLength, double[] kCBCoordinate, double kSpringConstant) {
     double cGX = cG[0];
     double cGY = cG[1];
     double cGMass = cG[2];
 
-    double cBx = cB[0];
-    double cBy = cB[1];
-    double springForceLB = cB[2];
-    double cBAngle = cB[3];
+    double armAngle = kArmAngle;
+    boolean redirected = kRedirected;
+    double[] springMountCoordinate = kSpringMountCoordinate;
+    double[] springRedirectCoordinate = kSpringRedirectCoordinate;
+    double springRestLength = kSpringRestLength;
+    double[] kcBCoordinate = kCBCoordinate;
+    double springConstant = kSpringConstant;
 
     double cGAngle = calculateCGAngleRad(cG);
     double cGDist = Math.hypot(cGX, cGY);
     
     double gravityTorque = calculateGravityTorque(cGAngle, cGMass, cGDist);
-    double counterBalanceTorque = calculateCounterBalanceTorque(cBAngle, springForceLB, cBx, cBy);
+    double counterBalanceTorque = calculateCounterBalanceTorque(armAngle, redirected, springMountCoordinate, springRedirectCoordinate, springRestLength, kcBCoordinate, springConstant);
 
     return gravityTorque - counterBalanceTorque;
   }
@@ -194,9 +224,6 @@ public class Grabber extends SubsystemBase {
   }
   public double calculateGravityTorque(double cGAngleRad, double massLb, double cGDistanceIn) {
     return Math.cos(cGAngleRad) * massLb * cGDistanceIn;
-  }
-  public double calculateCounterBalanceTorque(double cBAngleRad, double springForceLB, double cBx, double cBy) {
-    return Math.sin(cBAngleRad) * springForceLB *  Math.hypot(cBx, cBy);
   }
 
   public double[] subtractCoordinates(double[] coordinate, double[] origin) { //difference between two coordinates as a coordinate

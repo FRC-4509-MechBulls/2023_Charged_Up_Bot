@@ -32,6 +32,12 @@ public class ArmStageOne extends SubsystemBase {
   private double feedForward;
   private double kLength;
   private double kPivotCoordinate[];
+  private boolean kRedirected;
+  private double kSpringMountCoordinate[];
+  private double kSpringRedirectCoordinate[];
+  private double kSpringRestLength;
+  private double kCBCoordinate[];
+  private double kSpringConstant;
 
   /** Creates a new ArmStageOne. */
   public ArmStageOne() {
@@ -53,9 +59,16 @@ public class ArmStageOne extends SubsystemBase {
     armMotorPrimary.configClosedLoopPeriod(0, 1, 30);
 
     //magEncoder = new DutyCycleEncoder(ArmConstants.kStageOne_MagEncoderID);
-
-
-
+    kCG = ArmConstants.stageOneCG;
+    kTransmissionData = ArmConstants.stageOneTransmissionData;
+    kLength = ArmConstants.stageOneLength;
+    kPivotCoordinate = ArmConstants.stageOnePivotCoordinate;
+    kRedirected = ArmConstants.stageOneRedirected;
+    kSpringMountCoordinate = ArmConstants.stageOneSpringMountCoordinate;
+    kSpringRedirectCoordinate = ArmConstants.stageOneSpringRedirectCoordinate;
+    kSpringRestLength = ArmConstants.stageOneSpringRestLength;
+    kCBCoordinate = ArmConstants.stageOneCBCoordinate;
+    kSpringConstant = ArmConstants.stageOneSpringConstant;  
   }
   //Config
   //Getters
@@ -90,6 +103,27 @@ public class ArmStageOne extends SubsystemBase {
   }
   public double[] getPivotCoordinate() {
     return kPivotCoordinate;
+  }
+  public double getAngle() {
+    return angle;
+  }
+  public boolean getRedirected() {
+    return kRedirected;
+  }
+  public double[] getSpringMountCoordinate() {
+    return kSpringMountCoordinate;
+  }
+  public double[] getSpringRedirectCoordinate() {
+    return kSpringRedirectCoordinate;
+  }
+  public double getSpringRestLength() {
+    return kSpringRestLength;
+  }
+  public double[] getkCBCoordinate() {
+    return kCBCoordinate;
+  }
+  public double getSpringConstant() {
+    return kSpringConstant;
   }
   //Setters
   public void limitSwitchPassed(){

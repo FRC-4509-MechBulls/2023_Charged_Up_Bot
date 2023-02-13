@@ -11,15 +11,16 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.EndEffectorConstants;
 
 public class EndEffectorSubsystem extends SubsystemBase {
-  TalonSRX efMotorTop;
-  TalonSRX efMotorBottom;
+  private TalonSRX efMotorTop;
+  private TalonSRX efMotorBottom;
 
-  double kCG[];
-  double cG[];
-  double angle;
+  private double kCG[];
+  private double cG[];
+  private double angle;
 
   /** Creates a new EndEffectorSubsystem. */
   public EndEffectorSubsystem() {
@@ -45,6 +46,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
       10, // Limit (amp)
       15, // Trigger Threshold (amp)
       0.5)); // Trigger Threshold Time(s)
+    
+    kCG = ArmConstants.endEffectorCG;
   }
 
   public void calculateStageData() {
