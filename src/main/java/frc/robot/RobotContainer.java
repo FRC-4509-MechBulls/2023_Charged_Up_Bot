@@ -19,7 +19,11 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.NavToPointCommand;
 import frc.robot.lib.FMSGetter;
 import frc.robot.lib.NavigationField;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.GraphicalTelemetrySubsystem;
+import frc.robot.subsystems.PathingTelemetrySub;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.arm.EndEffectorSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
