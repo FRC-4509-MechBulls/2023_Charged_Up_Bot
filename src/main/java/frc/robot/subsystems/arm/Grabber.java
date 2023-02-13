@@ -7,64 +7,115 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ArmConstants;
+import frc.robot.lib.MathThings;
+import frc.robot.subsystems.StateControllerSubsystem;
+import frc.robot.subsystems.arm.ArmStageOne;
+import frc.robot.subsystems.arm.ArmStageTwo;
+import frc.robot.subsystems.arm.EndEffectorSubsystem;
+
+import javax.swing.plaf.nimbus.State;
+
+import static frc.robot.Constants.ArmConstants;
 
 
 public class Grabber extends SubsystemBase {
 
-  private ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:( //can we name the variable "stageOne" cus I dont feel like typing arm for no reason
-  private ArmStageTwo armStageTwo;
-  private EndEffectorSubsystem endEffectorSubsystem;
+  StateControllerSubsystem stateController;
+  ArmStageOne armStageOne; //refactor this to armStageOneSubsystem >:(
+  ArmStageTwo armStageTwo;
+  EndEffectorSubsystem endEffectorSubsystem;
+
 
   private double stageOneAFF;
   private double stageTwoAFF;
   private double stageTwoGravityAFF;
   private double stageOneGravityAFF;
+
   /** Creates a new Grabber. */
-  public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem) {
+  public Grabber(ArmStageOne armStageOne, ArmStageTwo armStageTwo, EndEffectorSubsystem endEffectorSubsystem, StateControllerSubsystem stateController) {
     this.armStageOne = armStageOne;
     this.armStageTwo = armStageTwo;
     this.endEffectorSubsystem = endEffectorSubsystem;
+    this.stateController = stateController;
   }
-  public enum ArmModes {INTAKING_CUBE,INTAKING_CONE_UPRIGHT,INTAKING_CONE_FALLEN,HOLDING_CONE,HOLDING_CUBE,PLACINGLVL1,PLACINGLVL2,PLACINGLVL3}
+  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
+  public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE, PLACING_CONE, STOPPED}
 
   public void setArmPosition(ArmModes armMode){
-    switch(armMode){
-      case INTAKING_CUBE: setArmPosition(ArmConstants.intakingCubesArmPos); break;
-      case INTAKING_CONE_UPRIGHT: setArmPosition(ArmConstants.intakingConesUprightArmPos); break;
-      case INTAKING_CONE_FALLEN: setArmPosition(ArmConstants.intakingConesFallenArmPos); break;
-      case HOLDING_CONE:
-        case HOLDING_CUBE: setArmPosition(ArmConstants.holdingArmPos); break;
-      case PLACINGLVL1: setArmPosition(ArmConstants.placingArmPosOne); break;
-      case PLACINGLVL2: setArmPosition(ArmConstants.placingArmPosTwo); break;
-      case PLACINGLVL3: setArmPosition(ArmConstants.placingArmPosThree); break;
-    }
+    double[] armPositions = getArmPositions(armMode);
+    if(armPositions.length>=2)
+      setArmPosition(armPositions);
+    this.armMode = armMode;
   }
 
-  public void setEndEffectorMode(ArmModes armMode){
-    switch(armMode){
+  public void setEndEffectorMode(EFModes effectorMode){
+    switch(effectorMode){
       case INTAKING_CUBE: endEffectorSubsystem.intakeCube(); break;
-      case INTAKING_CONE_UPRIGHT:
-        case INTAKING_CONE_FALLEN: endEffectorSubsystem.intakeCone(); break;
-      case HOLDING_CONE: endEffectorSubsystem.holdCone();
-      case HOLDING_CUBE: endEffectorSubsystem.holdCube();
-      case PLACINGLVL1: case PLACINGLVL2: case PLACINGLVL3: endEffectorSubsystem.placeCone();
+      case INTAKING_CONE: endEffectorSubsystem.intakeCone(); break;
+      case HOLDING_CONE: endEffectorSubsystem.holdCone(); break;
+      case HOLDING_CUBE: endEffectorSubsystem.holdCube(); break;
+      case PLACING_CONE: endEffectorSubsystem.placeCone(); break;
+      case PLACING_CUBE: endEffectorSubsystem.placeCube(); break;
+      case STOPPED: endEffectorSubsystem.stopMotors(); break;
     }
+    efMode = effectorMode;
   }
+
+  public double[] getArmPositions(ArmModes armMode){
+    switch (armMode){
+      case INTAKING_CUBE: return ArmConstants.intakingCubesArmPos;
+      case INTAKING_CONE_UPRIGHT: return ArmConstants.intakingConesUprightArmPos;
+      case INTAKING_CONE_FALLEN: return ArmConstants.intakingConesFallenArmPos;
+      case HOLDING: return ArmConstants.holdingArmPos;
+
+      case PLACING_CONE_LVL1: return ArmConstants.placingConeArmPosOne;
+      case PLACING_CONE_LVL2: return ArmConstants.placingConeArmPosTwo;
+      case PLACING_CONE_LVL3: return ArmConstants.placingConeArmPosThree;
+
+      case PLACING_CUBE_LVL1: return ArmConstants.placingCubeArmPosOne;
+      case PLACING_CUBE_LVL2: return ArmConstants.placingCubeArmPosTwo;
+      case PLACING_CUBE_LVL3: return ArmConstants.placingCubeArmPosThree;
+    }
+    return new double[]{};
+  }
+
+  private EFModes efMode = EFModes.STOPPED;
+  private ArmModes armMode = ArmModes.HOLDING;
+  private EFModes desiredEFMode = EFModes.STOPPED;
+  private ArmModes desiredArmMode = ArmModes.HOLDING;
+
+  public void setDesiredEFMode(EFModes desiredEFMode){
+    this.desiredEFMode = desiredEFMode;
+  }
+  public void setDesiredArmMode(ArmModes desiredArmMode){
+    this.desiredArmMode = desiredArmMode;
+  }
+  public EFModes getDesiredEFMode(){
+    return desiredEFMode;
+  }
+  public ArmModes getDesiredArmMode(){
+    return desiredArmMode;
+  }
+
+  public EFModes getEFMode(){
+    return efMode;
+  }
+  public ArmModes getArmMode(){return armMode;}
+
+
+
 
   public void setArmPosition(double[] armPosition){
-    if(armPosition.length<2) return;
     armStageOne.setArmPositionRad(armPosition[0]);
-    armStageOne.setArmPositionRad(armPosition[1]);
+    armStageTwo.setArmPositionRad(armPosition[1]);
+  }
+
+  public void setDesiredArmAndEFModes(ArmModes armMode, EFModes efMode){
+    setDesiredEFMode(efMode);
+    setDesiredArmMode(armMode);
   }
 
 
-  public void setGripperMode(ArmModes armMode){
-    setEndEffectorMode(armMode);
-    setArmPosition(armMode);
-  }
-
-   
   public void calculateArmData() {
     double stageTwoArmAngle = armStageTwo.getAngle();
     boolean stageTwoRedirected = armStageTwo.getRedirected();
@@ -99,6 +150,7 @@ public class Grabber extends SubsystemBase {
     stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneArmAngle, stageOneRedirected, stageOneSpringMountCoordinate, stageOneSpringRedirectCoordinate, stageOneSpringRestLength, stageOneKcBCoordinate, stageOneSpringConstant, stageTwoTransmissionData);
   }
 
+
   public double calculateCounterBalanceTorque(double armAngle, boolean redirected, double[] springMountCoordinate, double[] springRedirectCoordinate, double springRestLength, double[] kcBCoordinate, double springConstant) {
     boolean springRedirected = redirected;
     double referenceAngle = armAngle;
@@ -111,7 +163,7 @@ public class Grabber extends SubsystemBase {
     double kCBX = kCBCoordinate[0];
     double kCBY = kCBCoordinate[1];
     double kCBAngle = new Rotation2d(kCBCoordinate[0], kCBCoordinate[1]).getRadians();
-    
+
     double cBAngle = referenceAngle + kCBAngle;
     double cBRadius = calculateMagnitude(kCBX, kCBY);
 
@@ -130,7 +182,7 @@ public class Grabber extends SubsystemBase {
       double[] springRedirectCBVector = subtractCoordinates(cBCoordinate, kSpringRedirectCoordinate);
       double springRedirectCBX = springRedirectCBVector[0];
       double springRedirectCBY = springRedirectCBVector[1];
-      double springRedirectCBDistance = calculateMagnitude(springRedirectCBX, springRedirectCBY);  
+      double springRedirectCBDistance = calculateMagnitude(springRedirectCBX, springRedirectCBY);
       springCurrentLength = springMountRedirectDistance + springRedirectCBDistance;
       springAngle = new Rotation2d(springRedirectCBX, springRedirectCBY).getRadians();
     } else {
@@ -201,7 +253,7 @@ public class Grabber extends SubsystemBase {
 
     double cGAngle = calculateCGAngleRad(cG);
     double cGDist = Math.hypot(cGX, cGY);
-    
+
     double gravityTorque = calculateGravityTorque(cGAngle, cGMass, cGDist);
     double counterBalanceTorque = calculateCounterBalanceTorque(armAngle, redirected, springMountCoordinate, springRedirectCoordinate, springRestLength, kcBCoordinate, springConstant);
 
@@ -216,8 +268,8 @@ public class Grabber extends SubsystemBase {
   public double[] calculateFusedCG(double[] cGOne, double[] cGTwo) {
     double magnitude = calculateMagnitude(cGOne[2], cGTwo[2]);
     return new double[] {((cGOne[2]/magnitude) * cGOne[0]) + ((cGTwo[2]/magnitude) * cGTwo[0]),
-                        ((cGOne[2]/magnitude) * cGOne[1]) + ((cGTwo[2]/magnitude) * cGTwo[1]),
-                        cGOne[2] + cGTwo[2]};
+            ((cGOne[2]/magnitude) * cGOne[1]) + ((cGTwo[2]/magnitude) * cGTwo[1]),
+            cGOne[2] + cGTwo[2]};
   }
   public double calculateMagnitude(double valueOne, double valueTwo) {
     return Math.sqrt(Math.pow(valueOne, 2) + Math.pow(valueTwo, 2));
@@ -275,7 +327,7 @@ public class Grabber extends SubsystemBase {
     double stageOneLength = armStageOne.getLength();
     double stageTwoLength = armStageTwo.getLength();
     double totalLength = calculateCoordinateMagnitude(coordinateRelativeToPivotOne); //overall length
-    
+
     double theta = referenceAngle + calculateLawOfCosines(stageOneLength, stageTwoLength, totalLength);
     double omega = referenceAngle + calculateLawOfCosines(stageTwoLength, totalLength, stageOneLength);
 
@@ -296,10 +348,26 @@ public class Grabber extends SubsystemBase {
     return stageTwoAFF;
   }
 
+
   @Override
   public void periodic() {
-    calculateArmData();
-    updateArmData();
     // This method will be called once per scheduler run
+    setDesiredArmAndEFModes(stateController.getArmMode(), stateController.getEFMode());
+
+
+    if(getEFMode() != getDesiredEFMode()){ //wait for the arm to be within the tolerance to update the EF mode if intaking or placing
+      boolean armOneAligned = MathThings.isWithinRangeOf(armStageOne.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],ArmConstants.angleToleranceToUpdateEF);
+      boolean armTwoAligned = MathThings.isWithinRangeOf(armStageTwo.getEncoderRad(), getArmPositions(getDesiredArmMode())[1],ArmConstants.angleToleranceToUpdateEF);
+      boolean desiredEFIsHolding = getDesiredEFMode()==EFModes.HOLDING_CONE || getDesiredEFMode()==EFModes.HOLDING_CUBE;  //don't wait if you're switching to a holding mode
+      if((armOneAligned && armTwoAligned) || (desiredEFIsHolding)){
+        setEndEffectorMode(desiredEFMode);
+      }
+    }
+
+    if(getArmMode()!=getDesiredArmMode()){ //instantly set arm position if it doesn't match the desired position
+      armMode = getDesiredArmMode();
+    }
+
+
   }
 }

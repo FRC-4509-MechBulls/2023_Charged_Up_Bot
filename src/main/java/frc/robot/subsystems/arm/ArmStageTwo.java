@@ -137,7 +137,7 @@ public class ArmStageTwo extends SubsystemBase {
   public void setAFF(double AFF) {
     this.AFF = AFF;
   }
-  private double getEncoderRad() {
+  public double getEncoderRad() {
     return armMotorPrimary.getEncoder().getPosition() * ArmConstants.kstageTwo_encoderTicksToRadians;
   }
   public double[] getPivotCoordinate() {
@@ -152,7 +152,7 @@ public class ArmStageTwo extends SubsystemBase {
     armMotorPrimary.getEncoder().setPosition(ArmConstants.kStageTwo_LimitSwitchAngleRad / Math.PI / 2.0);
   }
 
-  private void setArmPositionRad(double setpoint){
+  void setArmPositionRad(double setpoint){
     pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
   }
 
