@@ -44,8 +44,8 @@ public class StageOneSub extends SubsystemBase {
     armMotorPrimary.configFactoryDefault(1000);
     armMotorSecondary.configFactoryDefault(1000);
 
-    armMotorPrimary.setNeutralMode(NeutralMode.Brake);
-    armMotorSecondary.setNeutralMode(NeutralMode.Brake);
+    armMotorPrimary.setNeutralMode(NeutralMode.Coast);
+    armMotorSecondary.setNeutralMode(NeutralMode.Coast);
 
     armMotorSecondary.follow(armMotorPrimary);
     armMotorSecondary.setInverted(InvertType.OpposeMaster);

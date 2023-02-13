@@ -24,8 +24,8 @@ public class MB_Math {
 
 
 
-    public static boolean isWithinRangeOf(double point, double setpoint, double tolerance) {
-        return Math.abs(point - setpoint) < Math.abs(tolerance);
+    public static boolean isWithinDistanceOf(double point, double setpoint, double maxDistance) {
+        return Math.abs(point - setpoint) < Math.abs(maxDistance);
     }
 
         public static int[] randomIndexes ( int size){

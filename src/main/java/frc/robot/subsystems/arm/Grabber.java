@@ -6,6 +6,7 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.state.StateControllerSubsystem;
@@ -347,22 +348,31 @@ public class Grabber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    setDesiredArmAndEFModes(stateController.getArmMode(), stateController.getEFMode());
+   // setDesiredArmAndEFModes(stateController.getArmMode(), );
+    setEndEffectorMode(stateController.getEFMode());
+    SmartDashboard.putString("EFMode",stateController.getEFMode().toString());
+    /*
 
 
-    if(getEFMode() != getDesiredEFMode()){ //wait for the arm to be within the tolerance to update the EF mode if intaking or placing
-      boolean armOneAligned = MB_Math.isWithinRangeOf(stageOneSub.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],ArmConstants.angleToleranceToUpdateEF);
-      boolean armTwoAligned = MB_Math.isWithinRangeOf(stageTwoSub.getEncoderRad(), getArmPositions(getDesiredArmMode())[1],ArmConstants.angleToleranceToUpdateEF);
+    stageOneSub.setAFF(getStageOneAFF());
+    stageTwoSub.setAFF(getStageOneAFF());
+    setArmPosition(getArmMode());
+
+
+    if(getEFMode() != getDesiredEFMode()){ //wait for the arm to be within the distance to update the EF mode if intaking or placing
+      boolean armOneAligned = MB_Math.isWithinDistanceOf(stageOneSub.getEncoderRad(), getArmPositions(getDesiredArmMode())[0],ArmConstants.angleToleranceToUpdateEF);
+      boolean armTwoAligned = MB_Math.isWithinDistanceOf(stageTwoSub.getEncoderRad(), getArmPositions(getDesiredArmMode())[1],ArmConstants.angleToleranceToUpdateEF);
       boolean desiredEFIsHolding = getDesiredEFMode()==EFModes.HOLDING_CONE || getDesiredEFMode()==EFModes.HOLDING_CUBE;  //don't wait if you're switching to a holding mode
       if((armOneAligned && armTwoAligned) || (desiredEFIsHolding)){
         setEndEffectorMode(desiredEFMode);
       }
     }
 
+
     if(getArmMode()!=getDesiredArmMode()){ //instantly set arm position if it doesn't match the desired position
       armMode = getDesiredArmMode();
     }
-
+*/
 
   }
 }

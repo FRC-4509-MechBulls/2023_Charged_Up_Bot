@@ -28,15 +28,23 @@ public final class Constants {
     }
 
     public static final class EndEffectorConstants {
-        public static final int EF_MOTOR_TOP_ID = 14; //not yet decided
-        public static final int EF_MOTOR_BOTTOM_ID = 12; //not yet decided
+        public static final int EF_MOTOR_TOP_ID = 14;
+        public static final int EF_MOTOR_BOTTOM_ID = 13;
 
-        public static final double INTAKE_CONE_OUTPUT = 0.8; //not yet decided, might make separate speeds for motors
-        public static final double INTAKE_CUBE_OUTPUT = 0.8; //not yet decided, might make separate speeds for motors
-        public static final double HOLD_CONE_OUTPUT = 0.1; //not yet decided
-        public static final double HOLD_CUBE_OUTPUT = 0.1; //not yet decided
-        public static final double PLACE_CONE_OUTPUT = -0.8; //not yet decided
-        public static final double PLACE_CUBE_OUTPUT = -0.8; //not yet decided
+        public static final double INTAKE_CONE_TOP_OUTPUT = 0.8;
+        public static final double INTAKE_CONE_BOTTOM_OUTPUT = 0.8;
+
+        public static final double INTAKE_CUBE_TOP_OUTPUT = 0.0;
+        public static final double INTAKE_CUBE_BOTTOM_OUTPUT = 0.8;
+        public static final double HOLD_CONE_TOP_OUTPUT = 0.3;
+        public static final double HOLD_CONE_BOTTOM_OUTPUT = -0.3;
+
+        public static final double HOLD_CUBE_TOP_OUTPUT = 0;
+        public static final double HOLD_CUBE_BOTTOM_OUTPUT = 0;
+        public static final double PLACE_CONE_TOP_OUTPUT = -0.8;
+        public static final double PLACE_CONE_BOTTOM_OUTPUT = -0.8;
+        public static final double PLACE_CUBE_TOP_OUTPUT = -1.0;
+        public static final double PLACE_CUBE_BOTTOM_OUTPUT = 0.6;
     }
 
     public static final class ArmConstants{
@@ -114,7 +122,7 @@ public final class Constants {
         public static final double[] placingCubeArmPosThree = {0,0}; //undecided
 
 
-        public static final double angleToleranceToUpdateEF = 0.1;
+        public static final double angleToleranceToUpdateEF = 0.5;
     }
 
 

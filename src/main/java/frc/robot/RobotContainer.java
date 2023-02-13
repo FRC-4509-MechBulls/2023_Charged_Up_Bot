@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.NavToPointCommand;
+import frc.robot.subsystems.arm.Grabber;
+import frc.robot.subsystems.arm.StageOneSub;
+import frc.robot.subsystems.arm.StageTwoSub;
 import frc.robot.subsystems.state.FMSGetter;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.nav.NavigationField;
@@ -40,6 +43,11 @@ public class RobotContainer {
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
   private final EFSub endEffectorSubsystem = new EFSub();
+
+  private final StageOneSub stageOneSub = new StageOneSub();
+  private final StageTwoSub stageTwoSub = new StageTwoSub();
+  private final EFSub efSub = new EFSub();
+  private final Grabber grabberSubsystem = new Grabber(stageOneSub,stageTwoSub,efSub,stateControllerSubsystem);
 
 
   private final XboxController driverController = new XboxController(OIConstants.DRIVER_CONTROLLER_PORT);

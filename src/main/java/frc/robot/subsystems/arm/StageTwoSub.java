@@ -45,8 +45,8 @@ public class StageTwoSub extends SubsystemBase {
     armMotorPrimary.restoreFactoryDefaults();
     armMotorSecondary.restoreFactoryDefaults();
 
-    armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kBrake);
-    armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
 
     armMotorSecondary.follow(armMotorPrimary);
@@ -73,14 +73,9 @@ public class StageTwoSub extends SubsystemBase {
 
   private void calculateStageData() {
     cG = calculateCG();
-    cB = calculateCB();
   }
 
-  private double[] calculateCB() {
-    Rotation2d cBAngle = new Rotation2d(new Rotation2d(kCB[0], kCB[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kCB[0], 2) + Math.pow(kCB[1], 2));
-    return new double[] {cBAngle.getCos() * magnitude, cBAngle.getSin() * magnitude, kCB[2] * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
-  }
+
   private double[] calculateCG() {
     /*
     x, y -> angle
