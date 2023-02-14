@@ -2,6 +2,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldLine;
@@ -200,6 +201,13 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem {
         Imgproc.rectangle(mat, new Point(10,50),new Point(50,100),new Scalar(255,255,255),2);
         drawArrow(mat,75,75,Math.toRadians(arrowAngleDeg),20,arrowColor);
         */
+
+        Scalar warningColor = new Scalar(255,255,255);
+        if(Timer.getFPGATimestamp()%1 > 0.5)
+            warningColor = new Scalar(0,0,255);
+        if(Constants.SimulationConstants.simulationEnabled)
+            Imgproc.putText(mat,"SIMULATED ODOMETRY IN USE",new Point(128,480-6),5,0.5,warningColor);
+
 
     }
 
