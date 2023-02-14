@@ -450,7 +450,8 @@ newY-=camYOffset;
     double measurement = getPitch();
     double p = 1.0/100;
     double max = 0.1;
-    drive(getAutoBalanceOut(setpoint,measurement,p,max)*Math.cos(stateControllerSubsystem.allianceForwardAngle().getRadians()),0,0,false,true);
+   // drive(getAutoBalanceOut(setpoint,measurement,p,max)*Math.cos(stateControllerSubsystem.allianceForwardAngle().getRadians()),0,0,false,true);
+    drive(getAutoBalanceOut(setpoint,measurement,p,max),0,0,false,false);
   }
 
 
