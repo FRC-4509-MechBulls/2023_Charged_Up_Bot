@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -16,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
-import frc.robot.commands.NavToPointCommand;
+import frc.robot.lib.MB_AutoCommandChooser;
 import frc.robot.subsystems.arm.Grabber;
 import frc.robot.subsystems.arm.StageOneSub;
 import frc.robot.subsystems.arm.StageTwoSub;
@@ -49,6 +48,7 @@ public class RobotContainer {
   private final EFSub efSub = new EFSub();
   private final Grabber grabberSubsystem = new Grabber(stageOneSub,stageTwoSub,efSub,stateControllerSubsystem);
 
+    private final MB_AutoCommandChooser autoChooser = new MB_AutoCommandChooser(navigationField,swerveSubsystem);
 
   private final XboxController driverController = new XboxController(OIConstants.DRIVER_CONTROLLER_PORT);
   private final XboxController operatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER_PORT);
@@ -67,7 +67,6 @@ public class RobotContainer {
 
 
 
-  SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -88,18 +87,8 @@ public class RobotContainer {
 //    SmartDashboard.putNumber("x2",0);
 //    SmartDashboard.putNumber("y2",0);
 
-    NavToPointCommand nav1 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.36,2.93,Rotation2d.fromDegrees(180)),15);
-    NavToPointCommand nav2 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-2.95,3.0,Rotation2d.fromDegrees(0)),15);
-    NavToPointCommand nav3 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.36, 2.38,Rotation2d.fromDegrees(180)),15);
-    NavToPointCommand nav4 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-2.95,2.0,Rotation2d.fromDegrees(0)),15);
-    NavToPointCommand nav5 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-6.37,1.82,Rotation2d.fromDegrees(180)),15);
-    NavToPointCommand nav6 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-4.51, 0.6,Rotation2d.fromDegrees(0)),15);
 
-    Command twoConeBalanceSequence = nav1.andThen(nav2.andThen(nav3.andThen(nav4.andThen(nav5.andThen(nav6)))));
-
-
-    autoChooser.setDefaultOption("twoConeBalanceSequence", twoConeBalanceSequence);
-    SmartDashboard.putData("Auto Chooser",autoChooser);
+    SmartDashboard.putData("Auto Chooser",autoChooser.getAutoChooser());
 
 
   }
@@ -140,6 +129,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return autoChooser.getSelected();
+    return autoChooser.getAutoChooser().getSelected();
   }
 }
