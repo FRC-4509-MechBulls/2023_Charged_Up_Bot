@@ -186,6 +186,10 @@ public  boolean barrierOnLine(Line2D.Double line){
 private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 private Pose2d desiredPose;
 
+public Pose2d getDesiredPose(){
+    return desiredPose;
+}
+
     public void setNavPoint(Pose2d desiredPose){
         if(desiredPose!= null && this.desiredPose != null)
         if(MB_Math.poseDist(desiredPose,this.desiredPose) != 0 || this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees()){
