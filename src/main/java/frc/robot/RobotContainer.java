@@ -38,7 +38,7 @@ import frc.robot.subsystems.state.StateControllerSubsystem;
 public class RobotContainer {
   private final FMSGetter fmsGetter = new FMSGetter();
   private final StateControllerSubsystem stateControllerSubsystem = new StateControllerSubsystem(fmsGetter);
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(fmsGetter);
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(stateControllerSubsystem);
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
@@ -60,6 +60,7 @@ public class RobotContainer {
   private final Command rc_generateNavPoses = new InstantCommand(()->navigationField.setNavPoint(new Pose2d(2.5,0,new Rotation2d())));
   private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint()),swerveSubsystem);
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
+  private final Command swerve_autoBalance = new InstantCommand(swerveSubsystem::driveAutoBalance);
 
 
 
@@ -128,6 +129,7 @@ public class RobotContainer {
     new JoystickButton(operatorController,XboxController.Button.kB.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToHolding));
 
     new JoystickButton(driverController,XboxController.Button.kLeftBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
+
 
   }
 

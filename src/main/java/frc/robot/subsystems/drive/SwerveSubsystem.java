@@ -29,6 +29,7 @@ import frc.robot.RobotContainer;
 import frc.robot.lib.FieldObjects.FieldTag;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.state.FMSGetter;
+import frc.robot.subsystems.state.StateControllerSubsystem;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
@@ -83,12 +84,11 @@ public class SwerveSubsystem extends SubsystemBase {
   private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
   private SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ANGULAR_ACCELERATION_UNITS_PER_SECOND);
   private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
-  private FMSGetter fmsGetter;
-
+StateControllerSubsystem stateControllerSubsystem;
 
   /** Creates a new SwerveSubsystem. */
-  public SwerveSubsystem(FMSGetter fmsGetter) {
-    this.fmsGetter = fmsGetter;
+  public SwerveSubsystem(StateControllerSubsystem stateControllerSubsystem) {
+    this.stateControllerSubsystem = stateControllerSubsystem;
     initialPose = new Pose2d();
     constructOdometry();
 
@@ -133,9 +133,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(getAngularVelocity(), turningSpeed);
 
-    Rotation2d invertFieldOrientedForOtherTeam = Rotation2d.fromDegrees(0);
-    if(!fmsGetter.isRedAlliance())
-      invertFieldOrientedForOtherTeam = Rotation2d.fromDegrees(180);
+    Rotation2d invertFieldOrientedForOtherTeam = stateControllerSubsystem.allianceForwardAngle();
 
 //4 - Convert and send chasis speeds
     if(fieldOriented)
@@ -223,6 +221,18 @@ public class SwerveSubsystem extends SubsystemBase {
       return Math.IEEEremainder(navx.getYaw(), 360);
 
     return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
+  }
+  public double getPitch(){
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
+      return Math.IEEEremainder(navx.getPitch(), 360);
+
+    return Math.IEEEremainder(gyro.getPitch(), 360);
+  }
+  public double getRoll(){
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
+      return Math.IEEEremainder(navx.getRoll(), 360);
+
+    return Math.IEEEremainder(gyro.getRoll(), 360);
   }
 
   // module states
@@ -336,6 +346,7 @@ SwerveModulePosition[] simModulePositions;
   // Periodic
   @Override
   public void periodic() {
+
     //constantly updates the gyro angle
   //  var gyroAngle = gyro.getRotation2d();
     //update odometry
@@ -426,6 +437,20 @@ newY-=camYOffset;
     speeds[2] = MB_Math.maxValueCutoff(speeds[2],DriveConstants.maxTurningPowerOut);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
+  }
+
+  double getAutoBalanceOut(double setpoint, double measurement, double p, double max){
+    double out = -MB_Math.maxValueCutoff((setpoint - measurement)* p, max);
+    return out;
+
+  }
+
+  public void driveAutoBalance(){
+    double setpoint = 0;
+    double measurement = getPitch();
+    double p = 1.0/100;
+    double max = 0.1;
+    drive(getAutoBalanceOut(setpoint,measurement,p,max),0,0,false,true);
   }
 
 
