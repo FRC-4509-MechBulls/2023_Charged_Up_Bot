@@ -38,7 +38,7 @@ import frc.robot.subsystems.state.StateControllerSubsystem;
 public class RobotContainer {
   private final FMSGetter fmsGetter = new FMSGetter();
   private final StateControllerSubsystem stateControllerSubsystem = new StateControllerSubsystem(fmsGetter);
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(fmsGetter);
   private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);

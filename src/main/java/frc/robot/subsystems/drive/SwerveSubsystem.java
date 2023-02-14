@@ -25,8 +25,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.lib.FieldObjects.FieldTag;
 import frc.robot.lib.MB_Math;
+import frc.robot.subsystems.state.FMSGetter;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
@@ -81,10 +83,12 @@ public class SwerveSubsystem extends SubsystemBase {
   private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
   private SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ANGULAR_ACCELERATION_UNITS_PER_SECOND);
   private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+  private FMSGetter fmsGetter;
 
 
   /** Creates a new SwerveSubsystem. */
-  public SwerveSubsystem() {
+  public SwerveSubsystem(FMSGetter fmsGetter) {
+    this.fmsGetter = fmsGetter;
     initialPose = new Pose2d();
     constructOdometry();
 
@@ -129,9 +133,13 @@ public class SwerveSubsystem extends SubsystemBase {
     //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(getAngularVelocity(), turningSpeed);
 
+    Rotation2d invertFieldOrientedForOtherTeam = Rotation2d.fromDegrees(0);
+    if(!fmsGetter.isRedAlliance())
+      invertFieldOrientedForOtherTeam = Rotation2d.fromDegrees(180);
+
 //4 - Convert and send chasis speeds
     if(fieldOriented)
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, getRotation2d());
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, odometry.getEstimatedPosition().getRotation().rotateBy(invertFieldOrientedForOtherTeam));
     else
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
 
