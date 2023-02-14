@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.state;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.arm.Grabber;
 
@@ -135,6 +136,11 @@ lastPlacingPOV = placingPOV;
   public void setAgArmToHolding(){agnosticGrabberMode = AgnosticGrabberMode.HOLDING;}
 
   public void setAgArmToPlacing(){agnosticGrabberMode = AgnosticGrabberMode.PLACING;}
+
+  public Rotation2d allianceForwardAngle(){
+    if(fmsGetter.isRedAlliance()) return Rotation2d.fromDegrees(0);
+    return Rotation2d.fromDegrees(180);
+  }
 
   @Override
   public void periodic() {
