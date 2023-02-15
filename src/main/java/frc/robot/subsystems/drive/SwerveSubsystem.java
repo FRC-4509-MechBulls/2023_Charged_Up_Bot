@@ -153,6 +153,10 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry.resetPosition(new Rotation2d(), getPositions(), new Pose2d());
   }
 
+  public void resetPose(Rotation2d rotation2d, Pose2d newPose){
+    odometry.resetPosition(rotation2d, getPositions(), newPose);
+  }
+
   public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
     //1.5 interpret joystick data
     //translation
