@@ -442,16 +442,19 @@ newY-=camYOffset;
   double getAutoBalanceOut(double setpoint, double measurement, double p, double max){
     double out = -MB_Math.maxValueCutoff((setpoint - measurement)* p, max);
     return out;
-
   }
+
+
 
   public void driveAutoBalance(){
     double setpoint = 0;
-    double measurement = getPitch();
-    double p = 1.0/100;
-    double max = 0.1;
+    double pitchMeasurement = getPitch();
+    double rollMeasurement = -getRoll();
+    double p = 1.0/70;
+    double max = 0.3;
    // drive(getAutoBalanceOut(setpoint,measurement,p,max)*Math.cos(stateControllerSubsystem.allianceForwardAngle().getRadians()),0,0,false,true);
-    drive(getAutoBalanceOut(setpoint,measurement,p,max),0,0,false,false);
+   // drive(getAutoBalanceOut(setpoint,pitchMeasurement,p,max),getAutoBalanceOut(setpoint,rollMeasurement,p,max),0,false,false); // bad stinky
+    drive(getAutoBalanceOut(setpoint,pitchMeasurement,p,max),0,0,false,false);
   }
 
 
