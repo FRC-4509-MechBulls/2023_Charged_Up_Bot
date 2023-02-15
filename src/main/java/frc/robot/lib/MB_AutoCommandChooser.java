@@ -2,13 +2,19 @@ package frc.robot.lib;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.commands.AutoBalanceCommand;
+import frc.robot.commands.DirectToPointCommand;
 import frc.robot.commands.NavToPointCommand;
 import frc.robot.subsystems.drive.SwerveModule;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.nav.NavigationField;
+
+import java.awt.font.TransformAttribute;
 
 public class MB_AutoCommandChooser {
 
@@ -22,6 +28,7 @@ public class MB_AutoCommandChooser {
         autoChooser = new SendableChooser<Command>();
         autoChooser.addOption("r_balancerLeft",redBalancerLeft());
         autoChooser.addOption("r_balancerRight",redBalancerRight());
+        autoChooser.addOption("r_balancerCenter",redBalancerCenter());
 
         autoChooser.addOption("b_balancerLeft",blueBalancerLeft());
         autoChooser.addOption("b_balancerRight",blueBalancerRight());
@@ -53,6 +60,13 @@ public class MB_AutoCommandChooser {
         NavToPointCommand nav1 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(-4.45,0.60,Rotation2d.fromDegrees(0)),15);
         AutoBalanceCommand autoBalanceCommand = new AutoBalanceCommand(swerveSubsystem,15);
         return nav1.andThen(autoBalanceCommand);
+    }
+
+    public Command redBalancerCenter(){
+        Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(Rotation2d.fromDegrees(180),new Pose2d(new Translation2d(-6.06,1.16), Rotation2d.fromDegrees(180))));
+        DirectToPointCommand nav1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.45,1.33,Rotation2d.fromDegrees(180)),15);
+        AutoBalanceCommand autoBalanceCommand = new AutoBalanceCommand(swerveSubsystem,15);
+        return setInitialPose.andThen(nav1.andThen(autoBalanceCommand));
     }
     public Command blueBalancerRight(){
         NavToPointCommand nav1 = new NavToPointCommand(navigationField,swerveSubsystem,new Pose2d(4.45,1.95,Rotation2d.fromDegrees(0)),15);
