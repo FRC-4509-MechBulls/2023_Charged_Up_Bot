@@ -61,38 +61,34 @@ public final class Constants {
     }
 
     public static final class ArmConstants{
-        public static final double stageOne_kP = 0.5; //undecided
+        public static final double stageOne_kP = 0.0; //undecided
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
 
-        public static final double stageTwo_kP = 0.5; //undecided
+        public static final double stageTwo_kP = 0.0; //undecided
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 
-        public static final double STAGE_ONE_ENCODER_TICKS_TO_RADIANS =  Math.PI * 2;
-        public static final double STAGE_TWO_ENCODER_TICKS_TO_RADIANS = 1 * Math.PI * 2;
+        public static final double magEncoderCountsPerRotation = 4096;
+        public static final double revEncoderCountsPerRotation = 2048;
+        public static final double radiansPerRotation = 2 * Math.PI;
 
+        public static final double STAGE_ONE_ENCODER_TICKS_TO_RADIANS =  1/(radiansPerRotation/magEncoderCountsPerRotation);
+        public static final double STAGE_TWO_ENCODER_TICKS_TO_RADIANS = 1/(radiansPerRotation/revEncoderCountsPerRotation); //uncalculated
 
-        public static final int STAGE_ONE_MOTOR_LEFT_ID = 11; //undecided
-        public static final int STAGE_ONE_MOTOR_RIGHT_ID = 12; //undecided
+        public static final int STAGE_ONE_MOTOR_LEFT_ID = 11; 
+        public static final int STAGE_ONE_MOTOR_RIGHT_ID = 12; 
 
-        public static final double ABS_TO_RADIANS = 2.0 * Math.PI;
+        public static final boolean STAGE_ONE_ENCODER_REVERSED = false; //undecided
 
-        public static final boolean STAGE_ONE_ABS_ENCODER_REVERSED = false; //undecided
+        public static final double STAGE_ONE_LIMIT_SWITCH_ANGLE_RAD = Units.degreesToRadians(45); //undecided
 
-        public static final double STAGE_ONE_ABS_ENCODER_INITIAL_OFFSET = 0; //undecided
+        public static final int STAGE_TWO_MOTOR_LEFT_CHANNEL = 1;
+        public static final int STAGE_TWO_MOTOR_RIGHT_CHANNEL = 2;
 
-        public static final double STAGE_ONE_LIMIT_SWITCH_ANGLE_RAD = 0; //undecided
+        public static final boolean STAGE_TWO_ENCODER_REVERSED = false; //undecided
 
-
-        public static final int STAGE_TWO_MOTOR_LEFT_CHANNEL = 1; //undecided
-        public static final int STAGE_TWO_MOTOR_RIGHT_CHANNEL = 2; //undecided
-
-        public static final boolean STAGE_TWO_ABS_ENCODER_REVERSED = false; //undecided
-
-        public static final double STAGE_TWO_ABS_ENCODER_INITIAL_OFFSET = 0; //undecided
-
-        public static final double STAGE_TWO_LIMIT_SWITCH_ANGLE_RAD = 0; //undecided
+        public static final double STAGE_TWO_LIMIT_SWITCH_ANGLE_RAD = Units.degreesToRadians(-90); //undecided
 
         public static final double[] intakingConesUprightArmPos = {0,0}; //undecided
         public static final double[] intakingConesFallenArmPos = {0,0}; //undecided
@@ -107,13 +103,14 @@ public final class Constants {
         public static final double[] stageOneTransmissionData = {1/((2.41/12)*(8.8507457916 )), 0.46, 2, 421.88}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
         public static final double stageOneLength = 28.75;
         public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
-        public static final boolean stageOneRedirected = true;
-        public static final double[] stageOneSpringMountCoordinate = {9.636, 14};
-        public static final double[] stageOneSpringRedirectCoordinate = {-0.7145, 8.125};
-        public static final double stageOneSpringRestLength = 0; //undecided
+        public static final boolean stageOneRedirected = false;
+        public static final double[] stageOneSpringMountCoordinate = {-0.7145, 8.125};
+        public static final double[] stageOneSpringRedirectCoordinate = {0, 0};
+        public static final double stageOneSpringRestLength = 4.46875;
         public static final double[] stageOneCBCoordinate = {12.14, 1.723};
-        public static final double stageOneSpringConstant = 0; //undecided
-        
+        public static final double stageOneSpringConstant = 1.8797202*4*2;
+        public static final double stageOneEncoderRatio = 54/16;
+
         public static final double[] stageTwoCG = {10.9, 0, 2};
         public static final double[] stageTwoTransmissionData = {1/((3.28/12/12)*(8.8507457916 )), 0.46, 2, 145.45}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
         public static final double stageTwoLength = 28.75;
@@ -121,9 +118,10 @@ public final class Constants {
         public static final boolean stageTwoRedirected = false;
         public static final double[] stageTwoSpringMountCoordinate = {-16.61, 1.723};
         public static final double[] stageTwoSpringRedirectCoordinate = {0, 0};
-        public static final double stageTwoSpringRestLength = 0; //undecided
+        public static final double stageTwoSpringRestLength = 8.1666666;
         public static final double[] stageTwoCBCoordinate = {-3.5, 0.3895};
-        public static final double stageTwoSpringConstant = 0; //undecided
+        public static final double stageTwoSpringConstant = 1.02857151 * 6;
+        public static final double stageTwoEncoderRatio = 54/16;
 
         public static final double[] endEffectorCG = {6.75, 0.75, 12.7};
         public static final double[] placingConeArmPosOne = {0,0}; //undecided
@@ -133,7 +131,6 @@ public final class Constants {
         public static final double[] placingCubeArmPosOne = {0,0}; //undecided
         public static final double[] placingCubeArmPosTwo = {0,0}; //undecided
         public static final double[] placingCubeArmPosThree = {0,0}; //undecided
-
 
         public static final double angleToleranceToUpdateEF = 0.5;
     }
