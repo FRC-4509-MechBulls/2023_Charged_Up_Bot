@@ -31,20 +31,33 @@ public final class Constants {
         public static final int EF_MOTOR_TOP_ID = 14;
         public static final int EF_MOTOR_BOTTOM_ID = 13;
 
-        public static final double INTAKE_CONE_TOP_OUTPUT = 0.8;
-        public static final double INTAKE_CONE_BOTTOM_OUTPUT = 0.8;
+        public static final double INTAKE_CONE_TOP_OUTPUT = -1;
+        public static final double INTAKE_CONE_BOTTOM_OUTPUT = 1;
+
+
+        public static final double HOLD_CONE_TOP_OUTPUT = -0.3;
+        public static final double HOLD_CONE_BOTTOM_OUTPUT = 0.3;
+
+        public static final double PLACE_CONE_TOP_OUTPUT = -1;
+        public static final double PLACE_CONE_BOTTOM_OUTPUT = -1;
+
 
         public static final double INTAKE_CUBE_TOP_OUTPUT = 0.0;
-        public static final double INTAKE_CUBE_BOTTOM_OUTPUT = 0.8;
-        public static final double HOLD_CONE_TOP_OUTPUT = 0.3;
-        public static final double HOLD_CONE_BOTTOM_OUTPUT = -0.3;
+        public static final double INTAKE_CUBE_BOTTOM_OUTPUT = -1;
 
         public static final double HOLD_CUBE_TOP_OUTPUT = 0;
         public static final double HOLD_CUBE_BOTTOM_OUTPUT = 0;
-        public static final double PLACE_CONE_TOP_OUTPUT = -0.8;
-        public static final double PLACE_CONE_BOTTOM_OUTPUT = -0.8;
-        public static final double PLACE_CUBE_TOP_OUTPUT = -1.0;
-        public static final double PLACE_CUBE_BOTTOM_OUTPUT = 0.6;
+
+        public static final double PLACE_CUBE_TOP_OUTPUT = -1;
+        public static final double PLACE_CUBE_BOTTOM_OUTPUT = -0.3;
+
+
+
+
+
+
+
+
     }
 
     public static final class ArmConstants{

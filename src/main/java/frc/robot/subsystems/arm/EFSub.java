@@ -30,24 +30,26 @@ public class EFSub extends SubsystemBase {
     efMotorBottom = new TalonSRX(EndEffectorConstants.EF_MOTOR_BOTTOM_ID);
 
     // setting motors to brake mode so they immediately stop moving when voltage stops being sent
-    efMotorTop.setNeutralMode(NeutralMode.Brake);
-    efMotorBottom.setNeutralMode(NeutralMode.Brake);
+    efMotorTop.setNeutralMode(NeutralMode.Coast);
+    efMotorBottom.setNeutralMode(NeutralMode.Coast);
+
+    efMotorBottom.setInverted(true);
     
     // limits power going to motor to prevent burnout
     // values need to be changed
     efMotorTop.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(
       true, // enabled
       10, // Limit (amp)
-      15, // Trigger Threshold (amp)
-      0.5)); // Trigger Threshold Time(s)
+      10, // Trigger Threshold (amp)
+      0)); // Trigger Threshold Time(s)
 
     // limits power going to motor to prevent burnout
     // values need to be changed
     efMotorTop.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(
       true, // enabled
       10, // Limit (amp)
-      15, // Trigger Threshold (amp)
-      0.5)); // Trigger Threshold Time(s)
+      10, // Trigger Threshold (amp)
+      0)); // Trigger Threshold Time(s)
     
     kCG = ArmConstants.endEffectorCG;
   }
@@ -75,7 +77,7 @@ public class EFSub extends SubsystemBase {
     // intakes cone into the end effector
     // the direction of the motors might need to be reversed, we'll see
     efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.INTAKE_CONE_TOP_OUTPUT);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.INTAKE_CONE_BOTTOM_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.INTAKE_CONE_BOTTOM_OUTPUT);
   }
 
   public void intakeCube() {
@@ -102,7 +104,7 @@ public class EFSub extends SubsystemBase {
     // reverses direction of motors to place cone
     // motors run in opposite directions
     efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CONE_TOP_OUTPUT);
-    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.PLACE_CONE_BOTTOM_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CONE_BOTTOM_OUTPUT);
   }
 
   public void placeCube() {

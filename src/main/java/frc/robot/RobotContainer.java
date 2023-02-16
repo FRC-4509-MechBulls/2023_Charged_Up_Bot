@@ -114,20 +114,25 @@ public class RobotContainer {
   private void configureButtonBindings() {
     new JoystickButton(driverController, XboxController.Button.kBack.value).whenPressed(() -> swerveSubsystem.zeroHeading());
     new JoystickButton(driverController, XboxController.Button.kStart.value).whenPressed(swerve_toggleFieldOriented);
-    new JoystickButton(driverController,XboxController.Button.kLeftBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
-    new JoystickButton(driverController,XboxController.Button.kA.value).whileTrue(rc_autoBalance);
+    new JoystickButton(driverController,XboxController.Button.kB.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
+    new JoystickButton(driverController,XboxController.Button.kX.value).whileTrue(rc_autoBalance);
 
 
     //new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whileTrue(rc_directToPose);
-    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whileTrue(rc_navToPose);
-    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(navigationField::engageNav));
-    new JoystickButton(driverController, XboxController.Button.kRightBumper.value).onFalse(new InstantCommand(navigationField::disengageNav));
+    new JoystickButton(driverController, XboxController.Button.kA.value).whileTrue(rc_navToPose);
+    new JoystickButton(driverController, XboxController.Button.kA.value).onTrue(new InstantCommand(navigationField::engageNav));
+    new JoystickButton(driverController, XboxController.Button.kA.value).onFalse(new InstantCommand(navigationField::disengageNav));
 
     new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::itemCubeButton));
       new JoystickButton(operatorController,XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::itemConeUprightButton));
-      
-    new JoystickButton(operatorController,XboxController.Button.kA.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToIntake));
-    new JoystickButton(operatorController,XboxController.Button.kB.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToHolding));
+
+      new JoystickButton(operatorController,XboxController.Button.kA.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToIntake));
+      new JoystickButton(operatorController,XboxController.Button.kB.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToHolding));
+
+      new JoystickButton(driverController,XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToIntake));
+      new JoystickButton(driverController,XboxController.Button.kLeftBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToHolding));
+
+    new JoystickButton(operatorController,XboxController.Button.kY.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
 
 
 
