@@ -6,6 +6,7 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -67,6 +68,7 @@ public class StageTwoSub extends SubsystemBase {
 
     armMotorSecondary.follow(armMotorPrimary);
     armMotorSecondary.setInverted(true);
+    armMotorPrimary.setInverted(false);
 
     pidController = armMotorPrimary.getPIDController();
     pidController.setFeedbackDevice(encoder);
@@ -141,7 +143,8 @@ public class StageTwoSub extends SubsystemBase {
   }
   void setArmPositionRad(double setpoint){
     setFeedForward(AFF);
-    pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
+    //pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
+    pidController.setReference(Units.degreesToRadians(-45), CANSparkMax.ControlType.kPosition);
   }
   private double getEncoder() {
     return encoder.getPosition();

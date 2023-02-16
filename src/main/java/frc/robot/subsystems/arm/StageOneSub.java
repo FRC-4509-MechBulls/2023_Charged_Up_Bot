@@ -127,7 +127,7 @@ public class StageOneSub extends SubsystemBase {
   }
   //Util
   private void setSensorPosition(double position) {
-    armMotorPrimary.setSelectedSensorPosition(position * ArmConstants.STAGE_ONE_ENCODER_TICKS_TO_RADIANS);
+    armMotorPrimary.setSelectedSensorPosition(position * ArmConstants.STAGE_ONE_ENCODER_TICKS_TO_RADIANS * kEncoderRatio);
   }
   private double getEncoder() {
     return armMotorPrimary.getSelectedSensorPosition();

@@ -65,7 +65,7 @@ public final class Constants {
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
 
-        public static final double stageTwo_kP = 0.0; //undecided
+        public static final double stageTwo_kP = 0.05; //undecided
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 
@@ -110,7 +110,7 @@ public final class Constants {
         public static final double[] stageOneCBCoordinate = {12.14, 1.723};
         public static final double stageOneSpringConstant = 1.8797202*4*2;
         public static final double stageOneEncoderRatio = 54.0/16;
-        public static final double stageOneStartAngle = Units.degreesToRadians(65);
+        public static final double stageOneStartAngle = Units.degreesToRadians(52);
 
         public static final double[] stageTwoCG = {10.9, 0, 2};
         public static final double[] stageTwoTransmissionData = {1.0/((3.28/12/12)*(8.8507457916 )), 0.46, 2, 145.45}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
@@ -124,7 +124,7 @@ public final class Constants {
         public static final double stageTwoSpringConstant = 1.02857151 * 6;
         public static final double stageTwoEncoderRatio = 32.0/22;
         public static final int stageTwoMPRatio = 5*5*4;
-        public static final double stageTwoStartAngle = Units.degreesToRadians(-160);
+        public static final double stageTwoStartAngle = Units.degreesToRadians(-90-52);
 
         public static final double[] endEffectorCG = {6.75, 0.75, 12.7};
         public static final double[] placingConeArmPosOne = {0,0}; //undecided
