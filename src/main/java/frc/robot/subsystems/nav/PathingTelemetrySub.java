@@ -337,8 +337,8 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
         double ang = Math.toRadians(180);
 
         posInMeters.x = -posInMeters.x; //what?
-        posInMeters.x += SmartDashboard.getNumber("TCamX",0);
-        posInMeters.y += SmartDashboard.getNumber("TCamY",0);
+   //     posInMeters.x += SmartDashboard.getNumber("TCamX",0);
+   //     posInMeters.y += SmartDashboard.getNumber("TCamY",0);
 
         if(robotOrientedView) {
             posInMeters.x += robotPose.getX();
@@ -348,9 +348,10 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
 
 
-        double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
+     //   double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
+        double zoom = 1;
 
-        ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
+     //   ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
         if(robotOrientedView)
             ang+= robotPose.getRotation().getRadians();
 
@@ -378,7 +379,7 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
     public void init() {
        //     SmartDashboard.putNumber("TCamAngle",0);
-            SmartDashboard.putNumber("TCamZoom",1.0);
+        //    SmartDashboard.putNumber("TCamZoom",1.0);
         //    SmartDashboard.putNumber("TCamX",0);
         //    SmartDashboard.putNumber("TCamY",0);
 
