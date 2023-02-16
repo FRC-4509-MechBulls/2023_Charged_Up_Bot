@@ -6,6 +6,7 @@ package frc.robot.subsystems.arm;
 
 import com.revrobotics.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.ArmConstants;
@@ -36,13 +37,29 @@ public class StageTwoSub extends SubsystemBase {
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
+    kCG = ArmConstants.stageTwoCG;
+    kTransmissionData = ArmConstants.stageTwoTransmissionData;
+    kLength = ArmConstants.stageTwoLength;
+    kPivotCoordinate = ArmConstants.stageTwoPivotCoordinate;
+    kRedirected = ArmConstants.stageTwoRedirected;
+    kSpringMountCoordinate = ArmConstants.stageTwoSpringMountCoordinate;
+    kSpringRedirectCoordinate = ArmConstants.stageTwoSpringRedirectCoordinate;
+    kSpringRestLength = ArmConstants.stageTwoSpringRestLength;
+    kCBCoordinate = ArmConstants.stageTwoCBCoordinate;
+    kSpringConstant = ArmConstants.stageTwoSpringConstant;
+    kEncoderRatio = ArmConstants.stageTwoEncoderRatio;  
+
     armMotorPrimary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_LEFT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
     armMotorSecondary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_RIGHT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
-
     armMotorPrimary.restoreFactoryDefaults();
     armMotorSecondary.restoreFactoryDefaults();
+
+    encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
+    encoder.setPositionConversionFactor(2 * Math.PI / kEncoderRatio);
+    setSensorPosition(ArmConstants.stageTwoStartAngle);
+
+    armMotorPrimary.setCANTimeout(1000);
 
     armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
     armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -58,22 +75,14 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setD(ArmConstants.stageTwo_kD);
     pidController.setOutputRange(-1,1);
 
-    kCG = ArmConstants.stageTwoCG;
-    kTransmissionData = ArmConstants.stageTwoTransmissionData;
-    kLength = ArmConstants.stageTwoLength;
-    kPivotCoordinate = ArmConstants.stageTwoPivotCoordinate;
-    kRedirected = ArmConstants.stageTwoRedirected;
-    kSpringMountCoordinate = ArmConstants.stageTwoSpringMountCoordinate;
-    kSpringRedirectCoordinate = ArmConstants.stageTwoSpringRedirectCoordinate;
-    kSpringRestLength = ArmConstants.stageTwoSpringRestLength;
-    kCBCoordinate = ArmConstants.stageTwoCBCoordinate;
-    kSpringConstant = ArmConstants.stageTwoSpringConstant;
-    kEncoderRatio = ArmConstants.stageTwoEncoderRatio;  
+    armMotorPrimary.burnFlash();
+    armMotorSecondary.burnFlash();
   }
 
   private void calculateStageData() {
     double ticks = getEncoder();
     angle = calculateAngle(ticks);
+    SmartDashboard.putNumber("stageTwoAngle", angle);
 
     cG = calculateCG();
   }
@@ -124,42 +133,31 @@ public class StageTwoSub extends SubsystemBase {
   public void setAFF(double AFF) {
     this.AFF = AFF;
   }
-  public double getEncoderRad() {
-    return armMotorPrimary.getEncoder().getPosition() * ArmConstants.STAGE_TWO_ENCODER_TICKS_TO_RADIANS;
-  }
   public double[] getPivotCoordinate() {
     return kPivotCoordinate;
   }
-
   public void setFeedForward(double gain){
     pidController.setFF(gain);
   }
-
-  public void limitSwitchPassed(){
-    armMotorPrimary.getEncoder().setPosition(ArmConstants.STAGE_TWO_LIMIT_SWITCH_ANGLE_RAD / Math.PI / 2.0);
-  }
-
   void setArmPositionRad(double setpoint){
+    setFeedForward(AFF);
     pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
   }
   private double getEncoder() {
     return encoder.getPosition();
   }
   private double calculateAngle(double encoder){
-    double ticks = encoder;
-    double outputTicks = ticks * kEncoderRatio;
-    angle = calculateRadiansFromTicks(outputTicks);
-    return angle;
+    return encoder;
   }
-  private double calculateRadiansFromTicks(double ticks) {
-    double radians = ticks * ArmConstants.STAGE_TWO_ENCODER_TICKS_TO_RADIANS;
-    return radians;
+  private void setSensorPosition(double position) {
+    encoder.setPosition(position);
   }
-
 
   @Override
   public void periodic() {
     calculateStageData();
+    setArmPositionRad(setpointRad);
+    SmartDashboard.putNumber("stageTwoAFF", AFF);
     // This method will be called once per scheduler run
     //armMotorPrimary.set(TalonSRXControlMode.PercentOutput,pid.calculate(getAbsoluteEncoderRad())); //replace this with internal PID
   }

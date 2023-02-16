@@ -74,7 +74,7 @@ public final class Constants {
         public static final double radiansPerRotation = 2 * Math.PI;
 
         public static final double STAGE_ONE_ENCODER_TICKS_TO_RADIANS =  1/(radiansPerRotation/magEncoderCountsPerRotation);
-        public static final double STAGE_TWO_ENCODER_TICKS_TO_RADIANS = 1/(radiansPerRotation/revEncoderCountsPerRotation); //uncalculated
+        public static final double STAGE_TWO_ENCODER_TICKS_TO_RADIANS = 2 * Math.PI; //uncalculated
 
         public static final int STAGE_ONE_MOTOR_LEFT_ID = 11; 
         public static final int STAGE_ONE_MOTOR_RIGHT_ID = 12; 
@@ -100,7 +100,7 @@ public final class Constants {
         public static final double[] placingArmPosThree = {0,0}; //undecided
 
         public static final double[] stageOneCG = {6, 0, 10.64};
-        public static final double[] stageOneTransmissionData = {1/((2.41/12)*(8.8507457916 )), 0.46, 2, 421.88}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
+        public static final double[] stageOneTransmissionData = {1.0/((2.41/12)*(8.8507457916 )), 0.46, 2, 421.88}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
         public static final double stageOneLength = 28.75;
         public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
         public static final boolean stageOneRedirected = false;
@@ -109,10 +109,11 @@ public final class Constants {
         public static final double stageOneSpringRestLength = 4.46875;
         public static final double[] stageOneCBCoordinate = {12.14, 1.723};
         public static final double stageOneSpringConstant = 1.8797202*4*2;
-        public static final double stageOneEncoderRatio = 54/16;
+        public static final double stageOneEncoderRatio = 54.0/16;
+        public static final double stageOneStartAngle = Units.degreesToRadians(65);
 
         public static final double[] stageTwoCG = {10.9, 0, 2};
-        public static final double[] stageTwoTransmissionData = {1/((3.28/12/12)*(8.8507457916 )), 0.46, 2, 145.45}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
+        public static final double[] stageTwoTransmissionData = {1.0/((3.28/12/12)*(8.8507457916 )), 0.46, 2, 145.45}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
         public static final double stageTwoLength = 28.75;
         public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
         public static final boolean stageTwoRedirected = false;
@@ -121,7 +122,9 @@ public final class Constants {
         public static final double stageTwoSpringRestLength = 8.1666666;
         public static final double[] stageTwoCBCoordinate = {-3.5, 0.3895};
         public static final double stageTwoSpringConstant = 1.02857151 * 6;
-        public static final double stageTwoEncoderRatio = 54/16;
+        public static final double stageTwoEncoderRatio = 32.0/22;
+        public static final int stageTwoMPRatio = 5*5*4;
+        public static final double stageTwoStartAngle = Units.degreesToRadians(-160);
 
         public static final double[] endEffectorCG = {6.75, 0.75, 12.7};
         public static final double[] placingConeArmPosOne = {0,0}; //undecided
