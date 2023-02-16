@@ -14,6 +14,7 @@ public class DirectToPointCommand extends CommandBase {
     Pose2d desiredPose;
     double distToFinished;
     double timeout;
+    double posTolerance = Constants.DriveConstants.posTolerance;
 
     public DirectToPointCommand(SwerveSubsystem swerveSubsystem,Pose2d desiredPose, double timeout) {
         this.swerveSubsystem = swerveSubsystem;
@@ -23,6 +24,11 @@ public class DirectToPointCommand extends CommandBase {
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.swerveSubsystem);
 
+    }
+
+    public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance){
+        this(swerveSubsystem,desiredPose,timeout);
+        this.posTolerance = posTolerance;
     }
 
     /**
@@ -58,7 +64,7 @@ public class DirectToPointCommand extends CommandBase {
     public boolean isFinished() {
         // TODO: Make this return true when this Command no longer needs to run execute()
         boolean timedOut = Timer.getFPGATimestamp() - startTime>timeout;
-        boolean reachedGoal = Math.sqrt(Math.pow(desiredPose.getX() - swerveSubsystem.getEstimatedPosition().getX(),2)+Math.pow(desiredPose.getY() - swerveSubsystem.getEstimatedPosition().getY(),2)) < Constants.DriveConstants.posTolerance;
+        boolean reachedGoal = Math.sqrt(Math.pow(desiredPose.getX() - swerveSubsystem.getEstimatedPosition().getX(),2)+Math.pow(desiredPose.getY() - swerveSubsystem.getEstimatedPosition().getY(),2)) < posTolerance;
         return timedOut || reachedGoal;
     }
 

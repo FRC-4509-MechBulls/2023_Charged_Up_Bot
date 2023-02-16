@@ -56,8 +56,8 @@ boolean queueNodeReset = true;
 int oldSetpointIndex = 0;
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
-Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
-    SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
+//Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
+//    SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
     if(Timer.getFPGATimestamp() - lastAllianceCheck>3){
         if(wasOnRedAlliance!= fmsGetter.isRedAlliance() || queueNodeReset)
         {
@@ -68,7 +68,7 @@ Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),Smar
         }
         lastAllianceCheck = Timer.getFPGATimestamp();
     }
-    SmartDashboard.putBoolean("poseChanged",poseChanged);
+  //  SmartDashboard.putBoolean("poseChanged",poseChanged);
     if(oldSetpointIndex != stateControllerSub.getSetpointIndex()){
         updateSetPoint(stateControllerSub.getSetpointIndex());
         oldSetpointIndex = stateControllerSub.getSetpointIndex();
@@ -211,7 +211,7 @@ public Pose2d getDesiredPose(){
             return;
         boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
         if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
-            SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
+        //    SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
             return;
         }
 
@@ -333,7 +333,7 @@ private void createAndStartPathingThread(){
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
                     });
     pathingThread.setDaemon(true);
-    pathingThread.setName("MB_PathingThread");
+    pathingThread.setName("MB_Pathing");
     pathingThread.setPriority(1); //low priority I hope?
     pathingThread.start();
 }

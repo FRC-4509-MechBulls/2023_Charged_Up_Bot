@@ -14,6 +14,7 @@ public class NavToPointCommand extends CommandBase {
     Pose2d desiredPose;
     double distToFinished;
     double timeout;
+    double posTolerance = Constants.DriveConstants.posTolerance;
 
     public NavToPointCommand(NavigationField navigationField, SwerveSubsystem swerveSubsystem,Pose2d desiredPose, double timeout) {
         this.navigationField = navigationField;
@@ -24,6 +25,11 @@ public class NavToPointCommand extends CommandBase {
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.swerveSubsystem);
         //navigationField.setNavPoint(desiredPose);
+    }
+
+    public NavToPointCommand(NavigationField navigationField, SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance){
+        this(navigationField,swerveSubsystem,desiredPose,timeout);
+        this.posTolerance = posTolerance;
     }
 
     /**
@@ -61,7 +67,7 @@ public class NavToPointCommand extends CommandBase {
     public boolean isFinished() {
         // TODO: Make this return true when this Command no longer needs to run execute()
         boolean timedOut = Timer.getFPGATimestamp() - startTime>timeout;
-        boolean reachedGoal = Math.sqrt(Math.pow(desiredPose.getX() - swerveSubsystem.getEstimatedPosition().getX(),2)+Math.pow(desiredPose.getY() - swerveSubsystem.getEstimatedPosition().getY(),2)) < Constants.DriveConstants.posTolerance;
+        boolean reachedGoal = Math.sqrt(Math.pow(desiredPose.getX() - swerveSubsystem.getEstimatedPosition().getX(),2)+Math.pow(desiredPose.getY() - swerveSubsystem.getEstimatedPosition().getY(),2)) < posTolerance;
         return timedOut || reachedGoal;
     }
 

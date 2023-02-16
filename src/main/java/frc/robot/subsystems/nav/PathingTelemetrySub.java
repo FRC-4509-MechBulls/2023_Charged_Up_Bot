@@ -2,6 +2,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldLine;
@@ -201,6 +202,13 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem {
         drawArrow(mat,75,75,Math.toRadians(arrowAngleDeg),20,arrowColor);
         */
 
+        Scalar warningColor = new Scalar(255,255,255);
+        if(Timer.getFPGATimestamp()%1 > 0.5)
+            warningColor = new Scalar(0,0,255);
+        if(Constants.SimulationConstants.simulationEnabled)
+            Imgproc.putText(mat,"SIMULATED ODOMETRY IN USE",new Point(128,480-6),5,0.5,warningColor);
+
+
     }
 
     public void drawArm(Mat mat,double x, double y, double len1, double ang1, double len2, double ang2,double baseWidth, double startingHeight){
@@ -329,8 +337,8 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
         double ang = Math.toRadians(180);
 
         posInMeters.x = -posInMeters.x; //what?
-        posInMeters.x += SmartDashboard.getNumber("TCamX",0);
-        posInMeters.y += SmartDashboard.getNumber("TCamY",0);
+   //     posInMeters.x += SmartDashboard.getNumber("TCamX",0);
+   //     posInMeters.y += SmartDashboard.getNumber("TCamY",0);
 
         if(robotOrientedView) {
             posInMeters.x += robotPose.getX();
@@ -340,9 +348,10 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
 
 
-        double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
+     //   double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
+        double zoom = 1;
 
-        ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
+     //   ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
         if(robotOrientedView)
             ang+= robotPose.getRotation().getRadians();
 
@@ -370,7 +379,7 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
     public void init() {
        //     SmartDashboard.putNumber("TCamAngle",0);
-            SmartDashboard.putNumber("TCamZoom",1.0);
+        //    SmartDashboard.putNumber("TCamZoom",1.0);
         //    SmartDashboard.putNumber("TCamX",0);
         //    SmartDashboard.putNumber("TCamY",0);
 

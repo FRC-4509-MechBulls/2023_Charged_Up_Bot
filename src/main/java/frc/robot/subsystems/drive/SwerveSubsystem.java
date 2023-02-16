@@ -8,6 +8,8 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -150,7 +152,11 @@ StateControllerSubsystem stateControllerSubsystem;
   public boolean getFieldOriented(){return fieldOriented;}
   public void setFieldOriented(boolean set){fieldOriented = set;}
   public void resetPose(){
-    odometry.resetPosition(new Rotation2d(), getPositions(), new Pose2d());
+    odometry.resetPosition(Rotation2d.fromDegrees(getHeading()), getPositions(), new Pose2d());
+  }
+
+  public void resetPose( Pose2d newPose){
+    odometry.resetPosition(Rotation2d.fromDegrees(getHeading()), getPositions(), newPose);
   }
 
   public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
@@ -391,7 +397,9 @@ newY-=camYOffset;
 
     //2. Pass vision measurement to odometry
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
-    odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
+  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
+  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1,0.1,0.1));
+
   //  zeroHeading(newRotation.getDegrees());
 
   }
@@ -450,7 +458,7 @@ newY-=camYOffset;
     double setpoint = 0;
     double pitchMeasurement = getPitch();
     double rollMeasurement = -getRoll();
-    double p = 1.0/70;
+    double p = 1.0/60; //1.0/70
     double max = 0.3;
    // drive(getAutoBalanceOut(setpoint,measurement,p,max)*Math.cos(stateControllerSubsystem.allianceForwardAngle().getRadians()),0,0,false,true);
    // drive(getAutoBalanceOut(setpoint,pitchMeasurement,p,max),getAutoBalanceOut(setpoint,rollMeasurement,p,max),0,false,false); // bad stinky

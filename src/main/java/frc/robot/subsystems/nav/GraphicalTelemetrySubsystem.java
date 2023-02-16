@@ -41,7 +41,7 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
                           try {Thread.sleep(80);} catch (InterruptedException e) {}
                       }
                     });
-    m_visionThread.setName("MB_"+name+"TelemetryThread");
+    m_visionThread.setName("MB_Telem-"+name);
     m_visionThread.setPriority(1);
     m_visionThread.setDaemon(true);
     m_visionThread.start();

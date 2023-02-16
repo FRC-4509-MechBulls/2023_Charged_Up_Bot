@@ -350,7 +350,7 @@ public class Grabber extends SubsystemBase {
     // This method will be called once per scheduler run
    // setDesiredArmAndEFModes(stateController.getArmMode(), );
     setEndEffectorMode(stateController.getEFMode());
-    SmartDashboard.putString("EFMode",stateController.getEFMode().toString());
+ //   SmartDashboard.putString("EFMode",stateController.getEFMode().toString());
     /*
 
 
