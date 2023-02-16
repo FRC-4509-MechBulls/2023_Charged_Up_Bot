@@ -150,11 +150,11 @@ StateControllerSubsystem stateControllerSubsystem;
   public boolean getFieldOriented(){return fieldOriented;}
   public void setFieldOriented(boolean set){fieldOriented = set;}
   public void resetPose(){
-    odometry.resetPosition(new Rotation2d(), getPositions(), new Pose2d());
+    odometry.resetPosition(Rotation2d.fromDegrees(getHeading()), getPositions(), new Pose2d());
   }
 
-  public void resetPose(Rotation2d rotation2d, Pose2d newPose){
-    odometry.resetPosition(rotation2d, getPositions(), newPose);
+  public void resetPose( Pose2d newPose){
+    odometry.resetPosition(Rotation2d.fromDegrees(getHeading()), getPositions(), newPose);
   }
 
   public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
