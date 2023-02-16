@@ -18,15 +18,13 @@ import static frc.robot.Constants.ArmConstants;
 public class StageOneSub extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
-  private double encoderOffset = ArmConstants.STAGE_ONE_ABS_ENCODER_INITIAL_OFFSET;
-  private double setpointRad = encoderOffset;
+  private double setpointRad;
   private double kCG[];
   private double kCB[];
   private double cG[];
-  private double cB[];
   private double angle;
   private double kTransmissionData[];
-  private double feedForward;
+  private double AFF;
   private double kLength;
   private double kPivotCoordinate[];
   private boolean kRedirected;
@@ -35,6 +33,7 @@ public class StageOneSub extends SubsystemBase {
   private double kSpringRestLength;
   private double kCBCoordinate[];
   private double kSpringConstant;
+  private double kEncoderRatio;
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
@@ -50,8 +49,6 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.follow(armMotorPrimary);
     armMotorSecondary.setInverted(InvertType.OpposeMaster);
 
-
-
     armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
 
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
@@ -60,7 +57,6 @@ public class StageOneSub extends SubsystemBase {
 
     armMotorPrimary.configClosedLoopPeriod(0, 1, 1000);
 
-    //magEncoder = new DutyCycleEncoder(ArmConstants.kStageOne_MagEncoderID);
     kCG = ArmConstants.stageOneCG;
     kTransmissionData = ArmConstants.stageOneTransmissionData;
     kLength = ArmConstants.stageOneLength;
@@ -70,26 +66,16 @@ public class StageOneSub extends SubsystemBase {
     kSpringRedirectCoordinate = ArmConstants.stageOneSpringRedirectCoordinate;
     kSpringRestLength = ArmConstants.stageOneSpringRestLength;
     kCBCoordinate = ArmConstants.stageOneCBCoordinate;
-    kSpringConstant = ArmConstants.stageOneSpringConstant;  
+    kSpringConstant = ArmConstants.stageOneSpringConstant; 
+    kEncoderRatio = ArmConstants.stageOneEncoderRatio; 
   }
   //Config
   //Getters
   public void calculateStageData() {
+    double ticks = getEncoder();
+    angle = calculateAngle(ticks);
+
     cG = calculateCG();
-  }
-  public double[] calculateCG() {
-    /*
-    x, y -> angle
-    angle + angle
-    angle -> x, y
-    x, y * magnitude
-    */
-    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
-    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
-  }
-  public double[] getkCB() {
-    return kCB;
   }
   public double[] getCG() {
     return cG;
@@ -99,9 +85,6 @@ public class StageOneSub extends SubsystemBase {
   }
   public double[] getTransmissionData() {
     return kTransmissionData;
-  }
-  public double getEncoderRad() {
-    return armMotorPrimary.getSelectedSensorPosition() * ArmConstants.STAGE_ONE_ENCODER_TICKS_TO_RADIANS;
   }
   public double[] getPivotCoordinate() {
     return kPivotCoordinate;
@@ -128,21 +111,44 @@ public class StageOneSub extends SubsystemBase {
     return kSpringConstant;
   }
   //Setters
-  public void limitSwitchPassed(){
-    armMotorPrimary.setSelectedSensorPosition(ArmConstants.STAGE_ONE_LIMIT_SWITCH_ANGLE_RAD);
+  public void setEncoderPosition(double position){
+    armMotorPrimary.setSelectedSensorPosition(position);
   }
   public void setAFF(double AFF){
-    this.feedForward = feedForward;
+    this.AFF = AFF;
   }
   public void setArmPositionRad(double setpoint){
     armMotorPrimary.set(TalonSRXControlMode.Position, setpoint);
   }
   //Util
+  private double getEncoder() {
+    return armMotorPrimary.getSelectedSensorPosition();
+  }
+  private double calculateAngle(double encoder){
+    double ticks = encoder;
+    double outputTicks = ticks * kEncoderRatio;
+    angle = calculateRadiansFromTicks(outputTicks);
+    return angle;
+  }
+  private double calculateRadiansFromTicks(double ticks) {
+    double radians = ticks * ArmConstants.STAGE_ONE_ENCODER_TICKS_TO_RADIANS;
+    return radians;
+  }
+  private double[] calculateCG() {
+    /*
+    x, y -> angle
+    angle + angle
+    angle -> x, y
+    x, y * magnitude
+    */
+    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
+    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
+    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
+  }
 
   @Override
   public void periodic() {
     calculateStageData();
     // This method will be called once per scheduler run
-    //armMotorPrimary.set(TalonSRXControlMode.PercentOutput,pid.calculate(getAbsoluteEncoderRad())); //replace this with internal PID
   }
 }

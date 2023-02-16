@@ -17,11 +17,9 @@ public class StageTwoSub extends SubsystemBase {
   private SparkMaxPIDController pidController;
   private RelativeEncoder encoder;
 
-  private double encoderOffset = ArmConstants.STAGE_TWO_ABS_ENCODER_INITIAL_OFFSET;
-  private double setpointRad = encoderOffset;
+  private double setpointRad;
   private double AFF;
   private double cG[];
-  private double cB[];
   private double kCG[];
   private double kCB[];
   private double kTransmissionData[];
@@ -34,13 +32,14 @@ public class StageTwoSub extends SubsystemBase {
   private double kSpringRestLength;
   private double kCBCoordinate[];
   private double kSpringConstant;
+  private double kEncoderRatio;
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
     armMotorPrimary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_LEFT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
     armMotorSecondary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_RIGHT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    encoder =  armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
+    encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
 
     armMotorPrimary.restoreFactoryDefaults();
     armMotorSecondary.restoreFactoryDefaults();
@@ -68,10 +67,14 @@ public class StageTwoSub extends SubsystemBase {
     kSpringRedirectCoordinate = ArmConstants.stageTwoSpringRedirectCoordinate;
     kSpringRestLength = ArmConstants.stageTwoSpringRestLength;
     kCBCoordinate = ArmConstants.stageTwoCBCoordinate;
-    kSpringConstant = ArmConstants.stageTwoSpringConstant;  
+    kSpringConstant = ArmConstants.stageTwoSpringConstant;
+    kEncoderRatio = ArmConstants.stageTwoEncoderRatio;  
   }
 
   private void calculateStageData() {
+    double ticks = getEncoder();
+    angle = calculateAngle(ticks);
+
     cG = calculateCG();
   }
 
@@ -89,9 +92,6 @@ public class StageTwoSub extends SubsystemBase {
   }
   public double[] getCG() {
     return cG;
-  }
-  public double[] getCB() {
-    return cB;
   }
   public double getLength() {
     return kLength;
@@ -141,6 +141,19 @@ public class StageTwoSub extends SubsystemBase {
 
   void setArmPositionRad(double setpoint){
     pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition);
+  }
+  private double getEncoder() {
+    return encoder.getPosition();
+  }
+  private double calculateAngle(double encoder){
+    double ticks = encoder;
+    double outputTicks = ticks * kEncoderRatio;
+    angle = calculateRadiansFromTicks(outputTicks);
+    return angle;
+  }
+  private double calculateRadiansFromTicks(double ticks) {
+    double radians = ticks * ArmConstants.STAGE_TWO_ENCODER_TICKS_TO_RADIANS;
+    return radians;
   }
 
 
