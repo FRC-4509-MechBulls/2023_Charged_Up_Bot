@@ -30,8 +30,8 @@ public class EFSub extends SubsystemBase {
     efMotorBottom = new TalonSRX(EndEffectorConstants.EF_MOTOR_BOTTOM_ID);
 
     // setting motors to brake mode so they immediately stop moving when voltage stops being sent
-    efMotorTop.setNeutralMode(NeutralMode.Brake);
-    efMotorBottom.setNeutralMode(NeutralMode.Brake);
+    efMotorTop.setNeutralMode(NeutralMode.Coast);
+    efMotorBottom.setNeutralMode(NeutralMode.Coast);
 
     efMotorBottom.setInverted(true);
     
