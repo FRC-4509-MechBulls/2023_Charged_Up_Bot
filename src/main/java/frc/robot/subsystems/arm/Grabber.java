@@ -347,6 +347,8 @@ public class Grabber extends SubsystemBase {
 
   @Override
   public void periodic() {
+    calculateArmData();
+    updateArmData();
     // This method will be called once per scheduler run
    // setDesiredArmAndEFModes(stateController.getArmMode(), );
     setEndEffectorMode(stateController.getEFMode());
