@@ -349,7 +349,7 @@ public void updateNodes(ArrayList<Node> nodes){this.nodes = nodes;}
 
 
      //   double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
-        double zoom = 1;
+        double zoom = 1 * 0.6;
 
      //   ang+= Math.toRadians(SmartDashboard.getNumber("TCamAngle",0));
         if(robotOrientedView)
