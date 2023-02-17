@@ -19,16 +19,16 @@ import java.util.List;
 public class GraphicalTelemetrySubsystem extends SubsystemBase {
   /** Creates a new GraphicalTelemetrySubsystem. */
   Thread m_visionThread;
-  public GraphicalTelemetrySubsystem(String name) {
+  public GraphicalTelemetrySubsystem(String name, int width, int height, int targetFramerate) {
 
     m_visionThread =
             new Thread(
                     () -> {
 
                       // Setup a CvSource. This will send images back to the Dashboard
-                      CvSource outputStream = CameraServer.putVideo(name, 768, 480);
+                      CvSource outputStream = CameraServer.putVideo(name, width, height);
                       // Mats are very memory expensive. Lets reuse this Mat.
-                      Mat mat = new Mat(480,768,16);
+                      Mat mat = new Mat(height,width,16);
 
                       // This cannot be 'true'. The program will never exit if it is. This
                       // lets the robot stop this thread when restarting robot code or
@@ -38,7 +38,7 @@ public class GraphicalTelemetrySubsystem extends SubsystemBase {
 
                         // Give the output stream a new image to display
                         outputStream.putFrame(mat);
-                          try {Thread.sleep(80);} catch (InterruptedException e) {}
+                          try {Thread.sleep((int)(1000.0/targetFramerate));} catch (InterruptedException e) {}
                       }
                     });
     m_visionThread.setName("MB_Telem-"+name);
