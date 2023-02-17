@@ -39,6 +39,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(stateControllerSubsystem);
     private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
     private final EFPathingTelemetrySub efTelemSub = new EFPathingTelemetrySub();
+    private final EFNavSystem efNavSystem = new EFNavSystem(efTelemSub);
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
   private final EFSub endEffectorSubsystem = new EFSub();

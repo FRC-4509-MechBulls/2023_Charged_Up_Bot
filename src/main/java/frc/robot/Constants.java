@@ -52,11 +52,18 @@ public final class Constants {
         public static final double PLACE_CUBE_BOTTOM_OUTPUT = -0.3;
 
 
+    }
 
+    public static final class EFPathingConstants{
+        public static final double BUMPER_Y_FROM_ORIGIN = Units.inchesToMeters(7);
+        public static final double BUMPER_X_FROM_ORIGIN = Units.inchesToMeters(34/2);
 
+        public static final double EF_WIDTH = Units.inchesToMeters(16);
+        public static final double EF_HEIGHT = Units.inchesToMeters(18);
 
+        public static final double EF_RADIUS = Math.max(EF_WIDTH,EF_HEIGHT); //this should be fine since it doesn't rotate?
 
-
+        public static final int innerLineTestCount = 5;
 
     }
 
