@@ -126,7 +126,7 @@ public class StageOneSub extends SubsystemBase {
     armMotorPrimary.set(TalonSRXControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, (AFF/12));
   }
   //Util
-  private void setSensorPosition(double position) {
+  public void setSensorPosition(double position) {
     armMotorPrimary.setSelectedSensorPosition(position * ArmConstants.STAGE_ONE_ENCODER_TICKS_TO_RADIANS);
   }
   private double getEncoder() {

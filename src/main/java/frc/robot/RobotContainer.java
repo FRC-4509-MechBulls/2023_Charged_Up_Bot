@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.lib.MB_AutoCommandChooser;
 import frc.robot.subsystems.arm.Grabber;
@@ -64,7 +66,8 @@ public class RobotContainer {
   private final Command rc_autoBalance = new RunCommand(()->swerveSubsystem.driveAutoBalance(),swerveSubsystem);
 
 
-
+    DigitalInput stageOneLimitSwitch = new DigitalInput(4);
+    DigitalInput stageTwoLimitSwitch = new DigitalInput(5);
 
 
 
@@ -80,6 +83,11 @@ public class RobotContainer {
     pathingTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
+      Trigger stageOneZeroTrigger = new Trigger(stageOneLimitSwitch::get);
+      Trigger stageTwoZeroTrigger = new Trigger(stageTwoLimitSwitch::get);
+
+      stageOneZeroTrigger.onTrue(new InstantCommand(()->stageOneSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchAngle)));
+      stageTwoZeroTrigger.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchAngle)));
 
     //inputs
 //    SmartDashboard.putNumber("x1",0);

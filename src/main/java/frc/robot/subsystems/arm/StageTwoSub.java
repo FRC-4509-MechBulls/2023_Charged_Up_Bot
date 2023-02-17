@@ -149,7 +149,7 @@ public class StageTwoSub extends SubsystemBase {
   private double calculateAngle(double encoder){
     return encoder;
   }
-  private void setSensorPosition(double position) {
+  public void setSensorPosition(double position) {
     encoder.setPosition(position);
   }
 

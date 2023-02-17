@@ -136,6 +136,9 @@ public final class Constants {
         public static final double[] placingCubeArmPosThree = {0,0}; //undecided
 
         public static final double angleToleranceToUpdateEF = 0.5;
+
+        public static final double stageOneLimitSwitchAngle = Units.degreesToRadians(49.8);
+        public static final double stageTwoLimitSwitchAngle = Units.degreesToRadians(70);
     }
 
 
