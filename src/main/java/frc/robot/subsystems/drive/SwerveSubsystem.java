@@ -343,10 +343,10 @@ SwerveModulePosition[] simModulePositions;
     //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
     //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
     //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
-    SmartDashboard.putNumber("FRAbs",frontRight.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("FLAbs",frontLeft.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("RRAbs",backRight.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("RLAbs",backLeft.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("FRAbs",frontRight.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("FLAbs",frontLeft.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("RRAbs",backRight.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("RLAbs",backLeft.getAbsoluteEncoderRad());
   }
 
   // Periodic
