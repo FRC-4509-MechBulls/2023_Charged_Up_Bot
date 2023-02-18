@@ -142,7 +142,7 @@ public final class Constants {
         public static final double stageTwoRealSpringLength = stageTwoGrossSpringLength - stageTwoExcessSpringLength;
         public static final double stageTwoRestingSpringLength = stageTwoRealSpringLength / stageTwoSpringWindings;
         public static final double stageTwoSpringConstant = stageTwoSpringConstantCoefficient * (1/stageTwoRestingSpringLength) * stageTwoSpringWindings * stageTwoSpringQuantity;
-        public static final double stageTwoMass = 2;
+        public static final double stageTwoMass = 2.0;
         public static final double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = {-16.61, 1.723};
         public static final double[] stageTwoDefaultSpringEndCoordinateRelativeToPivot = {-3.5, 0.3895};
 

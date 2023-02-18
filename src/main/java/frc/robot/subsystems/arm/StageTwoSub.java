@@ -29,7 +29,7 @@ public class StageTwoSub extends SubsystemBase {
   private double angle;
   private double length;
   private double springConstant;
-  private double kEncoderRatio;
+  private double encoderRatio;
   private double mass;
   private double[] defaultCGCoordinateRelativeToPivot;
   private double[] defaultSpringStartCoordinateRelativeToPivot;
@@ -41,7 +41,7 @@ public class StageTwoSub extends SubsystemBase {
   public StageTwoSub() {
     length = ArmConstants.stageTwoLength;
     springConstant = ArmConstants.stageTwoSpringConstant;
-    kEncoderRatio = ArmConstants.stageTwoEncoderRatio;
+    encoderRatio = ArmConstants.stageTwoEncoderRatio;
     mass = ArmConstants.stageTwoMass; 
     defaultCGCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultCGCoordinateRelativeToPivot;
     defaultSpringStartCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultSpringStartCoordinateRelativeToPivot;
@@ -62,7 +62,7 @@ public class StageTwoSub extends SubsystemBase {
     armMotorSecondary.setCANTimeout(2000);
 
     encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
-    encoder.setPositionConversionFactor((2 * Math.PI) / kEncoderRatio);
+    encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
 
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) Units.degreesToRadians(-10));
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) Units.degreesToRadians(-170));

@@ -21,7 +21,6 @@ public class EFSub extends SubsystemBase {
   private TalonSRX efMotorBottom;
 
   private double[] cGCoordinateRelativeToPivot;
-  private double angle;
   private double mass;
 
   /** Creates a new EndEffectorSubsystem. */
@@ -52,6 +51,7 @@ public class EFSub extends SubsystemBase {
       0)); // Trigger Threshold Time(s)
     
       cGCoordinateRelativeToPivot = ArmConstants.eFCGCoordinateRelativeToPivot;
+      mass = ArmConstants.eFMass;
   }
 
   public void calculateStageData() {

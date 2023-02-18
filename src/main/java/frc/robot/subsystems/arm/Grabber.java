@@ -116,15 +116,15 @@ public class Grabber extends SubsystemBase {
     double stageTwoArmAngle = stageTwoSub.getAngle();
     double stageOneArmAngle = stageOneSub.getAngle();
     double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringStartCoordinateRelativeToPivot();
-    double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringStartCoordinateRelativeToPivot();
+    double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = stageOneSub.getDefaultSpringStartCoordinateRelativeToPivot();
     double[] stageTwoDefaultSpringEndCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringEndCoordinateRelativeToPivot();
-    double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringEndCoordinateRelativeToPivot();
+    double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = stageOneSub.getDefaultSpringEndCoordinateRelativeToPivot();
     double stageTwoSpringConstant = stageTwoSub.getSpringConstant();
-    double stageOneSpringConstant = stageTwoSub.getSpringConstant();
+    double stageOneSpringConstant = stageOneSub.getSpringConstant();
     double stageTwoRestingSpringLength = stageTwoSub.getRestingSpringLength();
     double stageOneRestingSpringLength = stageOneSub.getRestingSpringLength();
     double stageTwoVoltsPerTorque = stageTwoSub.getVoltsPerTorque();
-    double stageOneVoltsPerTorque = stageTwoSub.getVoltsPerTorque();
+    double stageOneVoltsPerTorque = stageOneSub.getVoltsPerTorque();
 
     double stageOneMass = stageOneSub.getMass();
     double stageTwoMass = stageTwoSub.getMass();
@@ -158,7 +158,7 @@ public class Grabber extends SubsystemBase {
                               stageTwoSpringConstant, 
                               stageTwoRestingSpringLength, 
                               stageTwoAndEFMass, 
-                              stageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
+                              stageTwoAndEFCGCoordinateRelativeToStageTwoPivot, 
                               stageTwoVoltsPerTorque);
     stageOneAFF = calculateAFF(stageOneArmAngle, 
                               stageOneDefaultSpringStartCoordinateRelativeToPivot, 
@@ -221,7 +221,7 @@ public class Grabber extends SubsystemBase {
     return newCoordinate;
   }
   private double[] calculateCoordinateWeightedAverage(double[] coordinateOne, double weightOne, double[] coordinateTwo, double weightTwo) {
-    double magnitude = calculateMagnitude(weightOne, weightTwo);
+    double magnitude = weightOne + weightTwo;
 
     double newCoordinateX = (weightOne * coordinateOne[0] + weightTwo * coordinateTwo[0])/magnitude;
     double newCoordinateY = (weightOne * coordinateOne[1] + weightTwo * coordinateTwo[1])/magnitude;
