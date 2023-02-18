@@ -68,12 +68,15 @@ public final class Constants {
         public static final double CENTER_OFFSET_FROM_PIVOT_POINT_X = EF_WIDTH/2;
         public static final double CENTER_OFFSET_FROM_PIVOT_POINT_Y = EF_HEIGHT/2;
 
-        public static final int maxRecursionDepth = 3;
-        public static final double lineDistIterator = 0.5;
+        public static final int maxRecursionDepth = 2;
+        public static final double lineDistIterator = 0.2;
         public static final double maxLineDist = 1;
-        public static final int moveAngles = 4;
+        public static final int moveAngles = 8;
 
         public static final int minPathingDelay = 10;
+
+        public static final double reachedInBetweenPointThreshold = 0.05;
+
 
 
     }

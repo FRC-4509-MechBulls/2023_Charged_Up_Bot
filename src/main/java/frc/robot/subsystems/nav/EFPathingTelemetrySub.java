@@ -22,7 +22,7 @@ import java.util.List;
 public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
 
     public EFPathingTelemetrySub() {
-        super("EFNav",480,360,2);
+        super("EFNav",480,360,30);
     }
         Point2D.Double pivotPoint = new Point2D.Double(1,1);
 
@@ -81,11 +81,14 @@ void drawNavigationLines(Mat mat){
     /** Draw navigation lines */
     for(int i = 1; i<navPoses.size(); i++)
         Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
+    if(navPoses.size()==1)
+        Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(0).getX(), navPoses.get(0).getY())),metersPosToPixelsPos(new Point(pivotPoint.getX(),pivotPoint.getY())),new Scalar(255,0,100),2);
+    SmartDashboard.putNumber("EFNavPosesSize", navPoses.size());
 }
 
 void updateNavPoses(ArrayList<Pose2d> navPoses){
         if(dontTouchMe) return;
-        SmartDashboard.putNumber("ef_updateNavPoseTime", Timer.getFPGATimestamp());
+        //SmartDashboard.putNumber("ef_updateNavPoseTime", Timer.getFPGATimestamp());
      this.navPoses = navPoses;
 }
     public void updateDestinationPose(Pose2d newPose){

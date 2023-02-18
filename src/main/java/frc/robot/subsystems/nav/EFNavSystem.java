@@ -20,7 +20,7 @@ import static frc.robot.Constants.EFPathingConstants.*;
 
 
 public class EFNavSystem extends SubsystemBase {
-Point2D.Double pivotPoint = new Point2D.Double(0,0);
+Point2D.Double pivotPoint = new Point2D.Double(0,0.3);
 EFPathingTelemetrySub telemetrySub;
 Pose2d efPose = new Pose2d();
 
@@ -75,7 +75,7 @@ Pose2d efPose = new Pose2d();
         poseChanged = false;
         if(desiredPose == null)
             return;
-        Pose2d[] outNavPoses = findNavPoses(efPose,desiredPose,0,Timer.getFPGATimestamp(),5);
+        Pose2d[] outNavPoses = findNavPoses(new Pose2d(pivotPoint.getX(),pivotPoint.getY(),Rotation2d.fromDegrees(0)),desiredPose,0,Timer.getFPGATimestamp(),5);
         if(outNavPoses.length<1)
             return;
         boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,efPose)<Constants.PathingConstants.recalcThreshold;
@@ -89,7 +89,8 @@ Pose2d efPose = new Pose2d();
         lastUsedPose = efPose;
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
-            navPoses.add(i);
+            if(i!=null)
+                navPoses.add(i);
         telemetrySub.updateDestinationPose(this.desiredPose);
         //    pTelemetrySub.updateNavPoses(navPoses);
     }
@@ -100,8 +101,11 @@ Pose2d efPose = new Pose2d();
         double botX = efPose.getX();
         double botY = efPose.getY();
         double length = Math.sqrt(Math.pow(botX - path[0].getX(),2)+Math.pow(botY-path[0].getY(),2));
-        for(int i = 1; i<path.length; i++)
+        for(int i = 1; i<path.length; i++){
+            if(path[i] == null || path[i-1] == null)
+                return Integer.MAX_VALUE;
             length+=Math.sqrt(Math.pow(path[i].getX() - path[i-1].getX(),2)+Math.pow(path[i].getY() - path[i-1].getY(),2));
+        }
 
         return length;
     }
@@ -115,6 +119,11 @@ Pose2d efPose = new Pose2d();
 
     public void periodic(){
         updatePivotPoint(new Point2D.Double(SmartDashboard.getNumber("EFPivotX",0),SmartDashboard.getNumber("EFPivotY",0)));
+
+        SmartDashboard.putNumber("nextNavX",getNextNavPoint().getX());
+        SmartDashboard.putNumber("nextNavY",getNextNavPoint().getY());
+
+
         desiredPose = new Pose2d(SmartDashboard.getNumber("EFDesiredX",0.6),SmartDashboard.getNumber("EFDesiredY",0.075),Rotation2d.fromDegrees(0));
         telemetrySub.updateDestinationPose(desiredPose);
     }
@@ -132,7 +141,7 @@ Pose2d efPose = new Pose2d();
     public void updatePivotPoint(Point2D.Double pivotPoint){
         this.pivotPoint = pivotPoint;
         this.efPose = new Pose2d(pivotPoint.getX() + CENTER_OFFSET_FROM_PIVOT_POINT_X, pivotPoint.getY()+CENTER_OFFSET_FROM_PIVOT_POINT_Y, Rotation2d.fromDegrees(0));
-        SmartDashboard.putString("yDebug","getY():"+pivotPoint.getY()+", OFFSETVAR:"+CENTER_OFFSET_FROM_PIVOT_POINT_Y);
+       // SmartDashboard.putString("yDebug","getY():"+pivotPoint.getY()+", OFFSETVAR:"+CENTER_OFFSET_FROM_PIVOT_POINT_Y);
         telemetrySub.updatePivotPoint(this.pivotPoint);
         telemetrySub.updateEFPose(this.efPose);
     }
@@ -249,10 +258,23 @@ Pose2d efPose = new Pose2d();
         cornerPoints.clear();
 
         cornerPoints.add(new Pose2d(0.6,0.3,Rotation2d.fromDegrees(0)));
-        cornerPoints.add(new Pose2d(1.5,1.5,Rotation2d.fromDegrees(0)));
+        //cornerPoints.add(new Pose2d(1.5,1.5,Rotation2d.fromDegrees(0)));
 
 
         telemetrySub.updateCornerPoints(cornerPoints);
+    }
+
+    public Pose2d getNextNavPoint(){
+        if(navPoses.size()<1) return efPose;
+
+        Pose2d armPose = efPose;
+        while((navPoses.size()>1) &&(navPoses.get(0)==null || (Math.sqrt(Math.pow(pivotPoint.getX() - navPoses.get(0).getX(),2)+Math.pow(pivotPoint.getY() - navPoses.get(0).getY(),2))<reachedInBetweenPointThreshold)))
+            if(navPoses.size()>1)
+                navPoses.remove(0);
+        if(navPoses.size()>0 && navPoses.get(0)!=null)
+            return navPoses.get(0);
+        return efPose;
+
     }
 
 
