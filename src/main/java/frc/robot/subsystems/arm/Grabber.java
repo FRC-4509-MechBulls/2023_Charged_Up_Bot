@@ -23,8 +23,9 @@ public class Grabber extends SubsystemBase {
 
   private double stageOneAFF;
   private double stageTwoAFF;
-  private double[] xY;
-  private double[] alphaTheta;
+  private double[] setpointXY;
+  private double[] setpointAlphaTheta;
+  private double[] eFPosition;
 
   public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
   public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE, PLACING_CONE, STOPPED}
@@ -45,7 +46,7 @@ public class Grabber extends SubsystemBase {
   public void setArmPosition(ArmModes armMode){
     double[] armPositions = getArmPositions(armMode);
     if(armPositions.length>=2)
-      setXY(armPositions);
+      setSetpointXY(armPositions);
     this.armMode = armMode;
   }
   public void setEndEffectorMode(EFModes effectorMode){
@@ -101,8 +102,8 @@ public class Grabber extends SubsystemBase {
   }
   //config
   //setters
-  public void setXY(double[] xY){
-    this.xY = xY;
+  public void setSetpointXY(double[] coordinate){
+    setpointXY = coordinate;
   }
   //getters
   //util
@@ -162,7 +163,14 @@ public class Grabber extends SubsystemBase {
                               stageOneAndStageTwoAndEFMass, 
                               stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
                               stageOneVoltsPerTorque);
-    alphaTheta = convertGrabberXYToThetaOmega(xY);
+
+    setpointAlphaTheta = convertGrabberXYToThetaOmega(setpointXY);
+
+    double[] stageOnePivotCoordinateRelativeToOrigin = ArmConstants.stageOnePivotCoordinate;
+    double[] stageTwoPivotCoordinateRelativeToOrigin = calculateCoordinateSum(stageOnePivotCoordinateRelativeToOrigin, stageTwoPivotCoordinateRelativeToStageOnePivot);
+    double[] eFPivotCoordinateRelativeToOrigin = calculateCoordinateSum(stageTwoPivotCoordinateRelativeToOrigin, eFPivotCoordinateRelativeToStageTwoPivotCoordinate);
+
+    eFPosition = eFPivotCoordinateRelativeToOrigin;
   }
   private double calculateAFF(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength, double armMass, double[] cGCoordinateRelativeToPivot, double voltsPerTorque) {
     double passiveTorque = calculateArmTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength, armMass, cGCoordinateRelativeToPivot);
@@ -206,8 +214,8 @@ public class Grabber extends SubsystemBase {
   private void updateArmData() {
     stageOneSub.setAFF(stageOneAFF);
     stageTwoSub.setAFF(stageTwoAFF);
-    stageOneSub.setSetpoint(alphaTheta[0]);
-    stageTwoSub.setSetpoint(alphaTheta[1]);
+    stageOneSub.setSetpoint(setpointAlphaTheta[0]);
+    stageTwoSub.setSetpoint(setpointAlphaTheta[1]);
   }
   private double[] calculateCoordinateSum(double[] coordinateOne, double[] coordinateTwo) {
     double newCoordinateX = coordinateOne[0] + coordinateTwo[0];
