@@ -21,13 +21,10 @@ import frc.robot.lib.MB_AutoCommandChooser;
 import frc.robot.subsystems.arm.Grabber;
 import frc.robot.subsystems.arm.StageOneSub;
 import frc.robot.subsystems.arm.StageTwoSub;
+import frc.robot.subsystems.nav.*;
 import frc.robot.subsystems.state.FMSGetter;
 import frc.robot.subsystems.drive.SwerveSubsystem;
-import frc.robot.subsystems.nav.NavigationField;
 import frc.robot.subsystems.arm.EFSub;
-import frc.robot.subsystems.nav.GraphicalTelemetrySubsystem;
-import frc.robot.subsystems.nav.PathingTelemetrySub;
-import frc.robot.subsystems.nav.VisionSubsystem;
 import frc.robot.subsystems.state.StateControllerSubsystem;
 
 /**
@@ -40,7 +37,9 @@ public class RobotContainer {
   private final FMSGetter fmsGetter = new FMSGetter();
   private final StateControllerSubsystem stateControllerSubsystem = new StateControllerSubsystem(fmsGetter);
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(stateControllerSubsystem);
-  private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
+    private final GraphicalTelemetrySubsystem pathingTelemSub = new PathingTelemetrySub(stateControllerSubsystem);
+    private final EFPathingTelemetrySub efTelemSub = new EFPathingTelemetrySub();
+    private final EFNavSystem efNavSystem = new EFNavSystem(efTelemSub);
   private final NavigationField navigationField = new NavigationField((PathingTelemetrySub) pathingTelemSub, swerveSubsystem, fmsGetter,stateControllerSubsystem);
   private final VisionSubsystem visionSubsystem = new VisionSubsystem(swerveSubsystem, (PathingTelemetrySub) pathingTelemSub);
   private final EFSub endEffectorSubsystem = new EFSub();
@@ -81,6 +80,7 @@ public class RobotContainer {
   //  (PathingTelemetrySub)pathingTelemSub.set
 
     pathingTelemSub.init();
+    efTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
       Trigger stageOneZeroTrigger = new Trigger(stageOneLimitSwitch::get);

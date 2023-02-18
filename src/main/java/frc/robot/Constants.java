@@ -52,9 +52,30 @@ public final class Constants {
         public static final double PLACE_CUBE_BOTTOM_OUTPUT = -0.3;
 
 
+    }
 
+    public static final class EFPathingConstants{
+        public static final double BUMPER_Y_FROM_ORIGIN = Units.inchesToMeters(7);
+        public static final double BUMPER_X_FROM_ORIGIN = Units.inchesToMeters(34/2);
 
+        public static final double EF_WIDTH = Units.inchesToMeters(16);
+        public static final double EF_HEIGHT = Units.inchesToMeters(18);
 
+        public static final double EF_RADIUS = Math.min(EF_WIDTH,EF_HEIGHT); //this should be fine since it doesn't rotate?
+
+        public static final int innerLineTestCount = 5;
+
+        public static final double CENTER_OFFSET_FROM_PIVOT_POINT_X = EF_WIDTH/2;
+        public static final double CENTER_OFFSET_FROM_PIVOT_POINT_Y = EF_HEIGHT/2;
+
+        public static final int maxRecursionDepth = 2;
+        public static final double lineDistIterator = 0.2;
+        public static final double maxLineDist = 1;
+        public static final int moveAngles = 8;
+
+        public static final int minPathingDelay = 10;
+
+        public static final double reachedInBetweenPointThreshold = 0.05;
 
 
 
