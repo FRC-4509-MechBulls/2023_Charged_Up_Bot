@@ -73,8 +73,7 @@ public final class Constants {
         public static final double revEncoderCountsPerRotation = 2048;
         public static final double radiansPerRotation = 2 * Math.PI;
 
-        public static final double STAGE_ONE_ENCODER_TICKS_TO_RADIANS =  1/(radiansPerRotation/magEncoderCountsPerRotation);
-        public static final double STAGE_TWO_ENCODER_TICKS_TO_RADIANS = 2 * Math.PI; //uncalculated
+        public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
 
         public static final int STAGE_ONE_MOTOR_LEFT_ID = 11; 
         public static final int STAGE_ONE_MOTOR_RIGHT_ID = 12; 
@@ -121,6 +120,11 @@ public final class Constants {
         public static final double stageOneMass = 10.64;
         public static final double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = {-0.7145, 8.125};
         public static final double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = {12.14, 1.723};
+        public static final double stageOneSoftLimitForward = Units.degreesToRadians(55);
+        public static final double stageOneSoftLimitReverse = Units.degreesToRadians(25);
+        public static final double stageOneContinuousCurrentLimit = 20;
+        public static final double stageOnePeakCurrentLimit = 40;
+        public static final double stageOnePeakCurrentTime = 500;
 
         public static final double[] stageTwoDefaultCGCoordinateRelativeToPivot = {10.9, 0};
         public static final double stageTwoLength = 28.75;
@@ -145,6 +149,10 @@ public final class Constants {
         public static final double stageTwoMass = 2.0;
         public static final double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = {-16.61, 1.723};
         public static final double[] stageTwoDefaultSpringEndCoordinateRelativeToPivot = {-3.5, 0.3895};
+        public static final double stageTwoSoftLimitForward = Units.degreesToRadians(-20);
+        public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-175);
+        public static final int stageTwoSmartCurrentLimit = 40;
+        public static final double stageTwoSecondaryCurrentLimit = 60;
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;

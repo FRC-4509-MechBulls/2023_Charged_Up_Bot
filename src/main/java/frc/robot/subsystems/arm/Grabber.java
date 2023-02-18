@@ -21,11 +21,18 @@ public class Grabber extends SubsystemBase {
   StageTwoSub stageTwoSub;
   EFSub endEffectorSubsystem;
 
-
   private double stageOneAFF;
   private double stageTwoAFF;
-  private double stageTwoGravityAFF;
-  private double stageOneGravityAFF;
+  private double[] xY;
+  private double[] alphaTheta;
+
+  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
+  public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE, PLACING_CONE, STOPPED}
+
+  private EFModes efMode = EFModes.STOPPED;
+  private ArmModes armMode = ArmModes.HOLDING;
+  private EFModes desiredEFMode = EFModes.STOPPED;
+  private ArmModes desiredArmMode = ArmModes.HOLDING;
 
   /** Creates a new Grabber. */
   public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController) {
@@ -34,16 +41,13 @@ public class Grabber extends SubsystemBase {
     this.endEffectorSubsystem = endEffectorSubsystem;
     this.stateController = stateController;
   }
-  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
-  public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE, PLACING_CONE, STOPPED}
-
+  //random???
   public void setArmPosition(ArmModes armMode){
     double[] armPositions = getArmPositions(armMode);
     if(armPositions.length>=2)
-      setArmPosition(armPositions);
+      setXY(armPositions);
     this.armMode = armMode;
   }
-
   public void setEndEffectorMode(EFModes effectorMode){
     switch(effectorMode){
       case INTAKING_CUBE: endEffectorSubsystem.intakeCube(); break;
@@ -56,7 +60,6 @@ public class Grabber extends SubsystemBase {
     }
     efMode = effectorMode;
   }
-
   public double[] getArmPositions(ArmModes armMode){
     switch (armMode){
       case INTAKING_CUBE: return ArmConstants.intakingCubesArmPos;
@@ -74,12 +77,6 @@ public class Grabber extends SubsystemBase {
     }
     return new double[]{};
   }
-
-  private EFModes efMode = EFModes.STOPPED;
-  private ArmModes armMode = ArmModes.HOLDING;
-  private EFModes desiredEFMode = EFModes.STOPPED;
-  private ArmModes desiredArmMode = ArmModes.HOLDING;
-
   public void setDesiredEFMode(EFModes desiredEFMode){
     this.desiredEFMode = desiredEFMode;
   }
@@ -92,26 +89,23 @@ public class Grabber extends SubsystemBase {
   public ArmModes getDesiredArmMode(){
     return desiredArmMode;
   }
-
   public EFModes getEFMode(){
     return efMode;
   }
-  public ArmModes getArmMode(){return armMode;}
-
-
-
-
-  public void setArmPosition(double[] armPosition){
-    stageOneSub.setArmPositionRad(armPosition[0]);
-    stageTwoSub.setArmPositionRad(armPosition[1]);
+  public ArmModes getArmMode(){
+    return armMode;
   }
-
   public void setDesiredArmAndEFModes(ArmModes armMode, EFModes efMode){
     setDesiredEFMode(efMode);
     setDesiredArmMode(armMode);
   }
-
-
+  //config
+  //setters
+  public void setXY(double[] xY){
+    this.xY = xY;
+  }
+  //getters
+  //util
   public void calculateArmData() {
     double stageTwoArmAngle = stageTwoSub.getAngle();
     double stageOneArmAngle = stageOneSub.getAngle();
@@ -168,10 +162,7 @@ public class Grabber extends SubsystemBase {
                               stageOneAndStageTwoAndEFMass, 
                               stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
                               stageOneVoltsPerTorque);
-  }
-  private void updateArmData() {
-    stageOneSub.setAFF(stageOneAFF);
-    stageTwoSub.setAFF(stageTwoAFF);
+    alphaTheta = convertGrabberXYToThetaOmega(xY);
   }
   private double calculateAFF(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength, double armMass, double[] cGCoordinateRelativeToPivot, double voltsPerTorque) {
     double passiveTorque = calculateArmTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength, armMass, cGCoordinateRelativeToPivot);
@@ -211,6 +202,12 @@ public class Grabber extends SubsystemBase {
     double gravityTorque = realForce * cGDistance;
 
     return gravityTorque;
+  }
+  private void updateArmData() {
+    stageOneSub.setAFF(stageOneAFF);
+    stageTwoSub.setAFF(stageTwoAFF);
+    stageOneSub.setSetpoint(alphaTheta[0]);
+    stageTwoSub.setSetpoint(alphaTheta[1]);
   }
   private double[] calculateCoordinateSum(double[] coordinateOne, double[] coordinateTwo) {
     double newCoordinateX = coordinateOne[0] + coordinateTwo[0];
@@ -262,8 +259,7 @@ public class Grabber extends SubsystemBase {
 
     return magnitude;
   }
-
-  public double[] convertGrabberXYToThetaOmega(double[] coordinate) {
+  private double[] convertGrabberXYToThetaOmega(double[] coordinate) {
     double[] rawCoordinate = coordinate;
 
     double[] pivotOne = stageOneSub.getPivotCoordinate();
@@ -283,7 +279,6 @@ public class Grabber extends SubsystemBase {
 
     return new double[] {theta, omega};
   }
-
   private double calculateLawOfCosines(double clockwiseAdjacentLength, double oppositeLength, double counterclockwiseAdjacentLength) {
     double a = clockwiseAdjacentLength;
     double b = oppositeLength;
@@ -295,10 +290,10 @@ public class Grabber extends SubsystemBase {
   public void periodic() {
     calculateArmData();
     updateArmData();
-    // This method will be called once per scheduler run
-   // setDesiredArmAndEFModes(stateController.getArmMode(), );
-    setEndEffectorMode(stateController.getEFMode());
-    SmartDashboard.putString("EFMode",stateController.getEFMode().toString());
+   // setDesiredArmAndEFModes(stateController.getArmMode(), ); //???
+    setEndEffectorMode(stateController.getEFMode()); //???
+    SmartDashboard.putString("EFMode",stateController.getEFMode().toString()); //???
+    //???
     /*
 
 

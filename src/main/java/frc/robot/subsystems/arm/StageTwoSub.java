@@ -36,58 +36,78 @@ public class StageTwoSub extends SubsystemBase {
   private double[] defaultSpringEndCoordinateRelativeToPivot;
   private double restingSpringLength;
   private double voltsPerTorque;
+  private double softLimitForward;
+  private double softLimitReverse;
+  private int smartCurrentLimit;
+  private double secondaryCurrentLimit;
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
+    instantiateConstants();
+    instantiateMotorControllers();
+    resetMotorControllers();
+    instantiateEncoder();
+    configEncoder();
+    configMotorControllers();
+    configPIDController();
+    burnConfigs();
+  }
+  //config
+  private void instantiateConstants() {
     length = ArmConstants.stageTwoLength;
     springConstant = ArmConstants.stageTwoSpringConstant;
     encoderRatio = ArmConstants.stageTwoEncoderRatio;
-    mass = ArmConstants.stageTwoMass; 
+    mass = ArmConstants.stageTwoMass;
     defaultCGCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultCGCoordinateRelativeToPivot;
     defaultSpringStartCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultSpringStartCoordinateRelativeToPivot;
     defaultSpringEndCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultSpringEndCoordinateRelativeToPivot;
     restingSpringLength = ArmConstants.stageTwoRestingSpringLength;
     voltsPerTorque = ArmConstants.stageTwoOutputVoltsPerTorque;
-
-    armMotorPrimary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_LEFT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
-    //armMotorPrimary.clearFaults();
+    softLimitForward = ArmConstants.stageTwoSoftLimitForward;
+    softLimitReverse = ArmConstants.stageTwoSoftLimitReverse;
+    smartCurrentLimit = ArmConstants.stageTwoSmartCurrentLimit;
+    secondaryCurrentLimit = ArmConstants.stageTwoSecondaryCurrentLimit;  
+  }
+  private void instantiateMotorControllers() {
+    armMotorPrimary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_LEFT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless);
     armMotorSecondary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_RIGHT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless);
-    //armMotorSecondary.clearFaults();
-    armMotorPrimary.setCANTimeout(2000);
-    armMotorSecondary.setCANTimeout(2000);
-
+  }
+  private void resetMotorControllers() {
     armMotorPrimary.restoreFactoryDefaults();
     armMotorSecondary.restoreFactoryDefaults();
-    armMotorPrimary.setCANTimeout(2000);
-    armMotorSecondary.setCANTimeout(2000);
-
-    encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192); //the Alternate Encoder is automatically configured when the Alternate Encoder object is instantiated
+    armMotorPrimary.setCANTimeout(1000);
+    armMotorSecondary.setCANTimeout(1000);
+  }
+  private void instantiateEncoder() {
+    encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192);
+  }
+  private void configEncoder() {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
-
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) Units.degreesToRadians(-10));
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) Units.degreesToRadians(-170));
+    encoder.setInverted(false);
+    setSensorPosition(ArmConstants.stageTwoStartAngle);
+  }
+  private void configMotorControllers() {
+    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) softLimitForward);
+    armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) softLimitReverse);
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true);
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
     armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
+    armMotorPrimary.setSecondaryCurrentLimit(secondaryCurrentLimit);
+    armMotorPrimary.setSmartCurrentLimit(smartCurrentLimit);
+    armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kCoast);
     armMotorSecondary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
     armMotorSecondary.follow(armMotorPrimary, true);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 1000);
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 1000);
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 1000);
-    //armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    //armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 1000);
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
-    armMotorPrimary.setSecondaryCurrentLimit(60);
-    armMotorSecondary.setSecondaryCurrentLimit(60);
-    armMotorPrimary.setSmartCurrentLimit(40);
-    armMotorSecondary.setSmartCurrentLimit(40);
-    armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
-    armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kCoast);
-
-    setSensorPosition(ArmConstants.stageTwoStartAngle);
-
+    armMotorSecondary.setSecondaryCurrentLimit(secondaryCurrentLimit);
+    armMotorSecondary.setSmartCurrentLimit(smartCurrentLimit);
+  }
+  private void configPIDController() {
     pidController = armMotorPrimary.getPIDController();
     pidController.setFeedbackDevice(encoder);
     pidController.setP(ArmConstants.stageTwo_kP);
@@ -95,16 +115,12 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setD(ArmConstants.stageTwo_kD);
     pidController.setOutputRange(-12,12);
     pidController.setPositionPIDWrappingEnabled(false);
-
+  }
+  private void burnConfigs() {
     armMotorPrimary.burnFlash();
     armMotorSecondary.burnFlash();
   }
-
-  private void calculateStageData() {
-    double ticks = getEncoder();
-    angle = calculateAngle(ticks);
-    SmartDashboard.putNumber("stageTwoAngle", angle);
-  }
+  //getters
   public double getLength() {
     return length;
   }
@@ -132,21 +148,22 @@ public class StageTwoSub extends SubsystemBase {
   public double getVoltsPerTorque() {
     return voltsPerTorque;
   }
-  
-
+  //setters
   public void setAFF(double AFF) {
     this.AFF = AFF;
   }
-  void setArmPositionRad(double setpoint){
-    //pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
-    //pidController.setReference(Units.degreesToRadians(-ArmConstants.stageOneStartAngle), CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
-    pidController.setReference(ArmConstants.stageTwoStartAngle, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+  public void setSetpoint(double setpoint) {
+    this.setpoint = setpoint;
+  }
+  //util
+  private void calculateStageData() {
+    angle = getEncoder();
+  }
+  private void setArmPosition(){
+    pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoder() {
     return encoder.getPosition();
-  }
-  private double calculateAngle(double encoder){
-    return encoder;
   }
   private void setSensorPosition(double position) {
     encoder.setPosition(position);
@@ -155,9 +172,6 @@ public class StageTwoSub extends SubsystemBase {
   @Override
   public void periodic() {
     calculateStageData();
-    setArmPositionRad(setpoint);
-    SmartDashboard.putNumber("stageTwoAFF", AFF);
-    // This method will be called once per scheduler run
-    //armMotorPrimary.set(TalonSRXControlMode.PercentOutput,pid.calculate(getAbsoluteEncoderRad())); //replace this with internal PID
+    setArmPosition();
   }
 }
