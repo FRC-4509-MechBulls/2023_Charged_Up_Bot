@@ -114,167 +114,135 @@ public class Grabber extends SubsystemBase {
 
   public void calculateArmData() {
     double stageTwoArmAngle = stageTwoSub.getAngle();
-    boolean stageTwoRedirected = stageTwoSub.getRedirected();
-    double[] stageTwoSpringMountCoordinate = stageTwoSub.getSpringMountCoordinate();
-    double[] stageTwoSpringRedirectCoordinate = stageTwoSub.getSpringRedirectCoordinate();
-    double stageTwoSpringRestLength = stageTwoSub.getSpringRestLength();
-    double[] stageTwoKcBCoordinate = stageTwoSub.getkCBCoordinate();
-    double stageTwoSpringConstant = stageTwoSub.getSpringConstant();
-
     double stageOneArmAngle = stageOneSub.getAngle();
-    boolean stageOneRedirected = stageOneSub.getRedirected();
-    double[] stageOneSpringMountCoordinate = stageOneSub.getSpringMountCoordinate();
-    double[] stageOneSpringRedirectCoordinate = stageOneSub.getSpringRedirectCoordinate();
-    double stageOneSpringRestLength = stageOneSub.getSpringRestLength();
-    double[] stageOneKcBCoordinate = stageOneSub.getkCBCoordinate();
-    double stageOneSpringConstant = stageOneSub.getSpringConstant();
+    double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringStartCoordinateRelativeToPivot();
+    double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringStartCoordinateRelativeToPivot();
+    double[] stageTwoDefaultSpringEndCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringEndCoordinateRelativeToPivot();
+    double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringEndCoordinateRelativeToPivot();
+    double stageTwoSpringConstant = stageTwoSub.getSpringConstant();
+    double stageOneSpringConstant = stageTwoSub.getSpringConstant();
+    double stageTwoRestingSpringLength = stageTwoSub.getRestingSpringLength();
+    double stageOneRestingSpringLength = stageOneSub.getRestingSpringLength();
+    double stageTwoVoltsPerTorque = stageTwoSub.getVoltsPerTorque();
+    double stageOneVoltsPerTorque = stageTwoSub.getVoltsPerTorque();
 
-    double[] eFCG = endEffectorSubsystem.getCG();
-    double[] stageTwoCG = stageTwoSub.getCG();
-    double[] stageOneCG = stageOneSub.getCG();
+    double stageOneMass = stageOneSub.getMass();
+    double stageTwoMass = stageTwoSub.getMass();
+    double eFMass = endEffectorSubsystem.getMass();
+    double stageTwoAndEFMass = eFMass + stageTwoMass;
+    double stageOneAndStageTwoAndEFMass = stageTwoAndEFMass + stageOneMass;
 
-    double[] eFCGRelativeToStageTwo = sumCGCoordinates(stageTwoCG, eFCG);
-    double[] eFStageTwoFusedCG = calculateFusedCG(eFCGRelativeToStageTwo, stageTwoCG);
+    double stageTwoLength = stageTwoSub.getLength();
+    double stageOneLength = stageOneSub.getLength();
+    double stageTwoAngleRelativeToFloor = stageOneArmAngle + stageTwoArmAngle;
 
-    double[] eFStageTwoFusedCGRelativeToStageOne = sumCGCoordinates(stageOneCG, eFStageTwoFusedCG);
-    double[] eFStageTwoStageOneFusedCG = calculateFusedCG(eFStageTwoFusedCGRelativeToStageOne, stageOneCG);
+    double[] defaultStageOneCGCoordinateRelativeToStageOnePivot = stageOneSub.getDefaultCGCoordinateRelativeToPivot();
+    double[] stageOneCGCoordinateRelativeToStageOnePivot = calculateRotateCoordinate(defaultStageOneCGCoordinateRelativeToStageOnePivot, stageOneArmAngle);
+    double stageTwoPivotCoordinateRelativeToStageOnePivotY = new Rotation2d(stageOneArmAngle).getSin() * stageOneLength;
+    double stageTwoPivotCoordinateRelativeToStageOnePivotX = new Rotation2d(stageOneArmAngle).getCos() * stageOneLength;
+    double[] stageTwoPivotCoordinateRelativeToStageOnePivot = {stageTwoPivotCoordinateRelativeToStageOnePivotX, stageTwoPivotCoordinateRelativeToStageOnePivotY};
+    double[] defaultStageTwoCGCoordinateRelativeToStageTwoPivot = stageTwoSub.getdefaultCGCoordinateRelativeToPivot();
+    double[] stageTwoCGCoordinateRelativeToStageTwoPivot = calculateRotateCoordinate(defaultStageTwoCGCoordinateRelativeToStageTwoPivot, stageTwoAngleRelativeToFloor);
+    double eFPivotCoordinateRelativeToStageTwoPivotCoordinateX = new Rotation2d(stageTwoAngleRelativeToFloor).getCos() * stageTwoLength;
+    double eFPivotCoordinateRelativeToStageTwoPivotCoordinateY = new Rotation2d(stageTwoAngleRelativeToFloor).getSin() * stageTwoLength;
+    double[] eFPivotCoordinateRelativeToStageTwoPivotCoordinate = {eFPivotCoordinateRelativeToStageTwoPivotCoordinateX, eFPivotCoordinateRelativeToStageTwoPivotCoordinateY};
+    double[] eFCGCoordinateRelativeToEFPivot = endEffectorSubsystem.getCGCoordinateRelativeToPivot();
+    double[] eFCGCoordinateRelativeToStageTwoPivot = calculateCoordinateSum(eFCGCoordinateRelativeToEFPivot, eFPivotCoordinateRelativeToStageTwoPivotCoordinate);
+    double[] stageTwoAndEFCGCoordinateRelativeToStageTwoPivot = calculateCoordinateWeightedAverage(eFCGCoordinateRelativeToStageTwoPivot, eFMass, stageTwoCGCoordinateRelativeToStageTwoPivot, stageTwoMass);
+    double[] stageTwoAndEFCGCoordinateRelativeToStageOnePivot = calculateCoordinateSum(stageTwoAndEFCGCoordinateRelativeToStageTwoPivot, stageTwoPivotCoordinateRelativeToStageOnePivot);
+    double[] stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot = calculateCoordinateWeightedAverage(stageTwoAndEFCGCoordinateRelativeToStageOnePivot, stageTwoAndEFMass, stageOneCGCoordinateRelativeToStageOnePivot, stageOneMass);
 
-    double[] stageOneTransmissionData = stageOneSub.getTransmissionData();
-    double[] stageTwoTransmissionData = stageTwoSub.getTransmissionData();
-
-    stageTwoAFF = calculateAFF(eFStageTwoFusedCG, stageTwoArmAngle, stageTwoRedirected, stageTwoSpringMountCoordinate, stageTwoSpringRedirectCoordinate, stageTwoSpringRestLength, stageTwoKcBCoordinate, stageTwoSpringConstant, stageOneTransmissionData);
-    stageOneAFF = calculateAFF(eFStageTwoStageOneFusedCG, stageOneArmAngle, stageOneRedirected, stageOneSpringMountCoordinate, stageOneSpringRedirectCoordinate, stageOneSpringRestLength, stageOneKcBCoordinate, stageOneSpringConstant, stageTwoTransmissionData);
+    stageTwoAFF = calculateAFF(stageTwoArmAngle, 
+                              stageTwoDefaultSpringStartCoordinateRelativeToPivot, 
+                              stageTwoDefaultSpringEndCoordinateRelativeToPivot, 
+                              stageTwoSpringConstant, 
+                              stageTwoRestingSpringLength, 
+                              stageTwoAndEFMass, 
+                              stageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
+                              stageTwoVoltsPerTorque);
+    stageOneAFF = calculateAFF(stageOneArmAngle, 
+                              stageOneDefaultSpringStartCoordinateRelativeToPivot, 
+                              stageOneDefaultSpringEndCoordinateRelativeToPivot, 
+                              stageOneSpringConstant, 
+                              stageOneRestingSpringLength, 
+                              stageOneAndStageTwoAndEFMass, 
+                              stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
+                              stageOneVoltsPerTorque);
   }
-
-
-  public double calculateCounterBalanceTorque(double armAngle, boolean redirected, double[] springMountCoordinate, double[] springRedirectCoordinate, double springRestLength, double[] kcBCoordinate, double springConstant) {
-    boolean springRedirected = redirected;
-    double referenceAngle = armAngle;
-    double kSpringConstant = springConstant;
-    double[] kCBCoordinate = kcBCoordinate; //coordinate relative to pivot point and arm where spring attaches to arm
-    double kSpringRestLength = springRestLength;
-    double[] kSpringRedirectCoordinate = springRedirectCoordinate;
-    double[] kSpringMountCoordinate = springMountCoordinate;
-
-    double kCBX = kCBCoordinate[0];
-    double kCBY = kCBCoordinate[1];
-    double kCBAngle = new Rotation2d(kCBCoordinate[0], kCBCoordinate[1]).getRadians();
-
-    double cBAngle = referenceAngle + kCBAngle;
-    double cBRadius = calculateMagnitude(kCBX, kCBY);
-
-    double cBX = Math.cos(cBAngle) * cBRadius;
-    double cBY = Math.sin(cBAngle) * cBRadius;
-
-    double[] cBCoordinate = {cBX, cBY}; //coordinate relative to pivot point and ground where spring attaches to arm
-
-    double springCurrentLength;
-    double springAngle;
-    if (springRedirected) {
-      double[] springMountRedirectVector = subtractCoordinates(kSpringRedirectCoordinate, kSpringMountCoordinate);
-      double springMountRedirectX = springMountRedirectVector[0];
-      double springMountRedirectY = springMountRedirectVector[1];
-      double springMountRedirectDistance = calculateMagnitude(springMountRedirectX, springMountRedirectY);
-      double[] springRedirectCBVector = subtractCoordinates(cBCoordinate, kSpringRedirectCoordinate);
-      double springRedirectCBX = springRedirectCBVector[0];
-      double springRedirectCBY = springRedirectCBVector[1];
-      double springRedirectCBDistance = calculateMagnitude(springRedirectCBX, springRedirectCBY);
-      springCurrentLength = springMountRedirectDistance + springRedirectCBDistance;
-      springAngle = new Rotation2d(springRedirectCBX, springRedirectCBY).getRadians();
-    } else {
-      double[] springMountCBVector = subtractCoordinates(cBCoordinate, kSpringMountCoordinate);
-      double springMountCBX = springMountCBVector[0];
-      double springMountCBY = springMountCBVector[1];
-      double springMountCBDistance = calculateMagnitude(springMountCBX, springMountCBY);
-      springCurrentLength = springMountCBDistance;
-      springAngle = new Rotation2d(springMountCBX, springMountCBY).getRadians();
-    }
-
-    double springApproachAngle = Math.abs(MathUtil.angleModulus(cBAngle - springAngle));
-
-    double springDisplacement = springCurrentLength - kSpringRestLength;
-
-    double springGrossForce = springDisplacement * kSpringConstant;
-    double cBRealForce = Math.cos(springApproachAngle) * springGrossForce;
-
-    //double[] cB = {cBX, cBY, kSpringConstant * (Math.hypot(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()) - kCB[3]), new Rotation2d(kCB[4] - cBAngle.getCos(), kCB[5] - cBAngle.getSin()).getRadians() - cBAngle.getRadians()};
-
-    double cBTorque = cBRealForce * cBRadius;
-
-    return cBTorque;
-  }
-
-  public void updateArmData() {
+  private void updateArmData() {
     stageOneSub.setAFF(stageOneAFF);
     stageTwoSub.setAFF(stageTwoAFF);
   }
+  private double calculateAFF(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength, double armMass, double[] cGCoordinateRelativeToPivot, double voltsPerTorque) {
+    double passiveTorque = calculateArmTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength, armMass, cGCoordinateRelativeToPivot);
+    double demandedTorque = -passiveTorque;
 
-  public double calculateAFF(double[] armCG, double kArmAngle, boolean kRedirected, double[] kSpringMountCoordinate, double[] kSpringRedirectCoordinate, double kSpringRestLength, double[] kCBCoordinate, double kSpringConstant, double[] transmissionData) {
-    double[] cG = armCG;
-    double armAngle = kArmAngle;
-    boolean redirected = kRedirected;
-    double[] springMountCoordinate = kSpringMountCoordinate;
-    double[] springRedirectCoordinate = kSpringRedirectCoordinate;
-    double springRestLength = kSpringRestLength;
-    double[] kcBCoordinate = kCBCoordinate;
-    double springConstant = kSpringConstant;
-
-    double torque = calculateArmTorque(cG, armAngle, redirected, springMountCoordinate, springRedirectCoordinate, springRestLength, kcBCoordinate, springConstant);
-    double torqueCoefficient = calculateTorqueCoefficient(transmissionData);
-
-    double voltage = torque * torqueCoefficient;
-
+    double voltage = demandedTorque * voltsPerTorque;
     return voltage;
   }
-  public double calculateTorqueCoefficient(double[] transmissionData) {
-    double rateOfChangeTWithRespectToV = transmissionData[0];
-    double efficiency = transmissionData[1];
-    double numberOfMotors = transmissionData[2];
-    double gearRatio = transmissionData[3];
+  private double calculateArmTorque(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength, double armMass, double[] cGCoordinateRelativeToPivot) {
+    double counterBalanceTorque = calculateCounterBalanceTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength);
+    double gravityTorque = calculateGravityTorque(armMass, cGCoordinateRelativeToPivot);
 
-    return (1/rateOfChangeTWithRespectToV) * (1/efficiency) * (1/numberOfMotors) * (1/gearRatio);
+    return counterBalanceTorque - gravityTorque;
   }
-  public double calculateArmTorque(double[] cG, double kArmAngle, boolean kRedirected, double[] kSpringMountCoordinate, double[] kSpringRedirectCoordinate, double kSpringRestLength, double[] kCBCoordinate, double kSpringConstant) {
-    double cGX = cG[0];
-    double cGY = cG[1];
-    double cGMass = cG[2];
+  private double calculateCounterBalanceTorque(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength) {    
+    double springEndDistanceFromPivot = calculateMagnitude(defaultSpringEndCoordinateRelativeToPivot[0], defaultSpringEndCoordinateRelativeToPivot[1]);
+    double[] springStartCoordinate = defaultSpringStartCoordinateRelativeToPivot;
+    double[] springEndCoordinate = calculateRotateCoordinate(defaultSpringEndCoordinateRelativeToPivot, armAngle);
+    double[] currentSpringVector = subtractCoordinates(springEndCoordinate, springStartCoordinate);
 
-    double armAngle = kArmAngle;
-    boolean redirected = kRedirected;
-    double[] springMountCoordinate = kSpringMountCoordinate;
-    double[] springRedirectCoordinate = kSpringRedirectCoordinate;
-    double springRestLength = kSpringRestLength;
-    double[] kcBCoordinate = kCBCoordinate;
-    double springConstant = kSpringConstant;
+    double springCurrentAngle = MathUtil.angleModulus(new Rotation2d(currentSpringVector[0], currentSpringVector[1]).getRadians());
+    double springEndAngle = MathUtil.angleModulus(new Rotation2d(springEndCoordinate[0], springEndCoordinate[1]).getRadians());
+    double approachAngle = springEndAngle - springCurrentAngle;
 
-    double cGAngle = calculateCGAngleRad(cG);
-    double cGDist = Math.hypot(cGX, cGY);
+    double currentSpringLength = calculateMagnitude(currentSpringVector[0], currentSpringVector[1]);
+    double displacement = currentSpringLength - restingSpringLength;
+    double grossForce = displacement * springConstant;
+    double realForce = grossForce * Math.sin(approachAngle);
+    double cBTorque = realForce * springEndDistanceFromPivot;
 
-    double gravityTorque = calculateGravityTorque(cGAngle, cGMass, cGDist);
-    double counterBalanceTorque = calculateCounterBalanceTorque(armAngle, redirected, springMountCoordinate, springRedirectCoordinate, springRestLength, kcBCoordinate, springConstant);
+    return cBTorque;
+  }
+  private double calculateGravityTorque(double armMass, double[] cGCoordinateRelativeToPivot) {
+    double cGDistance = calculateMagnitude(cGCoordinateRelativeToPivot[0], cGCoordinateRelativeToPivot[1]);
+    double cGAngleRelativeToFloor = MathUtil.angleModulus(new Rotation2d(cGCoordinateRelativeToPivot[0], cGCoordinateRelativeToPivot[1]).getRadians());
+    double realForce = armMass * Math.cos(cGAngleRelativeToFloor);
+    double gravityTorque = realForce * cGDistance;
 
-    return gravityTorque - counterBalanceTorque;
+    return gravityTorque;
   }
-  public double calculateCGAngleRad(double[] cG) {
-    return new Rotation2d(cG[0], cG[1]).getRadians();
+  private double[] calculateCoordinateSum(double[] coordinateOne, double[] coordinateTwo) {
+    double newCoordinateX = coordinateOne[0] + coordinateTwo[0];
+    double newCoordinateY = coordinateOne[1] + coordinateTwo[1];
+
+    double[] newCoordinate = {newCoordinateX, newCoordinateY};
+
+    return newCoordinate;
   }
-  public double[] sumCGCoordinates (double[] origin, double[] point) {
-    return new double[] {point[0] + origin[0], point[1] + origin[1], point[2]};
+  private double[] calculateCoordinateWeightedAverage(double[] coordinateOne, double weightOne, double[] coordinateTwo, double weightTwo) {
+    double magnitude = calculateMagnitude(weightOne, weightTwo);
+
+    double newCoordinateX = (weightOne * coordinateOne[0] + weightTwo * coordinateTwo[0])/magnitude;
+    double newCoordinateY = (weightOne * coordinateOne[1] + weightTwo * coordinateTwo[1])/magnitude;
+
+    double[] newCoordinate = {newCoordinateX, newCoordinateY};
+
+    return newCoordinate;
   }
-  public double[] calculateFusedCG(double[] cGOne, double[] cGTwo) {
-    double magnitude = calculateMagnitude(cGOne[2], cGTwo[2]);
-    return new double[] {((cGOne[2]/magnitude) * cGOne[0]) + ((cGTwo[2]/magnitude) * cGTwo[0]),
-            ((cGOne[2]/magnitude) * cGOne[1]) + ((cGTwo[2]/magnitude) * cGTwo[1]),
-            cGOne[2] + cGTwo[2]};
-  }
-  public double calculateMagnitude(double valueOne, double valueTwo) {
+  private double calculateMagnitude(double valueOne, double valueTwo) {
     return Math.sqrt(Math.pow(valueOne, 2) + Math.pow(valueTwo, 2));
   }
-  public double calculateGravityTorque(double cGAngleRad, double massLb, double cGDistanceIn) {
-    return Math.cos(cGAngleRad) * massLb * cGDistanceIn;
+  private double[] calculateRotateCoordinate(double[] coordinate, double angle) {
+    double magnitude = calculateMagnitude(coordinate[0], coordinate[1]);
+    double originalDirection = MathUtil.angleModulus(new Rotation2d(coordinate[0], coordinate[1]).getRadians());
+    Rotation2d newDirection = new Rotation2d(originalDirection + angle);
+    double rotatedCoordinateX = newDirection.getCos() * magnitude;
+    double rotatedCoordinateY = newDirection.getSin() * magnitude;
+    double[] rotatedCoordinate = {rotatedCoordinateX, rotatedCoordinateY};
+    return rotatedCoordinate;
   }
-
-  public double[] subtractCoordinates(double[] coordinate, double[] origin) { //difference between two coordinates as a coordinate
+  private double[] subtractCoordinates(double[] coordinate, double[] origin) { //difference between two coordinates as a coordinate
     double coordinateX = coordinate[0];
     double coordinateY = coordinate[1];
 
@@ -286,21 +254,7 @@ public class Grabber extends SubsystemBase {
 
     return new double[] {x, y};
   }
-
-  public double[] sumCoordinates(double[] coordinate, double[] origin) { //difference between two coordinates as a coordinate
-    double coordinateX = coordinate[0];
-    double coordinateY = coordinate[1];
-
-    double originX = origin[0];
-    double originY = origin[1];
-
-    double x = coordinateX + originX;
-    double y = coordinateY + originY;
-
-    return new double[] {x, y};
-  }
-
-  public double calculateCoordinateMagnitude(double[] coordinate) {
+  private double calculateCoordinateMagnitude(double[] coordinate) {
     double x = coordinate[0];
     double y = coordinate[1];
 
@@ -330,20 +284,12 @@ public class Grabber extends SubsystemBase {
     return new double[] {theta, omega};
   }
 
-  public double calculateLawOfCosines(double clockwiseAdjacentLength, double oppositeLength, double counterclockwiseAdjacentLength) {
+  private double calculateLawOfCosines(double clockwiseAdjacentLength, double oppositeLength, double counterclockwiseAdjacentLength) {
     double a = clockwiseAdjacentLength;
     double b = oppositeLength;
     double c = counterclockwiseAdjacentLength;
     return Math.acos((Math.pow(a, 2) + Math.pow(c, 2) - Math.pow(b, 2)) / (2*a*c));
   }
-
-  public double getStageOneAFF() {
-    return stageOneAFF;
-  }
-  public double getStageTwoAFF() {
-    return stageTwoAFF;
-  }
-
 
   @Override
   public void periodic() {

@@ -21,35 +21,31 @@ public class StageOneSub extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
   private double setpointRad;
-  private double kCG[];
-  private double kCB[];
-  private double cG[];
   private double angle;
-  private double kTransmissionData[];
   private double AFF;
-  private double kLength;
-  private double kPivotCoordinate[];
-  private boolean kRedirected;
-  private double kSpringMountCoordinate[];
-  private double kSpringRedirectCoordinate[];
-  private double kSpringRestLength;
-  private double kCBCoordinate[];
-  private double kSpringConstant;
+  private double length;
+  private double springConstant;
   private double kEncoderRatio;
+  private double mass;
+  private double[] defaultCGCoordinateRelativeToPivot;
+  private double[] defaultSpringStartCoordinateRelativeToPivot;
+  private double[] defaultSpringEndCoordinateRelativeToPivot;
+  private double restingSpringLength;
+  private double voltsPerTorque;
+  private double[] pivotCoordinate;
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
-    kCG = ArmConstants.stageOneCG;
-    kTransmissionData = ArmConstants.stageOneTransmissionData;
-    kLength = ArmConstants.stageOneLength;
-    kPivotCoordinate = ArmConstants.stageOnePivotCoordinate;
-    kRedirected = ArmConstants.stageOneRedirected;
-    kSpringMountCoordinate = ArmConstants.stageOneSpringMountCoordinate;
-    kSpringRedirectCoordinate = ArmConstants.stageOneSpringRedirectCoordinate;
-    kSpringRestLength = ArmConstants.stageOneSpringRestLength;
-    kCBCoordinate = ArmConstants.stageOneCBCoordinate;
-    kSpringConstant = ArmConstants.stageOneSpringConstant; 
+    length = ArmConstants.stageOneLength;
+    springConstant = ArmConstants.stageOneSpringConstant; 
     kEncoderRatio = ArmConstants.stageOneEncoderRatio; 
+    mass = ArmConstants.stageOneMass; 
+    defaultCGCoordinateRelativeToPivot = ArmConstants.stageOneDefaultCGCoordinateRelativeToPivot;
+    defaultSpringStartCoordinateRelativeToPivot = ArmConstants.stageOneDefaultSpringStartCoordinateRelativeToPivot;
+    defaultSpringEndCoordinateRelativeToPivot = ArmConstants.stageOneDefaultSpringEndCoordinateRelativeToPivot;
+    restingSpringLength = ArmConstants.stageOneRestingSpringLength;
+    voltsPerTorque = ArmConstants.stageOneOutputVoltsPerTorque;
+    pivotCoordinate = ArmConstants.stageOnePivotCoordinate;
 
     armMotorPrimary = new TalonSRX(ArmConstants.STAGE_ONE_MOTOR_RIGHT_ID);
     armMotorSecondary = new TalonSRX(ArmConstants.STAGE_ONE_MOTOR_LEFT_ID);
@@ -79,42 +75,39 @@ public class StageOneSub extends SubsystemBase {
     double ticks = getEncoder();
     angle = calculateAngle(ticks);
     SmartDashboard.putNumber("stageOneAngle", angle);
-
-    cG = calculateCG();
-  }
-  public double[] getCG() {
-    return cG;
   }
   public double getLength() {
-    return kLength;
-  }
-  public double[] getTransmissionData() {
-    return kTransmissionData;
-  }
-  public double[] getPivotCoordinate() {
-    return kPivotCoordinate;
+    return length;
   }
   public double getAngle() {
     return angle;
   }
-  public boolean getRedirected() {
-    return kRedirected;
-  }
-  public double[] getSpringMountCoordinate() {
-    return kSpringMountCoordinate;
-  }
-  public double[] getSpringRedirectCoordinate() {
-    return kSpringRedirectCoordinate;
-  }
-  public double getSpringRestLength() {
-    return kSpringRestLength;
-  }
-  public double[] getkCBCoordinate() {
-    return kCBCoordinate;
-  }
   public double getSpringConstant() {
-    return kSpringConstant;
+    return springConstant;
   }
+  public double getMass() {
+    return mass;
+  }
+  public double[] getDefaultCGCoordinateRelativeToPivot() {
+    return defaultCGCoordinateRelativeToPivot;
+  }
+  public double[] getDefaultSpringStartCoordinateRelativeToPivot() {
+    return defaultSpringStartCoordinateRelativeToPivot;
+  }
+  public double[] getDefaultSpringEndCoordinateRelativeToPivot() {
+    return defaultSpringEndCoordinateRelativeToPivot;
+  }
+  public double getRestingSpringLength() {
+    return restingSpringLength;
+  }
+  public double getVoltsPerTorque() {
+    return voltsPerTorque;
+  }
+  public double[] getPivotCoordinate() {
+    return pivotCoordinate;
+  }
+  
+  
   //Setters
   public void setEncoderPosition(double position){
     armMotorPrimary.setSelectedSensorPosition(position);
@@ -141,17 +134,6 @@ public class StageOneSub extends SubsystemBase {
   private double calculateRadiansFromTicks(double ticks) {
     double radians = ticks / ArmConstants.STAGE_ONE_ENCODER_TICKS_TO_RADIANS;
     return radians;
-  }
-  private double[] calculateCG() {
-    /*
-    x, y -> angle
-    angle + angle
-    angle -> x, y
-    x, y * magnitude
-    */
-    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
-    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
   }
 
   @Override

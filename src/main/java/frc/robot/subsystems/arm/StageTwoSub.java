@@ -24,36 +24,30 @@ public class StageTwoSub extends SubsystemBase {
   private SparkMaxPIDController pidController;
   private RelativeEncoder encoder;
 
-  private double setpointRad;
+  private double setpoint;
   private double AFF;
-  private double cG[];
-  private double kCG[];
-  private double kCB[];
-  private double kTransmissionData[];
   private double angle;
-  private double kLength;
-  private double kPivotCoordinate[];
-  private boolean kRedirected;
-  private double kSpringMountCoordinate[];
-  private double kSpringRedirectCoordinate[];
-  private double kSpringRestLength;
-  private double kCBCoordinate[];
-  private double kSpringConstant;
+  private double length;
+  private double springConstant;
   private double kEncoderRatio;
+  private double mass;
+  private double[] defaultCGCoordinateRelativeToPivot;
+  private double[] defaultSpringStartCoordinateRelativeToPivot;
+  private double[] defaultSpringEndCoordinateRelativeToPivot;
+  private double restingSpringLength;
+  private double voltsPerTorque;
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
-    kCG = ArmConstants.stageTwoCG;
-    kTransmissionData = ArmConstants.stageTwoTransmissionData;
-    kLength = ArmConstants.stageTwoLength;
-    kPivotCoordinate = ArmConstants.stageTwoPivotCoordinate;
-    kRedirected = ArmConstants.stageTwoRedirected;
-    kSpringMountCoordinate = ArmConstants.stageTwoSpringMountCoordinate;
-    kSpringRedirectCoordinate = ArmConstants.stageTwoSpringRedirectCoordinate;
-    kSpringRestLength = ArmConstants.stageTwoSpringRestLength;
-    kCBCoordinate = ArmConstants.stageTwoCBCoordinate;
-    kSpringConstant = ArmConstants.stageTwoSpringConstant;
-    kEncoderRatio = ArmConstants.stageTwoEncoderRatio;  
+    length = ArmConstants.stageTwoLength;
+    springConstant = ArmConstants.stageTwoSpringConstant;
+    kEncoderRatio = ArmConstants.stageTwoEncoderRatio;
+    mass = ArmConstants.stageTwoMass; 
+    defaultCGCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultCGCoordinateRelativeToPivot;
+    defaultSpringStartCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultSpringStartCoordinateRelativeToPivot;
+    defaultSpringEndCoordinateRelativeToPivot = ArmConstants.stageTwoDefaultSpringEndCoordinateRelativeToPivot;
+    restingSpringLength = ArmConstants.stageTwoRestingSpringLength;
+    voltsPerTorque = ArmConstants.stageTwoOutputVoltsPerTorque;
 
     armMotorPrimary = new CANSparkMax(ArmConstants.STAGE_TWO_MOTOR_LEFT_CHANNEL, CANSparkMaxLowLevel.MotorType.kBrushless); //"right" motor
     //armMotorPrimary.clearFaults();
@@ -110,58 +104,38 @@ public class StageTwoSub extends SubsystemBase {
     double ticks = getEncoder();
     angle = calculateAngle(ticks);
     SmartDashboard.putNumber("stageTwoAngle", angle);
-
-    cG = calculateCG();
-  }
-
-
-  private double[] calculateCG() {
-    /*
-    x, y -> angle
-    angle + angle
-    angle -> x, y
-    x, y * magnitude
-    */
-    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
-    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
-  }
-  public double[] getCG() {
-    return cG;
   }
   public double getLength() {
-    return kLength;
-  }
-  public double[] getTransmissionData() {
-    return kTransmissionData;
+    return length;
   }
   public double getAngle() {
     return angle;
   }
-  public boolean getRedirected() {
-    return kRedirected;
-  }
-  public double[] getSpringMountCoordinate() {
-    return kSpringMountCoordinate;
-  }
-  public double[] getSpringRedirectCoordinate() {
-    return kSpringRedirectCoordinate;
-  }
-  public double getSpringRestLength() {
-    return kSpringRestLength;
-  }
-  public double[] getkCBCoordinate() {
-    return kCBCoordinate;
-  }
   public double getSpringConstant() {
-    return kSpringConstant;
+    return springConstant;
   }
+  public double getMass() {
+    return mass;
+  }
+  public double[] getdefaultCGCoordinateRelativeToPivot() {
+    return defaultCGCoordinateRelativeToPivot;
+  }
+  public double[] getDefaultSpringStartCoordinateRelativeToPivot() {
+    return defaultSpringStartCoordinateRelativeToPivot;
+  }
+  public double[] getDefaultSpringEndCoordinateRelativeToPivot() {
+    return defaultSpringEndCoordinateRelativeToPivot;
+  }
+  public double getRestingSpringLength() {
+    return restingSpringLength;
+  }
+  public double getVoltsPerTorque() {
+    return voltsPerTorque;
+  }
+  
 
   public void setAFF(double AFF) {
     this.AFF = AFF;
-  }
-  public double[] getPivotCoordinate() {
-    return kPivotCoordinate;
   }
   void setArmPositionRad(double setpoint){
     //pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
@@ -181,7 +155,7 @@ public class StageTwoSub extends SubsystemBase {
   @Override
   public void periodic() {
     calculateStageData();
-    setArmPositionRad(setpointRad);
+    setArmPositionRad(setpoint);
     SmartDashboard.putNumber("stageTwoAFF", AFF);
     // This method will be called once per scheduler run
     //armMotorPrimary.set(TalonSRXControlMode.PercentOutput,pid.calculate(getAbsoluteEncoderRad())); //replace this with internal PID
