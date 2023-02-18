@@ -39,6 +39,8 @@ Pose2d efPose = new Pose2d();
         createAndStartPathingThread();
         SmartDashboard.putNumber("EFPivotX",0);
         SmartDashboard.putNumber("EFPivotY",0.3);
+        SmartDashboard.putNumber("EFDesiredX",0.6);
+        SmartDashboard.putNumber("EFDesiredY",0.075);
     }
     private void createAndStartPathingThread(){
         pathingThread =
@@ -49,13 +51,13 @@ Pose2d efPose = new Pose2d();
                                     double startTime = Timer.getFPGATimestamp()*1000;
                                     //    if(Timer.getFPGATimestamp()-engageTime> 10)
                                     //        disengageNav(); //disengage if engaged for >10s
-                                    SmartDashboard.putBoolean("hello joshua",true);
+
                                     updateNavPoses();
                                     
                                     double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                     SmartDashboard.putNumber("EFpathingCompTime",compTime);
                                     telemetrySub.updateNavPoses(navPoses);
-                                    SmartDashboard.putBoolean("isItWorking?",true);
+
                                     Thread.sleep(minPathingDelay);
                                 }
                             } catch (InterruptedException e) {throw new RuntimeException(e);}
@@ -77,12 +79,12 @@ Pose2d efPose = new Pose2d();
         if(outNavPoses.length<1)
             return;
         boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,efPose)<Constants.PathingConstants.recalcThreshold;
-        SmartDashboard.putBoolean("here1",true);
+
         if(getPathLengthFromArm(outNavPoses)> getPathLengthFromArm(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
             //    SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
             return;
         }
-        SmartDashboard.putBoolean("here2",true);
+
 
         lastUsedPose = efPose;
         navPoses.clear();
@@ -113,12 +115,13 @@ Pose2d efPose = new Pose2d();
 
     public void periodic(){
         updatePivotPoint(new Point2D.Double(SmartDashboard.getNumber("EFPivotX",0),SmartDashboard.getNumber("EFPivotY",0)));
-
+        desiredPose = new Pose2d(SmartDashboard.getNumber("EFDesiredX",0.6),SmartDashboard.getNumber("EFDesiredY",0.075),Rotation2d.fromDegrees(0));
+        telemetrySub.updateDestinationPose(desiredPose);
     }
 
     private void createBarriers(){
         fieldLines.clear();
-      //  fieldLines.add(new FieldLine(new Line2D.Double(-15,0,15,0),true,new Scalar(100,100,100))); //ground
+        fieldLines.add(new FieldLine(new Line2D.Double(-15,0,15,0),true,new Scalar(100,100,100))); //ground
         fieldLines.add(new FieldLine(new Line2D.Double(-BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN))); //bumper top
         fieldLines.add(new FieldLine(new Line2D.Double(-BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,-BUMPER_X_FROM_ORIGIN,0))); //bumper left
         fieldLines.add(new FieldLine(new Line2D.Double(BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,BUMPER_X_FROM_ORIGIN,0))); //bumper right
@@ -135,7 +138,8 @@ Pose2d efPose = new Pose2d();
     }
 
     public  boolean barrierOnLine(Line2D.Double line){
-        //make it relative to the EF pivot point
+        //shift the line to check from the center of the box. The pivot point to pivot point is what's being passed in
+        line.setLine(line.getX1() + CENTER_OFFSET_FROM_PIVOT_POINT_X, line.getY1() + CENTER_OFFSET_FROM_PIVOT_POINT_Y, line.getX2() + CENTER_OFFSET_FROM_PIVOT_POINT_X, line.getY2() + CENTER_OFFSET_FROM_PIVOT_POINT_Y);
 
         double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
         double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
@@ -195,7 +199,7 @@ Pose2d efPose = new Pose2d();
     public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth, double startTime, double timeout){
         if(Timer.getFPGATimestamp() - startTime >timeout)
             return new Pose2d[]{};
-        myPose = new Pose2d(myPose.getX() - CENTER_OFFSET_FROM_PIVOT_POINT_X, myPose.getY() - CENTER_OFFSET_FROM_PIVOT_POINT_Y, myPose.getRotation());
+     //   myPose = new Pose2d(myPose.getX() + CENTER_OFFSET_FROM_PIVOT_POINT_X, myPose.getY() + CENTER_OFFSET_FROM_PIVOT_POINT_Y, myPose.getRotation());
 
         int[] randIndexes = MB_Math.randomIndexes(cornerPoints.size());
         if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
@@ -245,9 +249,11 @@ Pose2d efPose = new Pose2d();
         cornerPoints.clear();
 
         cornerPoints.add(new Pose2d(0.6,0.3,Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(1.5,1.5,Rotation2d.fromDegrees(0)));
 
 
         telemetrySub.updateCornerPoints(cornerPoints);
     }
+
 
 }

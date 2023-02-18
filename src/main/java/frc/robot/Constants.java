@@ -70,8 +70,8 @@ public final class Constants {
 
         public static final int maxRecursionDepth = 3;
         public static final double lineDistIterator = 0.5;
-        public static final double maxLineDist = 0;
-        public static final int moveAngles = 0;
+        public static final double maxLineDist = 1;
+        public static final int moveAngles = 4;
 
         public static final int minPathingDelay = 10;
 
