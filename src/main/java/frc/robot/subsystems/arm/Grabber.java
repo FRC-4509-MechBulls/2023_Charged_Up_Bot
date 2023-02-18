@@ -41,6 +41,8 @@ public class Grabber extends SubsystemBase {
     this.stageTwoSub = stageTwoSub;
     this.endEffectorSubsystem = endEffectorSubsystem;
     this.stateController = stateController;
+    SmartDashboard.putNumber("stageTwoEfficiency", ArmConstants.stageTwoEfficiency);
+    SmartDashboard.putNumber("stageOneEfficiency", ArmConstants.stageOneEfficiency);
   }
   //random???
   public void setArmPosition(ArmModes armMode){
@@ -118,8 +120,12 @@ public class Grabber extends SubsystemBase {
     double stageOneSpringConstant = stageOneSub.getSpringConstant();
     double stageTwoRestingSpringLength = stageTwoSub.getRestingSpringLength();
     double stageOneRestingSpringLength = stageOneSub.getRestingSpringLength();
+    /*
     double stageTwoVoltsPerTorque = stageTwoSub.getVoltsPerTorque();
     double stageOneVoltsPerTorque = stageOneSub.getVoltsPerTorque();
+    */
+    double stageTwoVoltsPerTorque = ArmConstants.stageTwoMotorVoltsPerTorque * (1/ArmConstants.stageTwoRatio) * (1/ArmConstants.stageTwoNumberOfMotors) * (1/SmartDashboard.getNumber("stageTwoEfficiency", ArmConstants.stageTwoEfficiency));
+    double stageOneVoltsPerTorque = ArmConstants.stageOneMotorVoltsPerTorque * (1/ArmConstants.stageOneRatio) * (1/ArmConstants.stageOneNumberOfMotors) * (1/SmartDashboard.getNumber("stageOneEfficiency", ArmConstants.stageOneEfficiency));
 
     double stageOneMass = stageOneSub.getMass();
     double stageTwoMass = stageTwoSub.getMass();
