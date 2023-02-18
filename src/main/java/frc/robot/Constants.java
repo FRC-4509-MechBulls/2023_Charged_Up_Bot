@@ -61,43 +61,12 @@ public final class Constants {
     }
 
     public static final class ArmConstants{
-        public static final double stageOne_kP = 0.0; //undecided
-        public static final double stageOne_kI = 0; //undecided
-        public static final double stageOne_kD = 0; //undecided
-
-        public static final double stageTwo_kP = 0.0; //undecided
-        public static final double stageTwo_kI = 0; //undecided
-        public static final double stageTwo_kD = 0; //undecided
-
         public static final double magEncoderCountsPerRotation = 4096;
-        public static final double revEncoderCountsPerRotation = 2048;
         public static final double radiansPerRotation = 2 * Math.PI;
-
         public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
-
-        public static final int STAGE_ONE_MOTOR_LEFT_ID = 11; 
-        public static final int STAGE_ONE_MOTOR_RIGHT_ID = 12; 
-
-        public static final boolean STAGE_ONE_ENCODER_REVERSED = false; //undecided
-
-        public static final double STAGE_ONE_LIMIT_SWITCH_ANGLE_RAD = Units.degreesToRadians(45); //undecided
-
-        public static final int STAGE_TWO_MOTOR_LEFT_CHANNEL = 1;
-        public static final int STAGE_TWO_MOTOR_RIGHT_CHANNEL = 2;
-
-        public static final boolean STAGE_TWO_ENCODER_REVERSED = false; //undecided
-
-        public static final double STAGE_TWO_LIMIT_SWITCH_ANGLE_RAD = Units.degreesToRadians(-90); //undecided
-
-        public static final double[] intakingConesUprightArmPos = {0,0}; //undecided
-        public static final double[] intakingConesFallenArmPos = {0,0}; //undecided
-        public static final double[] intakingCubesArmPos = {0,0}; //undecided
-        public static final double[] holdingArmPos = {0,0}; //undecided
-        public static final double[] aimingArmPos = {0,0}; //undecided
-        public static final double[] placingArmPosOne = {0,0}; //undecided
-        public static final double[] placingArmPosTwo = {0,0}; //undecided
-        public static final double[] placingArmPosThree = {0,0}; //undecided
-
+        public static final double stageOneLimitSwitchAngle = Units.degreesToRadians(45); //undecided
+        public static final int stageOneTalonLeftID = 11;
+        public static final int stageOneTalonRightID = 12;
         public static final double[] stageOneDefaultCGCoordinateRelativeToPivot = {6, 0};
         public static final double stageOneLength = 28.75;
         public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
@@ -125,7 +94,14 @@ public final class Constants {
         public static final double stageOneContinuousCurrentLimit = 20;
         public static final double stageOnePeakCurrentLimit = 40;
         public static final double stageOnePeakCurrentTime = 500;
+        public static final double stageOne_kP = 0.0; //undecided
+        public static final double stageOne_kI = 0; //undecided
+        public static final double stageOne_kD = 0; //undecided
 
+        public static final double revEncoderCountsPerRotation = 2048;
+        public static final double stageTwoLimitSwitchAngle = Units.degreesToRadians(-90); //undecided
+        public static final int stageTwoSparkLeftID = 1; 
+        public static final int stageTwoSparkRightID = 2; 
         public static final double[] stageTwoDefaultCGCoordinateRelativeToPivot = {10.9, 0};
         public static final double stageTwoLength = 28.75;
         public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
@@ -153,9 +129,22 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-175);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
+        public static final double stageTwo_kP = 0.0; //undecided
+        public static final double stageTwo_kI = 0; //undecided
+        public static final double stageTwo_kD = 0; //undecided
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;
+
+        //???
+        public static final double[] intakingConesUprightArmPos = {0,0}; //undecided
+        public static final double[] intakingConesFallenArmPos = {0,0}; //undecided
+        public static final double[] intakingCubesArmPos = {0,0}; //undecided
+        public static final double[] holdingArmPos = {0,0}; //undecided
+        public static final double[] aimingArmPos = {0,0}; //undecided
+        public static final double[] placingArmPosOne = {0,0}; //undecided
+        public static final double[] placingArmPosTwo = {0,0}; //undecided
+        public static final double[] placingArmPosThree = {0,0}; //undecided
 
         public static final double[] placingConeArmPosOne = {0,0}; //undecided
         public static final double[] placingConeArmPosTwo = {0,0}; //undecided
