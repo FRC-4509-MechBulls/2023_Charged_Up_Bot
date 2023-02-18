@@ -20,9 +20,8 @@ public class EFSub extends SubsystemBase {
   private TalonSRX efMotorTop;
   private TalonSRX efMotorBottom;
 
-  private double kCG[];
-  private double cG[];
-  private double angle;
+  private double[] cGCoordinateRelativeToPivot;
+  private double mass;
 
   /** Creates a new EndEffectorSubsystem. */
   public EFSub() {
@@ -51,25 +50,17 @@ public class EFSub extends SubsystemBase {
       10, // Trigger Threshold (amp)
       0)); // Trigger Threshold Time(s)
     
-    kCG = ArmConstants.endEffectorCG;
+      cGCoordinateRelativeToPivot = ArmConstants.eFCGCoordinateRelativeToPivot;
+      mass = ArmConstants.eFMass;
   }
 
   public void calculateStageData() {
-    cG = calculateCG();
   }
-  public double[] calculateCG() {
-    /*
-    x, y -> angle
-    angle + angle
-    angle -> x, y
-    x, y * magnitude
-    */
-    Rotation2d cGAngle = new Rotation2d(new Rotation2d(kCG[0], kCG[1]).getRadians() + angle);
-    double magnitude = Math.sqrt(Math.pow(kCG[0], 2) + Math.pow(kCG[1], 2));
-    return new double[] {cGAngle.getCos() * magnitude, cGAngle.getSin() * magnitude, kCG[2]};
+  public double[] getCGCoordinateRelativeToPivot() {
+    return cGCoordinateRelativeToPivot;
   }
-  public double[] getCG() {
-    return cG;
+  public double getMass() {
+    return mass;
   }
 
   public void intakeCone() {

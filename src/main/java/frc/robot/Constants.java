@@ -61,35 +61,82 @@ public final class Constants {
     }
 
     public static final class ArmConstants{
+        public static final double magEncoderCountsPerRotation = 4096;
+        public static final double radiansPerRotation = 2 * Math.PI;
+        public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
+        public static final double stageOneLimitSwitchAngle = Units.degreesToRadians(45); //undecided
+        public static final int stageOneTalonLeftID = 11;
+        public static final int stageOneTalonRightID = 12;
+        public static final double[] stageOneDefaultCGCoordinateRelativeToPivot = {6, 0};
+        public static final double stageOneLength = 28.75;
+        public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
+        public static final double stageOneEncoderRatio = 54.0/16;
+        public static final double stageOneStartAngle = Units.degreesToRadians(52.0);
+        public static final double stageOne12VStallTorque = 21.3302973;
+        public static final double stageOneMotorVoltsPerTorque = (12.0/stageOne12VStallTorque);
+        public static final double stageOneRatio = 421.88;
+        public static final double stageOneNumberOfMotors = 2;
+        public static final double stageOneEfficiency = 0.46;
+        public static final double stageOneOutputVoltsPerTorque = stageOneMotorVoltsPerTorque * (1/stageOneRatio) * (1/stageOneNumberOfMotors) * (1/stageOneEfficiency);
+        public static final double stageOneGrossSpringLength = 24.375;
+        public static final double stageOneExcessSpringLength = 6.5;
+        public static final double stageOneSpringWindings = 4;
+        public static final double stageOneSpringQuantity = 2;
+        public static final double stageOneSpringConstantCoefficient = 8.4;
+        public static final double stageOneRealSpringLength = stageOneGrossSpringLength - stageOneExcessSpringLength;
+        public static final double stageOneRestingSpringLength = stageOneRealSpringLength / stageOneSpringWindings;
+        public static final double stageOneSpringConstant = stageOneSpringConstantCoefficient * (1/stageOneRestingSpringLength) * stageOneSpringWindings * stageOneSpringQuantity;
+        public static final double stageOneMass = 10.64;
+        public static final double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = {-0.7145, 8.125};
+        public static final double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = {12.14, 1.723};
+        public static final double stageOneSoftLimitForward = Units.degreesToRadians(55);
+        public static final double stageOneSoftLimitReverse = Units.degreesToRadians(25);
+        public static final double stageOneContinuousCurrentLimit = 20;
+        public static final double stageOnePeakCurrentLimit = 40;
+        public static final double stageOnePeakCurrentTime = 500;
         public static final double stageOne_kP = 0.0; //undecided
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
 
+        public static final double revEncoderCountsPerRotation = 2048;
+        public static final double stageTwoLimitSwitchAngle = Units.degreesToRadians(-90); //undecided
+        public static final int stageTwoSparkLeftID = 1; 
+        public static final int stageTwoSparkRightID = 2; 
+        public static final double[] stageTwoDefaultCGCoordinateRelativeToPivot = {10.9, 0};
+        public static final double stageTwoLength = 28.75;
+        public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
+        public static final double stageTwoEncoderRatio = 32.0/22;
+        public static final int stageTwoMPRatio = 5*5*4;
+        public static final double stageTwoStartAngle = Units.degreesToRadians(-90.0-52.0);
+        public static final double stageTwo12VStallTorque = 29.03044612;
+        public static final double stageTwoMotorVoltsPerTorque = (12.0/stageTwo12VStallTorque);
+        public static final double stageTwoRatio = 145.45;
+        public static final double stageTwoNumberOfMotors = 2;
+        public static final double stageTwoEfficiency = 0.46;
+        public static final double stageTwoOutputVoltsPerTorque = stageTwoMotorVoltsPerTorque * (1/stageTwoRatio) * (1/stageTwoNumberOfMotors) * (1/stageTwoEfficiency);
+        public static final double stageTwoGrossSpringLength = 56;
+        public static final double stageTwoExcessSpringLength = 7;
+        public static final double stageTwoSpringWindings = 6;
+        public static final double stageTwoSpringQuantity = 1;
+        public static final double stageTwoSpringConstantCoefficient = 8.4;
+        public static final double stageTwoRealSpringLength = stageTwoGrossSpringLength - stageTwoExcessSpringLength;
+        public static final double stageTwoRestingSpringLength = stageTwoRealSpringLength / stageTwoSpringWindings;
+        public static final double stageTwoSpringConstant = stageTwoSpringConstantCoefficient * (1/stageTwoRestingSpringLength) * stageTwoSpringWindings * stageTwoSpringQuantity;
+        public static final double stageTwoMass = 2.0;
+        public static final double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = {-16.61, 1.723};
+        public static final double[] stageTwoDefaultSpringEndCoordinateRelativeToPivot = {-3.5, 0.3895};
+        public static final double stageTwoSoftLimitForward = Units.degreesToRadians(-20);
+        public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-175);
+        public static final int stageTwoSmartCurrentLimit = 40;
+        public static final double stageTwoSecondaryCurrentLimit = 60;
         public static final double stageTwo_kP = 0.0; //undecided
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 
-        public static final double magEncoderCountsPerRotation = 4096;
-        public static final double revEncoderCountsPerRotation = 2048;
-        public static final double radiansPerRotation = 2 * Math.PI;
+        public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
+        public static final double eFMass = 12.7;
 
-        public static final double STAGE_ONE_ENCODER_TICKS_TO_RADIANS =  1/(radiansPerRotation/magEncoderCountsPerRotation);
-        public static final double STAGE_TWO_ENCODER_TICKS_TO_RADIANS = 2 * Math.PI; //uncalculated
-
-        public static final int STAGE_ONE_MOTOR_LEFT_ID = 11; 
-        public static final int STAGE_ONE_MOTOR_RIGHT_ID = 12; 
-
-        public static final boolean STAGE_ONE_ENCODER_REVERSED = false; //undecided
-
-        public static final double STAGE_ONE_LIMIT_SWITCH_ANGLE_RAD = Units.degreesToRadians(45); //undecided
-
-        public static final int STAGE_TWO_MOTOR_LEFT_CHANNEL = 1;
-        public static final int STAGE_TWO_MOTOR_RIGHT_CHANNEL = 2;
-
-        public static final boolean STAGE_TWO_ENCODER_REVERSED = false; //undecided
-
-        public static final double STAGE_TWO_LIMIT_SWITCH_ANGLE_RAD = Units.degreesToRadians(-90); //undecided
-
+        //???
         public static final double[] intakingConesUprightArmPos = {0,0}; //undecided
         public static final double[] intakingConesFallenArmPos = {0,0}; //undecided
         public static final double[] intakingCubesArmPos = {0,0}; //undecided
@@ -99,34 +146,6 @@ public final class Constants {
         public static final double[] placingArmPosTwo = {0,0}; //undecided
         public static final double[] placingArmPosThree = {0,0}; //undecided
 
-        public static final double[] stageOneCG = {6, 0, 10.64};
-        public static final double[] stageOneTransmissionData = {1.0/((2.41/12)*(8.8507457916 )), 0.46, 2, 421.88}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
-        public static final double stageOneLength = 28.75;
-        public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
-        public static final boolean stageOneRedirected = false;
-        public static final double[] stageOneSpringMountCoordinate = {-0.7145, 8.125};
-        public static final double[] stageOneSpringRedirectCoordinate = {0, 0};
-        public static final double stageOneSpringRestLength = 4.46875;
-        public static final double[] stageOneCBCoordinate = {12.14, 1.723};
-        public static final double stageOneSpringConstant = 1.8797202*4*2;
-        public static final double stageOneEncoderRatio = 54.0/16;
-        public static final double stageOneStartAngle = Units.degreesToRadians(65);
-
-        public static final double[] stageTwoCG = {10.9, 0, 2};
-        public static final double[] stageTwoTransmissionData = {1.0/((3.28/12/12)*(8.8507457916 )), 0.46, 2, 145.45}; //rateOfChangeTWithRespectToV, efficiency, numberOfMotors, gearRatio
-        public static final double stageTwoLength = 28.75;
-        public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
-        public static final boolean stageTwoRedirected = false;
-        public static final double[] stageTwoSpringMountCoordinate = {-16.61, 1.723};
-        public static final double[] stageTwoSpringRedirectCoordinate = {0, 0};
-        public static final double stageTwoSpringRestLength = 8.1666666;
-        public static final double[] stageTwoCBCoordinate = {-3.5, 0.3895};
-        public static final double stageTwoSpringConstant = 1.02857151 * 6;
-        public static final double stageTwoEncoderRatio = 32.0/22;
-        public static final int stageTwoMPRatio = 5*5*4;
-        public static final double stageTwoStartAngle = Units.degreesToRadians(-160);
-
-        public static final double[] endEffectorCG = {6.75, 0.75, 12.7};
         public static final double[] placingConeArmPosOne = {0,0}; //undecided
         public static final double[] placingConeArmPosTwo = {0,0}; //undecided
         public static final double[] placingConeArmPosThree = {0,0}; //undecided
