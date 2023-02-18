@@ -155,6 +155,9 @@ public class StageTwoSub extends SubsystemBase {
   public void setSetpoint(double setpoint) {
     this.setpoint = setpoint;
   }
+  public void setSensorPosition(double position) {
+    encoder.setPosition(position);
+  }
   //util
   private void calculateStageData() {
     angle = getEncoder();
@@ -164,9 +167,6 @@ public class StageTwoSub extends SubsystemBase {
   }
   private double getEncoder() {
     return encoder.getPosition();
-  }
-  private void setSensorPosition(double position) {
-    encoder.setPosition(position);
   }
 
   @Override
