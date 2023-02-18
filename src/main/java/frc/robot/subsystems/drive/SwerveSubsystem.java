@@ -360,9 +360,9 @@ SwerveModulePosition[] simModulePositions;
     updateOdometry();
 
     double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
-    SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
-    SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
-    SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
+   // SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
+  //  SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
+   // SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
 
     //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
     //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
@@ -418,7 +418,7 @@ newY-=camYOffset;
 
     out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;
     out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;  //sin and cos used to have +rotationDiff for some reason
-    SmartDashboard.putNumber("rotationDiff",rotationDiff);
+  //  SmartDashboard.putNumber("rotationDiff",rotationDiff);
     out[2] =  rotationDiff * DriveConstants.turnPValue;
 
     if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;

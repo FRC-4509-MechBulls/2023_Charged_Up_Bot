@@ -6,10 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldLine;
-import frc.robot.lib.FieldObjects.FieldTag;
-import frc.robot.lib.FieldObjects.Node;
 import frc.robot.lib.LineIntersection;
-import frc.robot.subsystems.state.StateControllerSubsystem;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -18,10 +15,9 @@ import org.opencv.imgproc.Imgproc;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-
-import static frc.robot.Constants.EFPathingConstants.*;
 
 public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
 
@@ -30,8 +26,11 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
     }
         Point2D.Double pivotPoint = new Point2D.Double(1,1);
 
-    Point2D.Double efCenter = new Point2D.Double(1,1);
+    Pose2d efPose = new Pose2d();
     ArrayList<FieldLine> fieldLines = new ArrayList<>();
+    ArrayList<Pose2d> cornerPoints = new ArrayList<>();
+    ArrayList<Pose2d> navPoses = new ArrayList<>();
+    Pose2d destinationPose = new Pose2d(0.6,0.075,Rotation2d.fromDegrees(0));
 
     protected void drawThings(Mat mat){
         clearScreen(mat);
@@ -39,16 +38,23 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
         drawOrigin(mat);
         drawEFPivotPointAndBox(mat);
         drawBarriers(mat);
+        drawCornerPoints(mat);
+        drawNavigationLines(mat);
         dontTouchMe = false;
     }
 
 
     void drawEFPivotPointAndBox(Mat mat){
-        Point pivotPointMeters = metersPosToPixelsPos(new Point(this.pivotPoint.x,this.pivotPoint.y));
-        Imgproc.circle(mat,pivotPointMeters,3,new Scalar(255,255,255),2); //pivot point
+        Point pivotPointPixels = metersPosToPixelsPos(new Point(this.pivotPoint.x,this.pivotPoint.y));
+        Imgproc.circle(mat,pivotPointPixels,3,new Scalar(255,255,255),2); //pivot point
 
-        Point efCenterMeters = metersPosToPixelsPos(new Point(efCenter.x,efCenter.y));
-        drawRotatedRect(mat,efCenterMeters.x,efCenterMeters.y,EF_WIDTH,EF_HEIGHT,Rotation2d.fromDegrees(0),new Scalar(0,0,255),2);
+        SmartDashboard.putString("efPose","x:"+efPose.getX()+", y:"+efPose.getY());
+
+        drawRotatedRectMeters(mat, efPose.getX(),efPose.getY(),Constants.EFPathingConstants.EF_WIDTH,Constants.EFPathingConstants.EF_HEIGHT,efPose.getRotation(),new Scalar(0,0,255),2);
+
+        /** Draw nav end pose*/
+        drawRotatedRectMeters(mat, destinationPose.getX()+Constants.EFPathingConstants.CENTER_OFFSET_FROM_PIVOT_POINT_X, destinationPose.getY()+Constants.EFPathingConstants.CENTER_OFFSET_FROM_PIVOT_POINT_Y, Constants.EFPathingConstants.EF_WIDTH,Constants.EFPathingConstants.EF_HEIGHT,destinationPose.getRotation(), new Scalar(0,0,100), 2);
+
     }
 
     void drawOrigin(Mat mat){
@@ -62,6 +68,29 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
             double[] pt2Pix = metersPosToPixelsPos(new double[] {line.getLine().getX2(), line.getLine().getY2()});
             Imgproc.line(mat,new Point(pt1Pix[0],pt1Pix[1]),new Point(pt2Pix[0],pt2Pix[1]), line.getColor(),4);
         }
+    }
+
+    void drawCornerPoints(Mat mat){
+        /** Draw corner points */
+        for(Pose2d pose : cornerPoints)
+            Imgproc.circle(mat, metersPosToPixelsPos(new Point(pose.getX(), pose.getY())),2,new Scalar(100,100,100),2);
+
+    }
+
+void drawNavigationLines(Mat mat){
+    /** Draw navigation lines */
+    for(int i = 1; i<navPoses.size(); i++)
+        Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
+}
+
+void updateNavPoses(ArrayList<Pose2d> navPoses){
+        if(dontTouchMe) return;
+        SmartDashboard.putNumber("ef_updateNavPoseTime", Timer.getFPGATimestamp());
+     this.navPoses = navPoses;
+}
+    public void updateDestinationPose(Pose2d newPose){
+        if(dontTouchMe) return;
+        destinationPose = newPose;
     }
 
     public void drawArrow(Mat mat, double x, double y, double angle, double length, Scalar color){
@@ -79,7 +108,7 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
         Imgproc.line(mat, new Point(endX,endY),new Point(branch2X,branch2Y),color,2);
     }
 
-    public void drawRotatedRect(Mat mat, double centerX, double centerY, double width, double height, Rotation2d angle, Scalar color, int thickness){
+    public void drawRotatedRectMeters(Mat mat, double centerX, double centerY, double width, double height, Rotation2d angle, Scalar color, int thickness){
         double ang1 = Math.atan2(width, height);
         double ang2 = Math.atan2(width, -height);
         double cornerDist = Math.sqrt(Math.pow(width/2,2) + Math.pow(height/2,2));
@@ -214,10 +243,24 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
             this.fieldLines.add(line);
     }
 
+    public void updatePivotPoint(Point2D.Double pivotPoint){
+        this.pivotPoint = pivotPoint;
+    }
+    public void updateEFPose(Pose2d efPose){
+        this.efPose = efPose;
+    }
+
     public void init() {
     //    SmartDashboard.putNumber("TCamX",0);
     //    SmartDashboard.putNumber("TCamY",0);
 
+    }
+
+    public void updateCornerPoints(ArrayList<Pose2d> cornerPoints){
+        if(dontTouchMe) return;
+        this.cornerPoints.clear();
+        for(Pose2d pose : cornerPoints)
+            this.cornerPoints.add(pose);
     }
 
     public void periodic(){
