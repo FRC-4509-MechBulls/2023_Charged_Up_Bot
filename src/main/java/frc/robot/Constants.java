@@ -157,7 +157,6 @@ public final class Constants {
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;
 
-        //???
         public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(9.84971), Units.inchesToMeters(10.951019)}; //undecided
         public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(18.72625), Units.inchesToMeters(3.6)}; //undecided
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(15.001167), Units.inchesToMeters(10.85000)}; //undecided
