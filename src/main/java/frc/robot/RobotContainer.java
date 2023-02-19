@@ -47,7 +47,7 @@ public class RobotContainer {
   private final StageOneSub stageOneSub = new StageOneSub();
   private final StageTwoSub stageTwoSub = new StageTwoSub();
   private final EFSub efSub = new EFSub();
-  private final Grabber grabberSubsystem = new Grabber(stageOneSub,stageTwoSub,efSub,stateControllerSubsystem);
+  private final Grabber grabberSubsystem = new Grabber(stageOneSub, stageTwoSub, efSub, stateControllerSubsystem, efNavSystem);
 
     private final MB_AutoCommandChooser autoChooser = new MB_AutoCommandChooser(navigationField,swerveSubsystem);
 

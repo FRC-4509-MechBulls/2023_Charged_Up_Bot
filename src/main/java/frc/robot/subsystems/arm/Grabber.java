@@ -9,9 +9,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MB_Math;
+import frc.robot.subsystems.nav.EFNavSystem;
 import frc.robot.subsystems.state.StateControllerSubsystem;
 
 import static frc.robot.Constants.ArmConstants;
+
+import java.awt.geom.Point2D;
 
 
 public class Grabber extends SubsystemBase {
@@ -20,6 +23,7 @@ public class Grabber extends SubsystemBase {
   StageOneSub stageOneSub; //refactor this to armStageOneSubsystem >:(
   StageTwoSub stageTwoSub;
   EFSub endEffectorSubsystem;
+  EFNavSystem eFNavSystem;
 
   private double stageOneAFF;
   private double stageTwoAFF;
@@ -36,11 +40,12 @@ public class Grabber extends SubsystemBase {
   private ArmModes desiredArmMode = ArmModes.HOLDING;
 
   /** Creates a new Grabber. */
-  public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController) {
+  public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController, EFNavSystem eFNavSystem) {
     this.stageOneSub = stageOneSub;
     this.stageTwoSub = stageTwoSub;
     this.endEffectorSubsystem = endEffectorSubsystem;
     this.stateController = stateController;
+    this.eFNavSystem = eFNavSystem;
   }
   //random???
   public void setArmPosition(ArmModes armMode){
@@ -107,7 +112,7 @@ public class Grabber extends SubsystemBase {
   }
   //getters
   //util
-  public void calculateArmData() {
+  private void calculateGrabberData() {
     double stageTwoArmAngle = stageTwoSub.getAngle();
     double stageOneArmAngle = stageOneSub.getAngle();
     double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = stageTwoSub.getDefaultSpringStartCoordinateRelativeToPivot();
@@ -211,11 +216,13 @@ public class Grabber extends SubsystemBase {
 
     return gravityTorque;
   }
-  private void updateArmData() {
+  private void updateGrabberData() {
     stageOneSub.setAFF(stageOneAFF);
     stageTwoSub.setAFF(stageTwoAFF);
     stageOneSub.setSetpoint(setpointAlphaTheta[0]);
     stageTwoSub.setSetpoint(setpointAlphaTheta[1]);
+
+    eFNavSystem.updatePivotPoint(new Point2D.Double(eFPosition[0], eFPosition[1]));
   }
   private double[] calculateCoordinateSum(double[] coordinateOne, double[] coordinateTwo) {
     double newCoordinateX = coordinateOne[0] + coordinateTwo[0];
@@ -296,8 +303,8 @@ public class Grabber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    calculateArmData();
-    updateArmData();
+    calculateGrabberData();
+    updateGrabberData();
     setEndEffectorMode(stateController.getEFMode()); //???
    // setDesiredArmAndEFModes(stateController.getArmMode(), ); //???
     //???
