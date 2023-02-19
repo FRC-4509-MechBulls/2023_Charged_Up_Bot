@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
@@ -44,6 +45,7 @@ public class StageOneSub extends SubsystemBase {
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
+    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -156,13 +158,15 @@ public class StageOneSub extends SubsystemBase {
     angle = getEncoder();
   }
   private void setArmPosition(){
-    armMotorPrimary.set(TalonSRXControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, (AFF/12));
+    //armMotorPrimary.set(TalonSRXControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, (AFF/12));
+    armMotorPrimary.set(TalonSRXControlMode.Position, Units.degreesToRadians(45), DemandType.ArbitraryFeedForward, (AFF/12));
   }
   private double getEncoder() {
     return armMotorPrimary.getSelectedSensorPosition();
   }
   @Override
   public void periodic() {
+    armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP),1000);
     calculateStageData();
     setArmPosition();
   }

@@ -43,6 +43,7 @@ public class StageTwoSub extends SubsystemBase {
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
+    SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -163,7 +164,8 @@ public class StageTwoSub extends SubsystemBase {
     angle = getEncoder();
   }
   private void setArmPosition(){
-    pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+    //pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+    pidController.setReference(Units.degreesToRadians(-90), CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoder() {
     return encoder.getPosition();
@@ -171,6 +173,7 @@ public class StageTwoSub extends SubsystemBase {
 
   @Override
   public void periodic() {
+    pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP));
     calculateStageData();
     setArmPosition();
   }
