@@ -157,23 +157,18 @@ public final class Constants {
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;
 
-        //???
-        public static final double[] intakingConesUprightArmPos = {0,0}; //undecided
-        public static final double[] intakingConesFallenArmPos = {0,0}; //undecided
-        public static final double[] intakingCubesArmPos = {0,0}; //undecided
-        public static final double[] holdingArmPos = {0,0}; //undecided
-        public static final double[] aimingArmPos = {0,0}; //undecided
-        public static final double[] placingArmPosOne = {0,0}; //undecided
-        public static final double[] placingArmPosTwo = {0,0}; //undecided
-        public static final double[] placingArmPosThree = {0,0}; //undecided
+        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(9.84971), Units.inchesToMeters(10.951019)}; //undecided
+        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(18.72625), Units.inchesToMeters(3.6)}; //undecided
+        public static final double[] intakingCubesArmPos = {Units.inchesToMeters(15.001167), Units.inchesToMeters(10.85000)}; //undecided
+        public static final double[] holdingArmPos = {Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)}; //undecided
 
-        public static final double[] placingConeArmPosOne = {0,0}; //undecided
-        public static final double[] placingConeArmPosTwo = {0,0}; //undecided
-        public static final double[] placingConeArmPosThree = {0,0}; //undecided
+        public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //undecided
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(22.80887), Units.inchesToMeters(38.174883)}; //undecided
+        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(39.854341), Units.inchesToMeters(49.39670)}; //undecided
 
-        public static final double[] placingCubeArmPosOne = {0,0}; //undecided
-        public static final double[] placingCubeArmPosTwo = {0,0}; //undecided
-        public static final double[] placingCubeArmPosThree = {0,0}; //undecided
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(2.40714), Units.inchesToMeters(12.767167)}; //undecided
+        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(14.938901), Units.inchesToMeters(23.556361)}; //undecided
+        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(32.348569), Units.inchesToMeters(34.207880)}; //undecided
 
         public static final double angleToleranceToUpdateEF = 0.5;
     }
