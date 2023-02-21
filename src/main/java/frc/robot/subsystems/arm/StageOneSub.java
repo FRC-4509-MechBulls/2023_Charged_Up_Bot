@@ -45,12 +45,12 @@ public class StageOneSub extends SubsystemBase {
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
-    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
     configMotorControllers();
     configEncoder();
+    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
   }
   //Config
   private void instantiateConstants() {
@@ -159,6 +159,7 @@ public class StageOneSub extends SubsystemBase {
   public void calculateStageData() {
     angle = getEncoder();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
+    SmartDashboard.putNumber("stageOneSetpoint", Units.radiansToDegrees(calculateOutputFromEncoder(armMotorPrimary.getClosedLoopTarget(0))));
   }
   public double calculateOutputFromEncoder(double encoder) {
     double radians = encoder * ArmConstants.stageOneEncoderTicksToRadians;
@@ -176,8 +177,8 @@ public class StageOneSub extends SubsystemBase {
     double output = setpoint;
     double encoder = calculateEncoderFromOutput(output);
 
-    //armMotorPrimary.set(TalonSRXControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, (AFF/12));
-    armMotorPrimary.set(TalonSRXControlMode.Position, Units.degreesToRadians(45), DemandType.ArbitraryFeedForward, (AFF/12));
+    //armMotorPrimary.set(TalonSRXControlMode.Position, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
+    armMotorPrimary.set(TalonSRXControlMode.Position, calculateEncoderFromOutput(Units.degreesToRadians(45)), DemandType.ArbitraryFeedForward, (AFF/12));
   }
   private double getEncoder() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();

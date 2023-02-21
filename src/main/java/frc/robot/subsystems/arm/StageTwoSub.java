@@ -43,7 +43,6 @@ public class StageTwoSub extends SubsystemBase {
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
-    SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -52,6 +51,7 @@ public class StageTwoSub extends SubsystemBase {
     configMotorControllers();
     configPIDController();
     burnConfigs();
+    SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
   }
   //config
   private void instantiateConstants() {

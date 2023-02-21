@@ -86,8 +86,8 @@ public class RobotContainer {
       Trigger stageOneZeroTrigger = new Trigger(stageOneLimitSwitch::get);
       Trigger stageTwoZeroTrigger = new Trigger(stageTwoLimitSwitch::get);
 
-      stageOneZeroTrigger.onTrue(new InstantCommand(()->stageOneSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchAngle)));
-      stageTwoZeroTrigger.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchAngle)));
+      //stageOneZeroTrigger.onTrue(new InstantCommand(()->stageOneSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchAngle)));
+      //stageTwoZeroTrigger.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchAngle)));
 
     //inputs
 //    SmartDashboard.putNumber("x1",0);
