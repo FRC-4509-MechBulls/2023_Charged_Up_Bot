@@ -23,7 +23,7 @@ public class Grabber extends SubsystemBase {
 
   private double stageOneAFF;
   private double stageTwoAFF;
-  private double[] setpointXY;
+  private double[] setpointXY = {1, 1};
   private double[] setpointAlphaTheta;
   private double[] eFPosition;
 
