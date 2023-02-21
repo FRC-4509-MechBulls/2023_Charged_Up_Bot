@@ -162,7 +162,7 @@ public class StageTwoSub extends SubsystemBase {
   //util
   private void calculateStageData() {
     angle = getEncoder();
-    SmartDashboard.putNumber("stageTwoAngle", angle);
+    SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
   }
   private void setArmPosition(){
     //pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
