@@ -70,8 +70,8 @@ public class StageTwoSub extends SubsystemBase {
     secondaryCurrentLimit = ArmConstants.stageTwoSecondaryCurrentLimit;  
   }
   private void instantiateMotorControllers() {
-    armMotorPrimary = new CANSparkMax(ArmConstants.stageOneTalonLeftID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    armMotorSecondary = new CANSparkMax(ArmConstants.stageOneTalonRightID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    armMotorPrimary = new CANSparkMax(ArmConstants.stageTwoSparkLeftID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    armMotorSecondary = new CANSparkMax(ArmConstants.stageTwoSparkRightID, CANSparkMaxLowLevel.MotorType.kBrushless);
   }
   private void resetMotorControllers() {
     armMotorPrimary.restoreFactoryDefaults();

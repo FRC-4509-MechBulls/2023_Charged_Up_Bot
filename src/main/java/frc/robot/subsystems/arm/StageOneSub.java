@@ -71,8 +71,8 @@ public class StageOneSub extends SubsystemBase {
     peakCurrentTime = ArmConstants.stageOnePeakCurrentTime;
   }
   private void instantiateMotorControllers() {
-    armMotorPrimary = new TalonSRX(ArmConstants.stageTwoSparkRightID);
-    armMotorSecondary = new TalonSRX(ArmConstants.stageTwoSparkLeftID);
+    armMotorPrimary = new TalonSRX(ArmConstants.stageOneTalonRightID);
+    armMotorSecondary = new TalonSRX(ArmConstants.stageOneTalonLeftID);
   }
   private void resetMotorControllers() {
     armMotorPrimary.configFactoryDefault(1000);
