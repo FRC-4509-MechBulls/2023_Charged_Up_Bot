@@ -128,7 +128,7 @@ public final class Constants {
         public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
         public static final double stageTwoEncoderRatio = 32.0/22;
         public static final int stageTwoMPRatio = 5*5*4;
-        public static final double stageTwoStartAngle = Units.degreesToRadians(-90.0-stageOneStartAngle);
+        public static final double stageTwoStartAngle = Units.degreesToRadians(-90.0-Units.radiansToDegrees(stageOneStartAngle));
         public static final double stageTwo12VStallTorque = 29.03044612;
         public static final double stageTwoMotorVoltsPerTorque = (12.0/stageTwo12VStallTorque);
         public static final double stageTwoRatio = 145.45;
