@@ -154,6 +154,7 @@ public class StageOneSub extends SubsystemBase {
   //Util
   public void calculateStageData() {
     angle = getEncoder();
+    SmartDashboard.putNumber("stageOneAngle", angle);
   }
   private void setArmPosition(){
     armMotorPrimary.set(TalonSRXControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, (AFF/12));
