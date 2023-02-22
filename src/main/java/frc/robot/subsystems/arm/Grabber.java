@@ -5,6 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -111,6 +112,9 @@ public class Grabber extends SubsystemBase {
   //setters
   public void setSetpointXY(double[] coordinate){
     setpointXY = coordinate;
+  }
+  public void setSetpointXY(Pose2d coordinate){
+   setSetpointXY(new double[]{coordinate.getX(), coordinate.getY()});
   }
   //getters
   //util
@@ -308,12 +312,19 @@ public class Grabber extends SubsystemBase {
 
   @Override
   public void periodic() {
+    eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
+    setSetpointXY(eFNavSystem.getNextNavPoint());
     calculateGrabberData();
     updateGrabberData();
-    setEndEffectorMode(stateController.getEFMode()); //???
-    double[] testingThetaPhi = convertGrabberXYToThetaPhi(eFPosition);
-    SmartDashboard.putNumber("theta", Units.radiansToDegrees(testingThetaPhi[0]));
-    SmartDashboard.putNumber("phi", Units.radiansToDegrees(testingThetaPhi[1]));
+
+    setEndEffectorMode(stateController.getEFMode());
+    //setEndEffectorMode(stateController.getEFMode()); //???
+
+    //double[] testingThetaPhi = convertGrabberXYToThetaPhi(eFPosition);
+    //SmartDashboard.putNumber("theta", Units.radiansToDegrees(testingThetaPhi[0]));
+    //SmartDashboard.putNumber("phi", Units.radiansToDegrees(testingThetaPhi[1]));
+
+
    // setDesiredArmAndEFModes(stateController.getArmMode(), ); //???
     //???
     /*
