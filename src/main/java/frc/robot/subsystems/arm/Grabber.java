@@ -224,7 +224,10 @@ public class Grabber extends SubsystemBase {
     stageOneSub.setSetpoint(setpointThetaPhi[0]);
     stageTwoSub.setSetpoint(setpointThetaPhi[1]);
 
-    eFNavSystem.updatePivotPoint(new Point2D.Double(eFPosition[0], eFPosition[1]));
+    double eFPositionMetricX = Units.inchesToMeters(eFPosition[0]);
+    double eFPositionMetricY = Units.inchesToMeters(eFPosition[1]);
+
+    eFNavSystem.updatePivotPoint(new Point2D.Double(eFPositionMetricX, eFPositionMetricY));
   }
   private double[] calculateCoordinateSum(double[] coordinateOne, double[] coordinateTwo) {
     double newCoordinateX = coordinateOne[0] + coordinateTwo[0];
