@@ -86,7 +86,6 @@ public class StageOneSub extends SubsystemBase {
     armMotorPrimary.configReverseSoftLimitEnable(true, 1000);
     //encoder
     armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
-    armMotorPrimary.configSelectedFeedbackCoefficient(ArmConstants.stageOneEncoderTicksToRadians / encoderRatio);
     //PID
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
@@ -149,17 +148,38 @@ public class StageOneSub extends SubsystemBase {
     this.setpoint = setpoint;
   }
   public void setSensorPosition(double position){
-    armMotorPrimary.setSelectedSensorPosition(position, 0, 1000);
+    double radians = position;
+    double encoder = calculateEncoderFromOutput(radians);
+
+    armMotorPrimary.setSelectedSensorPosition(encoder, 0, 1000);
   }
   //Util
   public void calculateStageData() {
     angle = getEncoder();
   }
+  public double calculateOutputFromEncoder(double encoder) {
+    double radians = encoder * ArmConstants.stageOneEncoderTicksToRadians;
+    double output = radians / encoderRatio;
+
+    return output;
+  }
+  public double calculateEncoderFromOutput(double output) {
+    double ticks = output / ArmConstants.stageOneEncoderTicksToRadians;
+    double encoder = ticks * encoderRatio;
+
+    return encoder;
+  }
   private void setArmPosition(){
-    armMotorPrimary.set(TalonSRXControlMode.Position, setpoint, DemandType.ArbitraryFeedForward, (AFF/12));
+    double output = setpoint;
+    double encoder = calculateEncoderFromOutput(output);
+
+    armMotorPrimary.set(TalonSRXControlMode.Position, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
   }
   private double getEncoder() {
-    return armMotorPrimary.getSelectedSensorPosition();
+    double encoder = armMotorPrimary.getSelectedSensorPosition();
+    double output = calculateOutputFromEncoder(encoder);
+
+    return output;
   }
   @Override
   public void periodic() {
