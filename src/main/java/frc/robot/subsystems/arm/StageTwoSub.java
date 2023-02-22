@@ -174,5 +174,6 @@ public class StageTwoSub extends SubsystemBase {
   public void periodic() {
     calculateStageData();
     setArmPosition();
+    SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
   }
 }

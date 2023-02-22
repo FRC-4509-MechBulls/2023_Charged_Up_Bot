@@ -292,7 +292,7 @@ public class Grabber extends SubsystemBase {
     double totalLength = calculateCoordinateMagnitude(coordinateRelativeToPivotOne); //overall length
 
     double theta = referenceAngle + calculateLawOfCosines(stageOneLength, stageTwoLength, totalLength);
-    double phi = referenceAngle + calculateLawOfCosines(stageTwoLength, totalLength, stageOneLength);
+    double phi = -(Units.degreesToRadians(180) - calculateLawOfCosines(stageTwoLength, totalLength, stageOneLength));
 
     return new double[] {theta, phi};
   }

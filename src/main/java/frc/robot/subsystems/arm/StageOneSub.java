@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
@@ -189,5 +190,6 @@ public class StageOneSub extends SubsystemBase {
   public void periodic() {
     calculateStageData();
     setArmPosition();
+    SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
   }
 }
