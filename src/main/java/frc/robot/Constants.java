@@ -97,7 +97,7 @@ public final class Constants {
         public static final double stageOneMotorVoltsPerTorque = (12.0/stageOne12VStallTorque);
         public static final double stageOneRatio = 421.88;
         public static final double stageOneNumberOfMotors = 2;
-        public static final double stageOneEfficiency = 0.46;
+        public static final double stageOneEfficiency = 1;
         public static final double stageOneOutputVoltsPerTorque = stageOneMotorVoltsPerTorque * (1/stageOneRatio) * (1/stageOneNumberOfMotors) * (1/stageOneEfficiency);
         public static final double stageOneGrossSpringLength = 24.375;
         public static final double stageOneExcessSpringLength = 6.5;
@@ -133,7 +133,7 @@ public final class Constants {
         public static final double stageTwoMotorVoltsPerTorque = (12.0/stageTwo12VStallTorque);
         public static final double stageTwoRatio = 145.45;
         public static final double stageTwoNumberOfMotors = 2;
-        public static final double stageTwoEfficiency = 0.46;
+        public static final double stageTwoEfficiency = 1;
         public static final double stageTwoOutputVoltsPerTorque = stageTwoMotorVoltsPerTorque * (1/stageTwoRatio) * (1/stageTwoNumberOfMotors) * (1/stageTwoEfficiency);
         public static final double stageTwoGrossSpringLength = 56;
         public static final double stageTwoExcessSpringLength = 7;
@@ -150,7 +150,7 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-175);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
-        public static final double stageTwo_kP = 0.0; //undecided
+        public static final double stageTwo_kP = 1;
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 

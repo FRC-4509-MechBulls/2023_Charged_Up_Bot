@@ -49,6 +49,7 @@ public class StageOneSub extends SubsystemBase {
     resetMotorControllers();
     configMotorControllers();
     configEncoder();
+    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
   }
   //Config
   private void instantiateConstants() {

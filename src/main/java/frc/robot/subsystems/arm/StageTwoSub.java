@@ -51,6 +51,7 @@ public class StageTwoSub extends SubsystemBase {
     configMotorControllers();
     configPIDController();
     burnConfigs();
+    SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
   }
   //config
   private void instantiateConstants() {
