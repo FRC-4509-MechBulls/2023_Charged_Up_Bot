@@ -164,7 +164,7 @@ public class StageTwoSub extends SubsystemBase {
     angle = getEncoder();
   }
   private void setArmPosition(){
-    //pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+    pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoder() {
     return encoder.getPosition();
