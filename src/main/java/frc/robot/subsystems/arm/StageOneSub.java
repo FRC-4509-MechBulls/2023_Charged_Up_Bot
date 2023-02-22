@@ -177,7 +177,7 @@ public class StageOneSub extends SubsystemBase {
     double output = setpoint;
     double encoder = calculateEncoderFromOutput(output);
 
-    armMotorPrimary.set(TalonSRXControlMode.Position, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
+    //armMotorPrimary.set(TalonSRXControlMode.Position, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
   }
   private double getEncoder() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();

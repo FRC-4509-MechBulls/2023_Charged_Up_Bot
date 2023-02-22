@@ -6,6 +6,7 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MB_Math;
@@ -28,7 +29,7 @@ public class Grabber extends SubsystemBase {
   private double stageOneAFF;
   private double stageTwoAFF;
   private double[] setpointXY = {1, 1};
-  private double[] setpointAlphaTheta;
+  private double[] setpointThetaPhi;
   private double[] eFPosition;
 
   public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
@@ -169,7 +170,7 @@ public class Grabber extends SubsystemBase {
                               stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
                               stageOneVoltsPerTorque);
 
-    setpointAlphaTheta = convertGrabberXYToThetaOmega(setpointXY);
+    setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
 
     double[] stageOnePivotCoordinateRelativeToOrigin = ArmConstants.stageOnePivotCoordinate;
     double[] stageTwoPivotCoordinateRelativeToOrigin = calculateCoordinateSum(stageOnePivotCoordinateRelativeToOrigin, stageTwoPivotCoordinateRelativeToStageOnePivot);
@@ -219,8 +220,8 @@ public class Grabber extends SubsystemBase {
   private void updateGrabberData() {
     stageOneSub.setAFF(stageOneAFF);
     stageTwoSub.setAFF(stageTwoAFF);
-    stageOneSub.setSetpoint(setpointAlphaTheta[0]);
-    stageTwoSub.setSetpoint(setpointAlphaTheta[1]);
+    stageOneSub.setSetpoint(setpointThetaPhi[0]);
+    stageTwoSub.setSetpoint(setpointThetaPhi[1]);
 
     eFNavSystem.updatePivotPoint(new Point2D.Double(eFPosition[0], eFPosition[1]));
   }
@@ -274,7 +275,7 @@ public class Grabber extends SubsystemBase {
 
     return magnitude;
   }
-  private double[] convertGrabberXYToThetaOmega(double[] coordinate) {
+  private double[] convertGrabberXYToThetaPhi(double[] coordinate) {
     double[] rawCoordinate = coordinate;
 
     double[] pivotOne = stageOneSub.getPivotCoordinate();
@@ -290,9 +291,9 @@ public class Grabber extends SubsystemBase {
     double totalLength = calculateCoordinateMagnitude(coordinateRelativeToPivotOne); //overall length
 
     double theta = referenceAngle + calculateLawOfCosines(stageOneLength, stageTwoLength, totalLength);
-    double omega = referenceAngle + calculateLawOfCosines(stageTwoLength, totalLength, stageOneLength);
+    double phi = referenceAngle + calculateLawOfCosines(stageTwoLength, totalLength, stageOneLength);
 
-    return new double[] {theta, omega};
+    return new double[] {theta, phi};
   }
   private double calculateLawOfCosines(double clockwiseAdjacentLength, double oppositeLength, double counterclockwiseAdjacentLength) {
     double a = clockwiseAdjacentLength;
@@ -306,6 +307,9 @@ public class Grabber extends SubsystemBase {
     calculateGrabberData();
     updateGrabberData();
     setEndEffectorMode(stateController.getEFMode()); //???
+    double[] testingThetaPhi = convertGrabberXYToThetaPhi(eFPosition);
+    SmartDashboard.putNumber("theta", Units.radiansToDegrees(testingThetaPhi[0]));
+    SmartDashboard.putNumber("phi", Units.radiansToDegrees(testingThetaPhi[1]));
    // setDesiredArmAndEFModes(stateController.getArmMode(), ); //???
     //???
     /*
