@@ -87,10 +87,13 @@ Pose2d efPose = new Pose2d();
 
 
         lastUsedPose = efPose;
+        if(!dontTouchPoses){
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             if(i!=null)
                 navPoses.add(i);
+        }
+
         telemetrySub.updateDestinationPose(this.desiredPose);
         //    pTelemetrySub.updateNavPoses(navPoses);
     }
@@ -265,8 +268,13 @@ Pose2d efPose = new Pose2d();
     }
 
     public Pose2d getNextNavPoint(){
+        dontTouchPoses = true;
+        Pose2d out = getNextNavPointUnprotected();
+        dontTouchPoses = false;
+        return out;
+    }
+    public Pose2d getNextNavPointUnprotected(){
         if(navPoses.size()<1) return efPose;
-
         Pose2d armPose = efPose;
         while((navPoses.size()>1) &&(navPoses.get(0)==null || (Math.sqrt(Math.pow(pivotPoint.getX() - navPoses.get(0).getX(),2)+Math.pow(pivotPoint.getY() - navPoses.get(0).getY(),2))<reachedInBetweenPointThreshold)))
             if(navPoses.size()>1)
@@ -276,6 +284,16 @@ Pose2d efPose = new Pose2d();
         return efPose;
 
     }
+
+    public void updateDesiredPose(Pose2d desiredPose){
+        this.desiredPose = new Pose2d(desiredPose.getX(),desiredPose.getY(),desiredPose.getRotation());
+    }
+    public void updateDesiredPose(double[] desiredPose){
+        this.desiredPose = new Pose2d(desiredPose[0],desiredPose[1],Rotation2d.fromDegrees(0));
+    }
+
+
+    boolean dontTouchPoses = false;
 
 
 }
