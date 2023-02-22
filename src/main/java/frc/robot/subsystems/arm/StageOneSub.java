@@ -86,7 +86,7 @@ public class StageOneSub extends SubsystemBase {
     armMotorPrimary.configReverseSoftLimitEnable(true, 1000);
     //encoder
     armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
-    armMotorPrimary.configSelectedFeedbackCoefficient(ArmConstants.stageOneEncoderTicksToRadians * encoderRatio);
+    armMotorPrimary.configSelectedFeedbackCoefficient(ArmConstants.stageOneEncoderTicksToRadians / encoderRatio);
     //PID
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
@@ -149,7 +149,7 @@ public class StageOneSub extends SubsystemBase {
     this.setpoint = setpoint;
   }
   public void setSensorPosition(double position){
-    armMotorPrimary.setSelectedSensorPosition(position);
+    armMotorPrimary.setSelectedSensorPosition(position, 0, 1000);
   }
   //Util
   public void calculateStageData() {
