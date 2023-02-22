@@ -98,6 +98,9 @@ public class StageOneSub extends SubsystemBase {
     armMotorPrimary.enableVoltageCompensation(true);
     //Neutral Mode
     armMotorPrimary.setNeutralMode(NeutralMode.Coast);
+    //directionality
+    armMotorPrimary.setSensorPhase(true);
+    armMotorPrimary.setInverted(true);
     //second motor
     armMotorSecondary.follow(armMotorPrimary);
     armMotorSecondary.setInverted(InvertType.OpposeMaster);
