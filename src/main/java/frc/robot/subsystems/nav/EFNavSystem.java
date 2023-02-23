@@ -2,6 +2,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,10 +38,10 @@ Pose2d efPose = new Pose2d();
         createCornerPoints();
         telemetrySub.updateBarriers(fieldLines);
         createAndStartPathingThread();
-        SmartDashboard.putNumber("EFPivotX",0);
-        SmartDashboard.putNumber("EFPivotY",0.3);
-        SmartDashboard.putNumber("EFDesiredX",0.6);
-        SmartDashboard.putNumber("EFDesiredY",0.075);
+       // SmartDashboard.putNumber("EFPivotX",0);
+       // SmartDashboard.putNumber("EFPivotY",0.3);
+       // SmartDashboard.putNumber("EFDesiredX",0.6);
+       // SmartDashboard.putNumber("EFDesiredY",0.075);
     }
     private void createAndStartPathingThread(){
         pathingThread =
@@ -69,7 +70,9 @@ Pose2d efPose = new Pose2d();
     }
 
     Pose2d lastUsedPose = new Pose2d();
-    boolean engaged = false;
+    boolean engaged = true;
+    public void engageNav(){engaged = true;}
+    public void disengageNav(){engaged = false;}
     public void updateNavPoses(){
         boolean poseChangedOld = poseChanged;
         poseChanged = false;
@@ -78,7 +81,7 @@ Pose2d efPose = new Pose2d();
         Pose2d[] outNavPoses = findNavPoses(new Pose2d(pivotPoint.getX(),pivotPoint.getY(),Rotation2d.fromDegrees(0)),desiredPose,0,Timer.getFPGATimestamp(),5);
         if(outNavPoses.length<1)
             return;
-        boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,efPose)<Constants.PathingConstants.recalcThreshold;
+        boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,pointToPose2D(pivotPoint))<recalcThreshold;
 
         if(getPathLengthFromArm(outNavPoses)> getPathLengthFromArm(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
             //    SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
@@ -87,12 +90,19 @@ Pose2d efPose = new Pose2d();
 
 
         lastUsedPose = efPose;
+        if(!dontTouchPoses){
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             if(i!=null)
                 navPoses.add(i);
+        }
+
         telemetrySub.updateDestinationPose(this.desiredPose);
         //    pTelemetrySub.updateNavPoses(navPoses);
+    }
+
+    private Pose2d pointToPose2D(Point2D.Double in){
+        return new Pose2d(in.getX(),in.getY(),Rotation2d.fromDegrees(0));
     }
 
     private double getPathLengthFromArm(Pose2d[] path){ //getPathLengthFromBot rename
@@ -118,19 +128,19 @@ Pose2d efPose = new Pose2d();
     }
 
     public void periodic(){
-        updatePivotPoint(new Point2D.Double(SmartDashboard.getNumber("EFPivotX",0),SmartDashboard.getNumber("EFPivotY",0)));
+        //updatePivotPoint(new Point2D.Double(SmartDashboard.getNumber("EFPivotX",0),SmartDashboard.getNumber("EFPivotY",0)));
+        SmartDashboard.putBoolean("clearPathToSetpoint",barrierOnLine(new Line2D.Double(pivotPoint.getX(),pivotPoint.getY(),desiredPose.getX(),desiredPose.getY())));
+   //     SmartDashboard.putNumber("nextNavX",getNextNavPoint().getX());
+    //    SmartDashboard.putNumber("nextNavY",getNextNavPoint().getY());
 
-        SmartDashboard.putNumber("nextNavX",getNextNavPoint().getX());
-        SmartDashboard.putNumber("nextNavY",getNextNavPoint().getY());
 
-
-        desiredPose = new Pose2d(SmartDashboard.getNumber("EFDesiredX",0.6),SmartDashboard.getNumber("EFDesiredY",0.075),Rotation2d.fromDegrees(0));
+        //desiredPose = new Pose2d(SmartDashboard.getNumber("EFDesiredX",0.6),SmartDashboard.getNumber("EFDesiredY",0.075),Rotation2d.fromDegrees(0));
         telemetrySub.updateDestinationPose(desiredPose);
     }
 
     private void createBarriers(){
         fieldLines.clear();
-        fieldLines.add(new FieldLine(new Line2D.Double(-15,0,15,0),true,new Scalar(100,100,100))); //ground
+        //fieldLines.add(new FieldLine(new Line2D.Double(-15,0,15,0),true,new Scalar(100,100,100))); //ground
         fieldLines.add(new FieldLine(new Line2D.Double(-BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN))); //bumper top
         fieldLines.add(new FieldLine(new Line2D.Double(-BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,-BUMPER_X_FROM_ORIGIN,0))); //bumper left
         fieldLines.add(new FieldLine(new Line2D.Double(BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,BUMPER_X_FROM_ORIGIN,0))); //bumper right
@@ -145,10 +155,15 @@ Pose2d efPose = new Pose2d();
         telemetrySub.updatePivotPoint(this.pivotPoint);
         telemetrySub.updateEFPose(this.efPose);
     }
+    public void updatePivotPoint(double[] pivotPoint){
+        if(pivotPoint== null) return;
+        updatePivotPoint(new Point2D.Double(pivotPoint[0],pivotPoint[1]));
+    }
 
     public  boolean barrierOnLine(Line2D.Double line){
         //shift the line to check from the center of the box. The pivot point to pivot point is what's being passed in
         line.setLine(line.getX1() + CENTER_OFFSET_FROM_PIVOT_POINT_X, line.getY1() + CENTER_OFFSET_FROM_PIVOT_POINT_Y, line.getX2() + CENTER_OFFSET_FROM_PIVOT_POINT_X, line.getY2() + CENTER_OFFSET_FROM_PIVOT_POINT_Y);
+        if(Math.sqrt(Math.pow(line.getX1()-line.getX2(),2)+Math.pow(line.getY1()+line.getY2(),2))< recalcThreshold) return false;
 
         double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
         double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
@@ -257,7 +272,7 @@ Pose2d efPose = new Pose2d();
     void createCornerPoints(){
         cornerPoints.clear();
 
-        cornerPoints.add(new Pose2d(0.6,0.3,Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(Units.inchesToMeters(24),Units.inchesToMeters(16),Rotation2d.fromDegrees(0))); //24,16
         //cornerPoints.add(new Pose2d(1.5,1.5,Rotation2d.fromDegrees(0)));
 
 
@@ -265,8 +280,13 @@ Pose2d efPose = new Pose2d();
     }
 
     public Pose2d getNextNavPoint(){
+        dontTouchPoses = true;
+        Pose2d out = getNextNavPointUnprotected();
+        dontTouchPoses = false;
+        return out;
+    }
+    public Pose2d getNextNavPointUnprotected(){
         if(navPoses.size()<1) return efPose;
-
         Pose2d armPose = efPose;
         while((navPoses.size()>1) &&(navPoses.get(0)==null || (Math.sqrt(Math.pow(pivotPoint.getX() - navPoses.get(0).getX(),2)+Math.pow(pivotPoint.getY() - navPoses.get(0).getY(),2))<reachedInBetweenPointThreshold)))
             if(navPoses.size()>1)
@@ -276,6 +296,21 @@ Pose2d efPose = new Pose2d();
         return efPose;
 
     }
+
+    public void updateDesiredPose(Pose2d desiredPose){
+        this.desiredPose = new Pose2d(desiredPose.getX(),desiredPose.getY(),desiredPose.getRotation());
+        poseChanged = true;
+    }
+    public void updateDesiredPose(double[] desiredPose){
+        this.desiredPose = new Pose2d(desiredPose[0],desiredPose[1],Rotation2d.fromDegrees(0));
+        poseChanged = true;
+    }
+    public Pose2d getDesiredPose(){
+        return new Pose2d(desiredPose.getX(),desiredPose.getY(),Rotation2d.fromDegrees(0));
+    }
+
+
+    boolean dontTouchPoses = false;
 
 
 }

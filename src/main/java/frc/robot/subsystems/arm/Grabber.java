@@ -5,6 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -112,6 +113,7 @@ public class Grabber extends SubsystemBase {
   public void setSetpointXY(double[] coordinate){
     setpointXY = coordinate;
   }
+
   //getters
   //util
   private void calculateGrabberData() {
@@ -305,15 +307,46 @@ public class Grabber extends SubsystemBase {
     double c = counterclockwiseAdjacentLength;
     return Math.acos((Math.pow(a, 2) + Math.pow(c, 2) - Math.pow(b, 2)) / (2*a*c));
   }
+  public void overrideDesiredEFWait(){
+    setEndEffectorMode(desiredEFMode);
+  }
 
   @Override
   public void periodic() {
+
+    Pose2d nextNavPoint = eFNavSystem.getNextNavPoint();
+    double[] navPointInInches = new double[]{Units.metersToInches(nextNavPoint.getX()), Units.metersToInches(nextNavPoint.getY())};
+    setSetpointXY(navPointInInches);
+    SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
+    SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
+
     calculateGrabberData();
     updateGrabberData();
-    setEndEffectorMode(stateController.getEFMode()); //???
-    double[] testingThetaPhi = convertGrabberXYToThetaPhi(eFPosition);
-    SmartDashboard.putNumber("theta", Units.radiansToDegrees(testingThetaPhi[0]));
-    SmartDashboard.putNumber("phi", Units.radiansToDegrees(testingThetaPhi[1]));
+
+    double[] eFPositionButInMeters = new double[]{Units.inchesToMeters(eFPosition[0]),Units.inchesToMeters(eFPosition[1])};
+    eFNavSystem.updatePivotPoint(eFPositionButInMeters);
+    SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
+    SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
+    eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
+
+    setDesiredEFMode(stateController.getEFMode());
+
+    if(getEFMode()!= getDesiredEFMode()){
+      double distFromDest = MB_Math.dist(eFPositionButInMeters[0],eFPositionButInMeters[1],eFNavSystem.getDesiredPose().getX(),eFNavSystem.getDesiredPose().getY());
+      SmartDashboard.putNumber("distFromDest",distFromDest);
+      if(distFromDest<Units.inchesToMeters(2))
+        setEndEffectorMode(desiredEFMode);
+    }
+
+
+
+    //setEndEffectorMode(stateController.getEFMode()); //???
+
+    //double[] testingThetaPhi = convertGrabberXYToThetaPhi(eFPosition);
+    //SmartDashboard.putNumber("theta", Units.radiansToDegrees(testingThetaPhi[0]));
+    //SmartDashboard.putNumber("phi", Units.radiansToDegrees(testingThetaPhi[1]));
+
+
    // setDesiredArmAndEFModes(stateController.getArmMode(), ); //???
     //???
     /*

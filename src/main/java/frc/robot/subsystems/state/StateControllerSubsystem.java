@@ -7,6 +7,7 @@ package frc.robot.subsystems.state;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.arm.Grabber;
 
 public class StateControllerSubsystem extends SubsystemBase {
@@ -106,6 +107,8 @@ lastPlacingPOV = placingPOV;
     return Grabber.ArmModes.HOLDING;
   }
 
+  //return x and y values for the arm
+
   public Grabber.EFModes getEFMode(){
     if(agnosticGrabberMode == AgnosticGrabberMode.INTAKING){
       switch (itemType){
@@ -137,6 +140,7 @@ lastPlacingPOV = placingPOV;
   public void setAgArmToHolding(){agnosticGrabberMode = AgnosticGrabberMode.HOLDING;}
 
   public void setAgArmToPlacing(){agnosticGrabberMode = AgnosticGrabberMode.PLACING;}
+
 
   public Rotation2d allianceForwardAngle(){
     if(fmsGetter.isRedAlliance()) return Rotation2d.fromDegrees(0);
