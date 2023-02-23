@@ -85,7 +85,8 @@ public final class Constants {
         public static final double magEncoderCountsPerRotation = 4096;
         public static final double radiansPerRotation = 2 * Math.PI;
         public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
-        public static final double stageOneLimitSwitchAngle = Units.degreesToRadians(45); //undecided
+        public static final double stageOneLimitSwitchLeadingAngle = Units.degreesToRadians(45); //undecided
+        public static final double stageOneLimitSwitchTrailingAngle = Units.degreesToRadians(45); //undecided
         public static final int stageOneTalonLeftID = 11;
         public static final int stageOneTalonRightID = 12;
         public static final double[] stageOneDefaultCGCoordinateRelativeToPivot = {6, 0};
@@ -120,7 +121,8 @@ public final class Constants {
         public static final double stageOne_kD = 0; //undecided
 
         public static final double revEncoderCountsPerRotation = 2048;
-        public static final double stageTwoLimitSwitchAngle = Units.degreesToRadians(-90); //undecided
+        public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-90); //undecided
+        public static final double stageTwoLimitSwitchTrailingAngle = Units.degreesToRadians(-90); //undecided
         public static final int stageTwoSparkLeftID = 1; 
         public static final int stageTwoSparkRightID = 2; 
         public static final double[] stageTwoDefaultCGCoordinateRelativeToPivot = {10.9, 0};

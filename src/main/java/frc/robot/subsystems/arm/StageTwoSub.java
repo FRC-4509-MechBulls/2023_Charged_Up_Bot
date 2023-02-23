@@ -11,6 +11,7 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
@@ -23,6 +24,8 @@ public class StageTwoSub extends SubsystemBase {
 
   private SparkMaxPIDController pidController;
   private RelativeEncoder encoder;
+
+  private DigitalInput limitSwitch = new DigitalInput(4);
 
   private double setpoint;
   private double AFF;
@@ -40,6 +43,8 @@ public class StageTwoSub extends SubsystemBase {
   private double softLimitReverse;
   private int smartCurrentLimit;
   private double secondaryCurrentLimit;
+  private double velocity;
+  private boolean limitSwitchValue;
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
@@ -51,6 +56,7 @@ public class StageTwoSub extends SubsystemBase {
     configMotorControllers();
     configPIDController();
     burnConfigs();
+    instantiateLimitSwitch();
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
   }
   //config
@@ -84,6 +90,7 @@ public class StageTwoSub extends SubsystemBase {
   }
   private void configEncoder() {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
+    encoder.setVelocityConversionFactor(((2 * Math.PI) / encoderRatio) / 60);
     encoder.setInverted(false);
     setSensorPosition(ArmConstants.stageTwoStartAngle);
   }
@@ -121,6 +128,9 @@ public class StageTwoSub extends SubsystemBase {
     armMotorPrimary.burnFlash();
     armMotorSecondary.burnFlash();
   }
+  private void instantiateLimitSwitch() {
+    limitSwitch = new DigitalInput(5);
+  }
   //getters
   public double getLength() {
     return length;
@@ -149,6 +159,9 @@ public class StageTwoSub extends SubsystemBase {
   public double getVoltsPerTorque() {
     return voltsPerTorque;
   }
+  public boolean getLimitSwitchValue() {
+    return limitSwitchValue;
+  }
   //setters
   public void setAFF(double AFF) {
     this.AFF = AFF;
@@ -159,15 +172,26 @@ public class StageTwoSub extends SubsystemBase {
   public void setSensorPosition(double position) {
     encoder.setPosition(position);
   }
+  public double getVelocity() {
+    return velocity;
+  }
   //util
   private void calculateStageData() {
-    angle = getEncoder();
+    angle = getEncoderPosition();
+    velocity = getEncoderVelocity();
+    limitSwitchValue = getLimitSwitch();
   }
   private void setArmPosition(){
     pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
   }
-  private double getEncoder() {
+  private double getEncoderPosition() {
     return encoder.getPosition();
+  }
+  private double getEncoderVelocity() {
+    return encoder.getVelocity();
+  }
+  private boolean getLimitSwitch() {
+    return limitSwitch.get();
   }
 
   @Override

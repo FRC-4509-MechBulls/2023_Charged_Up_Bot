@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
@@ -24,6 +25,7 @@ import static frc.robot.Constants.ArmConstants;
 public class StageOneSub extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
+  private DigitalInput limitSwitch;
   private double setpoint;
   private double angle;
   private double AFF;
@@ -42,6 +44,8 @@ public class StageOneSub extends SubsystemBase {
   private double continuousCurrentLimit;
   private double peakCurrentLimit;
   private double peakCurrentTime;
+  private double velocity;
+  private boolean limitSwitchValue;
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
@@ -50,6 +54,7 @@ public class StageOneSub extends SubsystemBase {
     resetMotorControllers();
     configMotorControllers();
     configEncoder();
+    instantiateLimitSwitch();
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
   }
   //Config
@@ -114,6 +119,9 @@ public class StageOneSub extends SubsystemBase {
   private void configEncoder() {
     setSensorPosition(ArmConstants.stageOneStartAngle);
   }
+  private void instantiateLimitSwitch() {
+    limitSwitch = new DigitalInput(5);
+  }
   //Getters
   public double getLength() {
     return length;
@@ -145,6 +153,12 @@ public class StageOneSub extends SubsystemBase {
   public double[] getPivotCoordinate() {
     return pivotCoordinate;
   }
+  public double getVelocity() {
+    return velocity;
+  }
+  public boolean getLimitSwitchValue() {
+    return limitSwitchValue;
+  }
   //Setters
   public void setAFF(double AFF){
     this.AFF = AFF;
@@ -160,7 +174,9 @@ public class StageOneSub extends SubsystemBase {
   }
   //Util
   public void calculateStageData() {
-    angle = getEncoder();
+    angle = getEncoderPosition();
+    velocity = getEncoderVelocity();
+    limitSwitchValue = getLimitSwitch();
   }
   public double calculateOutputFromEncoder(double encoder) {
     double radians = encoder * ArmConstants.stageOneEncoderTicksToRadians;
@@ -180,11 +196,20 @@ public class StageOneSub extends SubsystemBase {
 
     armMotorPrimary.set(TalonSRXControlMode.Position, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
   }
-  private double getEncoder() {
+  private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
     double output = calculateOutputFromEncoder(encoder);
 
     return output;
+  }
+  private double getEncoderVelocity() {
+    double encoder = armMotorPrimary.getSelectedSensorVelocity();
+    double output = calculateOutputFromEncoder(encoder) / 10;
+
+    return output;
+  }
+  private boolean getLimitSwitch() {
+    return limitSwitch.get();
   }
   @Override
   public void periodic() {
