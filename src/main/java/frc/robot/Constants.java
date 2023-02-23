@@ -55,13 +55,13 @@ public final class Constants {
     }
 
     public static final class EFPathingConstants{
-        public static final double BUMPER_Y_FROM_ORIGIN = Units.inchesToMeters(7);
-        public static final double BUMPER_X_FROM_ORIGIN = Units.inchesToMeters(34/2);
+        public static final double BUMPER_Y_FROM_ORIGIN = Units.inchesToMeters(8); //5 real
+        public static final double BUMPER_X_FROM_ORIGIN = Units.inchesToMeters(34/2); //34/2 real
 
-        public static final double EF_WIDTH = Units.inchesToMeters(16);
-        public static final double EF_HEIGHT = Units.inchesToMeters(18);
+        public static final double EF_WIDTH = Units.inchesToMeters(17);
+        public static final double EF_HEIGHT = Units.inchesToMeters(12.5);
 
-        public static final double EF_RADIUS = Math.min(EF_WIDTH,EF_HEIGHT); //this should be fine since it doesn't rotate?
+        public static final double EF_RADIUS = Units.inchesToMeters(14.32); //this should be fine since it doesn't rotate?
 
         public static final int innerLineTestCount = 5;
 
@@ -76,7 +76,7 @@ public final class Constants {
         public static final int minPathingDelay = 10;
 
         public static final double reachedInBetweenPointThreshold = 0.05;
-
+        public static final double recalcThreshold = Units.inchesToMeters(3); // max distance to travel before recalculating trajectory
 
 
     }
@@ -157,10 +157,10 @@ public final class Constants {
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;
 
-        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(9.84971), Units.inchesToMeters(10.951019)}; //undecided
-        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(18.72625), Units.inchesToMeters(3.6)}; //undecided
-        public static final double[] intakingCubesArmPos = {Units.inchesToMeters(15.001167), Units.inchesToMeters(10.85000)}; //undecided
-        public static final double[] holdingArmPos = {Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)}; //undecided
+        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(9.84971 + 4), Units.inchesToMeters(10.951019)}; //undecided
+        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(18.72625 + 6 + 4), Units.inchesToMeters(3.6)}; //undecided
+        public static final double[] intakingCubesArmPos = {Units.inchesToMeters(15.001167 + + 4), Units.inchesToMeters(10.85000)}; //undecided
+        public static final double[] holdingArmPos = {0.315,0.324}; //undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //undecided
         public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(22.80887), Units.inchesToMeters(38.174883)}; //undecided

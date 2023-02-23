@@ -113,9 +113,7 @@ public class Grabber extends SubsystemBase {
   public void setSetpointXY(double[] coordinate){
     setpointXY = coordinate;
   }
-  public void setSetpointXY(Pose2d coordinate){
-   setSetpointXY(new double[]{coordinate.getX(), coordinate.getY()});
-  }
+
   //getters
   //util
   private void calculateGrabberData() {
@@ -312,12 +310,26 @@ public class Grabber extends SubsystemBase {
 
   @Override
   public void periodic() {
-    eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
-    setSetpointXY(eFNavSystem.getNextNavPoint());
+
+    Pose2d nextNavPoint = eFNavSystem.getNextNavPoint();
+    double[] navPointInInches = new double[]{Units.metersToInches(nextNavPoint.getX()), Units.metersToInches(nextNavPoint.getY())};
+    setSetpointXY(navPointInInches);
+    SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
+    SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
+
     calculateGrabberData();
     updateGrabberData();
 
-    setEndEffectorMode(stateController.getEFMode());
+    double[] eFPositionButInMeters = new double[]{Units.inchesToMeters(eFPosition[0]),Units.inchesToMeters(eFPosition[1])};
+    eFNavSystem.updatePivotPoint(eFPositionButInMeters);
+    SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
+    SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
+    eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
+
+    //setEndEffectorMode(stateController.getEFMode());
+
+
+
     //setEndEffectorMode(stateController.getEFMode()); //???
 
     //double[] testingThetaPhi = convertGrabberXYToThetaPhi(eFPosition);
