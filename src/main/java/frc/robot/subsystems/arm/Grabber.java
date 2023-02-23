@@ -307,6 +307,9 @@ public class Grabber extends SubsystemBase {
     double c = counterclockwiseAdjacentLength;
     return Math.acos((Math.pow(a, 2) + Math.pow(c, 2) - Math.pow(b, 2)) / (2*a*c));
   }
+  public void overrideDesiredEFWait(){
+    setEndEffectorMode(desiredEFMode);
+  }
 
   @Override
   public void periodic() {
@@ -326,7 +329,14 @@ public class Grabber extends SubsystemBase {
     SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
     eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
 
-    //setEndEffectorMode(stateController.getEFMode());
+    setDesiredEFMode(stateController.getEFMode());
+
+    if(getEFMode()!= getDesiredEFMode()){
+      double distFromDest = MB_Math.dist(eFPositionButInMeters[0],eFPositionButInMeters[1],eFNavSystem.getDesiredPose().getX(),eFNavSystem.getDesiredPose().getY());
+      SmartDashboard.putNumber("distFromDest",distFromDest);
+      if(distFromDest<Units.inchesToMeters(2))
+        setEndEffectorMode(desiredEFMode);
+    }
 
 
 

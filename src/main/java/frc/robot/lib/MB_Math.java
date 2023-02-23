@@ -49,6 +49,10 @@ public class MB_Math {
 
         }
 
+        public static double dist(double x1, double y1, double x2, double y2){
+            return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2));
+        }
+
         public static int indexWrap(int i, int max){ //keeps i within 0 to (max-1), wraps back to the beginning/end if gone too high/below zero
         if(max == 0) return 0;
         return (int)(i + Math.abs(i*(Math.floor(max))))%max;

@@ -305,6 +305,9 @@ Pose2d efPose = new Pose2d();
         this.desiredPose = new Pose2d(desiredPose[0],desiredPose[1],Rotation2d.fromDegrees(0));
         poseChanged = true;
     }
+    public Pose2d getDesiredPose(){
+        return new Pose2d(desiredPose.getX(),desiredPose.getY(),Rotation2d.fromDegrees(0));
+    }
 
 
     boolean dontTouchPoses = false;

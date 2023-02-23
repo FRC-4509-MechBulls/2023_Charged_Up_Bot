@@ -129,7 +129,8 @@ public class RobotContainer {
       new JoystickButton(driverController,XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToIntake));
       new JoystickButton(driverController,XboxController.Button.kLeftBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToHolding));
 
-    new JoystickButton(operatorController,XboxController.Button.kY.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
+      new JoystickButton(operatorController,XboxController.Button.kY.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
+      new JoystickButton(operatorController,XboxController.Button.kX.value).onTrue(new InstantCommand(grabberSubsystem::overrideDesiredEFWait));
 
 
 
