@@ -57,7 +57,6 @@ public class StageTwoSub extends SubsystemBase {
     configPIDController();
     burnConfigs();
     instantiateLimitSwitch();
-    SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
   }
   //config
   private void instantiateConstants() {

@@ -55,7 +55,6 @@ public class StageOneSub extends SubsystemBase {
     configMotorControllers();
     configEncoder();
     instantiateLimitSwitch();
-    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
   }
   //Config
   private void instantiateConstants() {
