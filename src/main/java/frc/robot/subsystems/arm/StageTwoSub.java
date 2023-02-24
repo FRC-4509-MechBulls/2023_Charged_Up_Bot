@@ -200,7 +200,7 @@ public class StageTwoSub extends SubsystemBase {
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
     SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     SmartDashboard.putNumber("stageTwoVelocity", velocity);
-    if(getLimitSwitch()) {
+    if(getLimitSwitch() && velocity > 0) {
       setSensorPosition(ArmConstants.stageTwoLimitSwitchLeadingAngle);
     }
   }
