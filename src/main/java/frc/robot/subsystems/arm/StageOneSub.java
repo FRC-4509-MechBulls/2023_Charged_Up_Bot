@@ -46,6 +46,7 @@ public class StageOneSub extends SubsystemBase {
   private double peakCurrentTime;
   private double velocity;
   private boolean limitSwitchValue;
+  private boolean lastInLimitZone = false;
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
@@ -217,5 +218,16 @@ public class StageOneSub extends SubsystemBase {
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
     SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
     SmartDashboard.putNumber("stageOneVelocity", velocity);
+    if (!getLimitSwitch()) {
+      lastInLimitZone = false;
+    }
+    if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
+      setSensorPosition(ArmConstants.stageOneLimitSwitchLeadingAngle);
+      lastInLimitZone = true;
+    }
+    if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
+      setSensorPosition(ArmConstants.stageOneLimitSwitchTrailingAngle);
+      lastInLimitZone = true;
+    }
   }
 }
