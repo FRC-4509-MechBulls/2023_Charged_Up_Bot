@@ -216,5 +216,6 @@ public class StageOneSub extends SubsystemBase {
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
     SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
+    SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
 }
