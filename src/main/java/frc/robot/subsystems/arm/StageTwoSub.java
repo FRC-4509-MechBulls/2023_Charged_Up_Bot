@@ -128,7 +128,7 @@ public class StageTwoSub extends SubsystemBase {
     armMotorSecondary.burnFlash();
   }
   private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(4);
+    limitSwitch = new DigitalInput(5);
   }
   //getters
   public double getLength() {

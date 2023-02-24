@@ -119,7 +119,7 @@ public class StageOneSub extends SubsystemBase {
     setSensorPosition(ArmConstants.stageOneStartAngle);
   }
   private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(5);
+    limitSwitch = new DigitalInput(4);
   }
   //Getters
   public double getLength() {
