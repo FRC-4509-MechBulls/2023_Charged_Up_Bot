@@ -25,7 +25,7 @@ public class StageTwoSub extends SubsystemBase {
   private SparkMaxPIDController pidController;
   private RelativeEncoder encoder;
 
-  private DigitalInput limitSwitch = new DigitalInput(4);
+  private DigitalInput limitSwitch;
 
   private double setpoint;
   private double AFF;
