@@ -128,7 +128,7 @@ public class StageTwoSub extends SubsystemBase {
     armMotorSecondary.burnFlash();
   }
   private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(5);
+    limitSwitch = new DigitalInput(4);
   }
   //getters
   public double getLength() {
@@ -190,7 +190,7 @@ public class StageTwoSub extends SubsystemBase {
     return encoder.getVelocity();
   }
   private boolean getLimitSwitch() {
-    return limitSwitch.get();
+    return !limitSwitch.get();
   }
 
   @Override

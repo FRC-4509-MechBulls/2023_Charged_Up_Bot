@@ -119,7 +119,7 @@ public class StageOneSub extends SubsystemBase {
     setSensorPosition(ArmConstants.stageOneStartAngle);
   }
   private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(4);
+    limitSwitch = new DigitalInput(5);
   }
   //Getters
   public double getLength() {
@@ -208,7 +208,7 @@ public class StageOneSub extends SubsystemBase {
     return output;
   }
   private boolean getLimitSwitch() {
-    return limitSwitch.get();
+    return !limitSwitch.get();
   }
   @Override
   public void periodic() {
