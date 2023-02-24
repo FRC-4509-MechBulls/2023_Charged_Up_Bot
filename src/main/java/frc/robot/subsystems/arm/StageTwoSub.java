@@ -45,7 +45,7 @@ public class StageTwoSub extends SubsystemBase {
   private double secondaryCurrentLimit;
   private double velocity;
   private boolean limitSwitchValue;
-  private boolean lastInLimitZone = false;
+  private boolean lastInLimitZone = true;
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {

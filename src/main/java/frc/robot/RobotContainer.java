@@ -76,14 +76,14 @@ public class RobotContainer {
     efTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
-      Trigger stageOneSwitchLeadingEdge = new Trigger(()->(stageOneSub.getLimitSwitchValue())); //&& stageOneSub.getVelocity() > 0));
+      //Trigger stageOneSwitchLeadingEdge = new Trigger(()->(stageOneSub.getLimitSwitchValue())); //&& stageOneSub.getVelocity() > 0));
       //Trigger stageOneSwitchTrailingEdge = new Trigger(()->(stageOneSub.getLimitSwitchValue() && stageOneSub.getVelocity() < 0));
-      Trigger stageTwoSwitchLeadingEdge = new Trigger(()->(stageTwoSub.getLimitSwitchValue())); //&& stageTwoSub.getVelocity() > 0));
+      //Trigger stageTwoSwitchLeadingEdge = new Trigger(()->(stageTwoSub.getLimitSwitchValue())); //&& stageTwoSub.getVelocity() > 0));
       //Trigger stageTwoSwitchTrailingEdge = new Trigger(()->(stageTwoSub.getLimitSwitchValue() && stageTwoSub.getVelocity() < 0));
 
-      stageOneSwitchLeadingEdge.onTrue(new InstantCommand(()->stageOneSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchLeadingAngle)));
+      //stageOneSwitchLeadingEdge.onTrue(new InstantCommand(()->stageOneSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchLeadingAngle)));
       //stageOneSwitchTrailingEdge.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchTrailingAngle)));
-      stageTwoSwitchLeadingEdge.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchLeadingAngle)));
+      //stageTwoSwitchLeadingEdge.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchLeadingAngle)));
       //stageTwoSwitchTrailingEdge.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchTrailingAngle)));
 
     //inputs

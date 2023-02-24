@@ -46,7 +46,7 @@ public class StageOneSub extends SubsystemBase {
   private double peakCurrentTime;
   private double velocity;
   private boolean limitSwitchValue;
-  private boolean lastInLimitZone = false;
+  private boolean lastInLimitZone = true;
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
