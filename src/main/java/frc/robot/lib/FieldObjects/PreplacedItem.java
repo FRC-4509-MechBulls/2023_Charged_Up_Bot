@@ -2,9 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.lib;
+package frc.robot.lib.FieldObjects;
 
-import frc.robot.subsystems.StateControllerSubsystem;
+import frc.robot.subsystems.state.StateControllerSubsystem;
 
 /** Add your docs here. */
 public class PreplacedItem {
