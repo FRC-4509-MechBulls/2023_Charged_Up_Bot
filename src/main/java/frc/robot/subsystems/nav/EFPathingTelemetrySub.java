@@ -79,6 +79,7 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
     }
 
 void drawNavigationLines(Mat mat){
+        if(navPoses.size()<2) return;
     /** Draw navigation lines */
     for(int i = 1; i<navPoses.size(); i++)
         Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
@@ -254,9 +255,11 @@ void updateNavPoses(ArrayList<Pose2d> navPoses){
     }
 
     public void updatePivotPoint(Point2D.Double pivotPoint){
+        if(dontTouchMe) return;
         this.pivotPoint = pivotPoint;
     }
     public void updateEFPose(Pose2d efPose){
+        if(dontTouchMe) return;
         this.efPose = efPose;
     }
 
