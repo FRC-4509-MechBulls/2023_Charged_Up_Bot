@@ -2,33 +2,21 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.can.SlotConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
-
-import java.lang.management.ThreadInfo;
+import frc.robot.Robot;
 
 public class SwerveModule extends SubsystemBase {
   //motors
@@ -44,6 +32,7 @@ public class SwerveModule extends SubsystemBase {
 	private double delta = 0;
 	private double deltaConverted = 0;
 	private double setAngle = 0;
+  private double timestamp = Timer.getFPGATimestamp();
 
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
@@ -56,25 +45,35 @@ public class SwerveModule extends SubsystemBase {
     
     //motors
       //drive
-      driveMotor = new WPI_TalonFX(driveMotorId);
-      driveMotor.configFactoryDefault();
-      driveMotor.setNeutralMode(NeutralMode.Coast);
-      driveMotor.setInverted(driveMotorReversed);
-      driveMotor.config_kF(0, ModuleConstants.kFDrive);
-      driveMotor.config_kP(0, ModuleConstants.kPDrive);
-			driveMotor.configVoltageCompSaturation(12);
-      driveMotor.configNeutralDeadband(0.01);
+    driveMotor = new WPI_TalonFX(driveMotorId);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+    driveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
+    driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveMotor, 1000);
+    driveMotor.setNeutralMode(NeutralMode.Coast);
+    driveMotor.setInverted(driveMotorReversed);
       //debug output: driveMotor.config_kF(0, 0);
       //debug output: driveMotor.config_kP(0, 0);
       //turn
-      turningMotor = new WPI_TalonFX(turningMotorId);
-      turningMotor.configFactoryDefault();
-      turningMotor.setNeutralMode(NeutralMode.Coast);
-      turningMotor.setInverted(turningMotorReversed);
-      turningMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
-      turningMotor.config_kP(0, ModuleConstants.kPTurning);
-			turningMotor.configVoltageCompSaturation(12);
-      //both
+    turningMotor = new WPI_TalonFX(turningMotorId);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 3001, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3003, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 3007, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 3011, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 3013, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 3017, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 3021, 1000);
+    turningMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 3023, 1000);
+    turningMotor.configAllSettings(Robot.ctreConfigs.swerveTurnMotor, 1000);
+    turningMotor.setInverted(turningMotorReversed);
+    while (Timer.getFPGATimestamp() < timestamp + 2) {}
+    turningMotor.setNeutralMode(NeutralMode.Coast);
+    //both
       enableVoltageCompensation(true);
       //initialize encoders in thread so they don't timeout
       new Thread(() -> {
@@ -94,7 +93,7 @@ public class SwerveModule extends SubsystemBase {
   //Configuration
   public void resetEncoders() {
     driveMotor.setSelectedSensorPosition(0); //reset drive motor encoder to 0
-    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * ModuleConstants.kRadiansToTurning); //resets turning motor encoder to absolute encoder value
+    turningMotor.setSelectedSensorPosition(getAbsoluteEncoderRad() * ModuleConstants.RADIANS_TO_TURNING); //resets turning motor encoder to absolute encoder value
   }
   public void enableVoltageCompensation(boolean onOff) {
     driveMotor.enableVoltageCompensation(onOff);
@@ -103,14 +102,14 @@ public class SwerveModule extends SubsystemBase {
 
   //Getters
   public Rotation2d getTurningPosition() {
-    return new Rotation2d(turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning);
+    return new Rotation2d(turningMotor.getSelectedSensorPosition() / ModuleConstants.RADIANS_TO_TURNING);
   }
   public double getDriveVelocity() {
-    return driveMotor.getSelectedSensorVelocity() / ModuleConstants.kMetersToDriveVelocity; //convert raw sensor units to m/s
+    return driveMotor.getSelectedSensorVelocity() / ModuleConstants.METERS_TO_DRIVE_VELOCITY; //convert raw sensor units to m/s
   }
   public double getAbsoluteEncoderRad() {
     double angle = absoluteEncoder.getAbsolutePosition(); //range 0-1
-    angle *= ModuleConstants.kAbsToRadians; //converts to radians
+    angle *= ModuleConstants.ABS_TO_RADIANS; //converts to radians
     angle += absoluteEncoderOffsetRad; //subtracts the offset to get the actual wheel angles
     return angle * (absoluteEncoderReversed ? -1.0 : 1.0); //multiply -1 if reversed
   }
@@ -121,8 +120,8 @@ public class SwerveModule extends SubsystemBase {
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-      driveMotor.getSelectedSensorPosition() / ModuleConstants.kMetersToDrive,
-      new Rotation2d(turningMotor.getSelectedSensorPosition() / ModuleConstants.kRadiansToTurning)
+      driveMotor.getSelectedSensorPosition() / ModuleConstants.METERS_TO_DRIVE,
+      new Rotation2d(turningMotor.getSelectedSensorPosition() / ModuleConstants.RADIANS_TO_TURNING)
     );
   }
 
@@ -139,9 +138,9 @@ public class SwerveModule extends SubsystemBase {
 		setAngle = Math.abs(deltaConverted) < (Math.PI / 2) ? getTurningPosition().getRadians() + deltaConverted : getTurningPosition().getRadians() - ((deltaConverted/Math.abs(deltaConverted)) * (Math.PI-Math.abs(deltaConverted))); //makes set angle +/- 1/2pi of our current position(capable of pointing all directions)
 
     //Debug intput: driveMotor.config_kP(0, SmartDashboard.getNumber("kPDrive", ModuleConstants.kPDrive));
-    driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
-    //Debug output: driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.kMetersToDriveVelocity, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * SmartDashboard.getNumber("kAFFDrive", ModuleConstants.kAFFDrive)); //velocity control
-    turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.kRadiansToTurning); //Position Control
+    driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.METERS_TO_DRIVE_VELOCITY, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * ModuleConstants.kAFFDrive); //velocity control
+    //Debug output: driveMotor.set(TalonFXControlMode.Velocity, state.speedMetersPerSecond * ModuleConstants.METERS_TO_DRIVE_VELOCITY, DemandType.ArbitraryFeedForward, (state.speedMetersPerSecond/Math.abs(state.speedMetersPerSecond)) * SmartDashboard.getNumber("kAFFDrive", ModuleConstants.kAFFDrive)); //velocity control
+    turningMotor.set(TalonFXControlMode.Position, setAngle * ModuleConstants.RADIANS_TO_TURNING); //Position Control
     
     //Debug output: SmartDashboard.putNumber("stateAngle" + absoluteEncoder.getSourceChannel(), getState().angle.getRadians());
     //Debug output: SmartDashboard.putString("Swerve[" + absoluteEncoder.getSourceChannel() + "] state", state.toString());
@@ -159,7 +158,7 @@ public class SwerveModule extends SubsystemBase {
 		//Debug output: turningMotor.config_kP(0, SmartDashboard.getNumber("kPT", ModuleConstants.kPTurning));
     //Debug input: turningMotor.config_kD(0, SmartDashboard.getNumber("kDT", ModuleConstants.kDTurning));
 		//Debug output: SmartDashboard.putBoolean("absPos"+this.turningMotor.getDeviceID(), absoluteEncoder.isConnected());
-    //Debug output: SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition() * ModuleConstants.kRadiansToTurning);
+    //Debug output: SmartDashboard.putNumber("relRadians" + absoluteEncoder.getSourceChannel(), getTurningPosition() * ModuleConstants.RADIANS_TO_TURNING);
     //Debug output: SmartDashboard.putNumber("absRadians" + absoluteEncoder.getSourceChannel(), getAbsoluteEncoderRad());
     //Debug output: SmartDashboard.putNumber("abs0-1" + absoluteEncoder.getSourceChannel(), absoluteEncoder.getAbsolutePosition());
     //Debug output: SmartDashboard.putNumber(this.name+".sDrivePos",getDrivePosition());
@@ -167,6 +166,6 @@ public class SwerveModule extends SubsystemBase {
     //Debug output: SmartDashboard.putNumber("deltaC" + absoluteEncoder.getSourceChannel(), deltaConverted);
     //Debug output: SmartDashboard.putNumber("Voltd" + absoluteEncoder.getSourceChannel(), driveMotor.getMotorOutputVoltage());
     //Debug output: SmartDashboard.putNumber("Vd" + absoluteEncoder.getSourceChannel(), getDriveVelocity());
-    //Debug output: SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopTarget() / ModuleConstants.kMetersToDriveVelocity);
+    //Debug output: SmartDashboard.putNumber("Sd" + absoluteEncoder.getSourceChannel(), driveMotor.getClosedLoopTarget() / ModuleConstants.METERS_TO_DRIVE_VELOCITY);
   }
 }

@@ -2,12 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
-import frc.robot.lib.FieldTag;
-import frc.robot.lib.MathThings;
+import frc.robot.lib.FieldObjects.FieldTag;
+import frc.robot.lib.MB_Math;
+import frc.robot.subsystems.drive.SwerveSubsystem;
+import frc.robot.subsystems.nav.PathingTelemetrySub;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -141,10 +143,10 @@ public class VisionSubsystem extends SubsystemBase {
         double rotationFromCamera = Math.IEEEremainder(lastTransform.getRotation().getZ() + Math.PI, 2*Math.PI);
         out[2] =  rotationFromCamera;//this might be the wrong axis, uncomment this for rotation tracking
 
-        out[0] = MathThings.maxValueCutoff(out[0], 0.2);
-        out[1] = MathThings.maxValueCutoff(out[1], 0.2);
+        out[0] = MB_Math.maxValueCutoff(out[0], 0.2);
+        out[1] = MB_Math.maxValueCutoff(out[1], 0.2);
         if(Math.abs(out[2])<0.1) out[2] = 0;
-        out[2] = MathThings.maxValueCutoff(out[2], 0.05);
+        out[2] = MB_Math.maxValueCutoff(out[2], 0.05);
 
 
         return out;

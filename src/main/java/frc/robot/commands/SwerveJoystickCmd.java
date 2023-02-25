@@ -11,13 +11,10 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.drive.SwerveSubsystem;
 
 public class SwerveJoystickCmd extends CommandBase {
   private final SwerveSubsystem swerveSubsystem;
@@ -42,9 +39,9 @@ public class SwerveJoystickCmd extends CommandBase {
     this.ySpdFunction = ySpdFunction;
     this.turningSpdFunction = turningSpdFunction;
     this.fieldOrientedFunction = fieldOrientedFunction;
-    this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-    this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-    this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+    this.xLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
+    this.yLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
+    this.turningLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ANGULAR_ACCELERATION_UNITS_PER_SECOND);
     addRequirements(swerveSubsystem);
 
     //dashboard
@@ -78,13 +75,13 @@ public class SwerveJoystickCmd extends CommandBase {
 
     //1.55 scale magnitudes to reflect deadzone
       //Translation
-        TranslationMagnitudeScaled = (1/(1-OIConstants.kDeadband))*(TranslationMagnitude-OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
+        TranslationMagnitudeScaled = (1/(1-OIConstants.DEADBAND))*(TranslationMagnitude-OIConstants.DEADBAND); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
       //Rotation
-        scaledMagnitudeRotation = (1/(1-OIConstants.kDeadband))*(rotationMagnitude-OIConstants.kDeadband); //same algorithm as scaled magnitude translation
+        scaledMagnitudeRotation = (1/(1-OIConstants.DEADBAND))*(rotationMagnitude-OIConstants.DEADBAND); //same algorithm as scaled magnitude translation
 
     //2.0 deadzone and construct outputs
       //Translation
-        if (TranslationMagnitude > OIConstants.kDeadband) {
+        if (TranslationMagnitude > OIConstants.DEADBAND) {
           ySpeed = translationDirection.getCos() * TranslationMagnitudeScaled; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
           xSpeed = translationDirection.getSin() * TranslationMagnitudeScaled;
         } else {
@@ -92,7 +89,7 @@ public class SwerveJoystickCmd extends CommandBase {
           ySpeed = 0.0; //zero inputs < deadzone
         }
       //Rotation
-        if (rotationMagnitude > OIConstants.kDeadband) {
+        if (rotationMagnitude > OIConstants.DEADBAND) {
           turningSpeed = rotationDirection.getCos() * scaledMagnitudeRotation; //same as above for translation
         } else {
           turningSpeed = 0.0; //zero inputs < deadzone
@@ -106,9 +103,9 @@ public class SwerveJoystickCmd extends CommandBase {
     */
 
     // 3. Make the driving smoother, no sudden acceleration from sudden inputs
-      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
+      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.TELE_DRIVE_MAX_SPEED_METERS_PER_SECOND);
+      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.TELE_DRIVE_MAX_SPEED_METERS_PER_SECOND);
+      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.TELE_DRIVE_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND);
       //debug output: SmartDashboard.putNumber("xspeed", xSpeed);
       //debug output: SmartDashboard.putNumber("turningspeed", turningSpeed);
 

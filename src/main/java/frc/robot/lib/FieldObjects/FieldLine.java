@@ -1,4 +1,4 @@
-package frc.robot.lib;
+package frc.robot.lib.FieldObjects;
 
 import org.opencv.core.Scalar;
 

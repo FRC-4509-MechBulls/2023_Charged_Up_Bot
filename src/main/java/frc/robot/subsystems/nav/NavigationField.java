@@ -1,4 +1,4 @@
-package frc.robot.lib;
+package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -7,8 +7,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.PathingTelemetrySub;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.lib.*;
+import frc.robot.lib.FieldObjects.FieldLine;
+import frc.robot.lib.FieldObjects.Node;
+import frc.robot.subsystems.state.FMSGetter;
+import frc.robot.subsystems.arm.Grabber;
+import frc.robot.subsystems.state.StateControllerSubsystem;
+import frc.robot.subsystems.drive.SwerveSubsystem;
 import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
@@ -19,19 +24,23 @@ import static frc.robot.Constants.FieldConstants.*;
 
 public class NavigationField extends SubsystemBase {
 
+    StateControllerSubsystem stateControllerSub;
  ArrayList<FieldLine> fieldLines = new ArrayList<FieldLine>();
  ArrayList<Node> nodes = new ArrayList<Node>();
  ArrayList<Pose2d> setPoints = new ArrayList<Pose2d>();
+
+ ArrayList<Pose2d> cornerPoints = new ArrayList<Pose2d>();
 
 
 PathingTelemetrySub pTelemetrySub;
  private SwerveSubsystem swerveSubsystem;
  Thread pathingThread;
  FMSGetter fmsGetter;
-public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter){
+public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem, FMSGetter fmsGetter, StateControllerSubsystem stateControllerSub){
     this.pTelemetrySub = telemetrySub;
     this.swerveSubsystem = swerveSubsystem;
     this.fmsGetter = fmsGetter;
+    this.stateControllerSub = stateControllerSub;
 
     createAndStartPathingThread();
     createBarriers();
@@ -44,31 +53,38 @@ public NavigationField(PathingTelemetrySub telemetrySub, SwerveSubsystem swerveS
 boolean wasOnRedAlliance = true;
 double lastAllianceCheck = Timer.getFPGATimestamp();
 boolean queueNodeReset = true;
+int oldSetpointIndex = 0;
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
-Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
-    SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
+//Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
+//    SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
     if(Timer.getFPGATimestamp() - lastAllianceCheck>3){
         if(wasOnRedAlliance!= fmsGetter.isRedAlliance() || queueNodeReset)
         {
             resetNodes();
+            placeCornerPoints();
             wasOnRedAlliance = fmsGetter.isRedAlliance();
             queueNodeReset = false;
         }
         lastAllianceCheck = Timer.getFPGATimestamp();
     }
-    SmartDashboard.putBoolean("poseChanged",poseChanged);
+  //  SmartDashboard.putBoolean("poseChanged",poseChanged);
+    if(oldSetpointIndex != stateControllerSub.getSetpointIndex()){
+        updateSetPoint(stateControllerSub.getSetpointIndex());
+        oldSetpointIndex = stateControllerSub.getSetpointIndex();
+    }
+
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
     double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
     double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
-    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius; //why do I need to multiply by 2??
-    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.kRobotRadius; //because your visualization was not to scale 😉
+    double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS; //why do I need to multiply by 2??
+    double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS; //because your visualization was not to scale 😉
 
-    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
-    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.kRobotRadius;
+    double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS;
+    double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * Constants.PathingConstants.ROBOT_RADIUS;
 
     double destEdgePtX1 = edgePtX1 + (line.getX2() - line.getX1());
     double destEdgePtY1 = edgePtY1 + (line.getY2() - line.getY1());
@@ -118,32 +134,48 @@ public  boolean barrierOnLine(Line2D.Double line){
 
 
 
- public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth){
+ public Pose2d[] findNavPoses(Pose2d myPose, Pose2d desiredPose, int recursionDepth, double startTime, double timeout){
+     if(Timer.getFPGATimestamp() - startTime >timeout)
+         return new Pose2d[]{};
+
+    double random = Math.random(); // :)
+     int[] randIndexes = MB_Math.randomIndexes(cornerPoints.size());
     if(!barrierOnLine(new Line2D.Double(myPose.getX(),myPose.getY(),desiredPose.getX(),desiredPose.getY())))
         return new Pose2d[] {myPose,desiredPose};
     if(recursionDepth>Constants.PathingConstants.maxRecursionDepth)
         return new Pose2d[] {};
 
-        for (double dist = 0; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
-            for (double ang = 0; ang < Math.PI * 2; ang += Math.PI * 2 / (Constants.PathingConstants.moveAngles)) {
-                double branchHeadX = myPose.getX() + dist*Math.cos(ang);
-                double branchHeadY = myPose.getY() + dist*Math.sin(ang);
-                Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
-                Line2D.Double lineToDesiredPose = new Line2D.Double(branchHeadX,branchHeadY,desiredPose.getX(),desiredPose.getY());
-                if(barrierOnLine(lineToTestPoint)) continue;
-             //   if(recursionDepth<=Constants.PathingConstants.maxRecursionDepth+1){
-                    Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1);
-                    if(lowerLevelOut.length>0){
-                        Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
-                        myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
-                        for(int i = 1; i<myOut.length; i++)
-                            myOut[i] = lowerLevelOut[i-1];
-                        //the issue lies here
-                        return myOut;
-                    }
-             //   }
+    for (double dist = Constants.PathingConstants.lineDistIterator; dist < Constants.PathingConstants.maxLineDist; dist += Constants.PathingConstants.lineDistIterator)
+        for (int angI = -cornerPoints.size(); angI < Constants.PathingConstants.moveAngles; angI += 1) {
+
+            double ang = angI * (Math.PI * 2 / (Constants.PathingConstants.moveAngles));
+            double branchHeadX = myPose.getX() + dist*Math.cos(ang);
+            double branchHeadY = myPose.getY() + dist*Math.sin(ang);
+
+            if(angI<0 && cornerPoints.size()>0 && randIndexes.length>0){ //iterate through every corner point before doing anything else - notice how angI starts at -size
+                //for indexes, use [cornerPoints.size()-ang]
+                int cornerIndex = angI + cornerPoints.size();
+                branchHeadX = cornerPoints.get(randIndexes[cornerIndex]).getX();
+                branchHeadY = cornerPoints.get(randIndexes[cornerIndex]).getY();
 
             }
+
+
+            Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );
+
+            if(barrierOnLine(lineToTestPoint)) continue;
+
+            Pose2d[] lowerLevelOut = findNavPoses(new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation()),desiredPose,recursionDepth+1,startTime,timeout);
+
+            if(lowerLevelOut.length>0){
+                Pose2d[] myOut = new Pose2d[lowerLevelOut.length + 1];
+                myOut[0] = new Pose2d(branchHeadX,branchHeadY,desiredPose.getRotation());
+                for(int i = 1; i<myOut.length; i++)
+                    myOut[i] = lowerLevelOut[i-1];
+                return myOut;
+            }
+
+        }
 
 
 
@@ -154,34 +186,45 @@ public  boolean barrierOnLine(Line2D.Double line){
 private ArrayList<Pose2d> navPoses = new ArrayList<Pose2d>();
 private Pose2d desiredPose;
 
+public Pose2d getDesiredPose(){
+    return desiredPose;
+}
+
     public void setNavPoint(Pose2d desiredPose){
+        if(desiredPose!= null && this.desiredPose != null)
+        if(MB_Math.poseDist(desiredPose,this.desiredPose) != 0 || this.desiredPose.getRotation().getDegrees() != desiredPose.getRotation().getDegrees()){
+            poseChanged = true;
+        }
         this.desiredPose = desiredPose;
-        poseChanged = true;
         pTelemetrySub.updateDestinationPose(this.desiredPose);
         //updateNavPoses();
     }
 
+    Pose2d lastUsedPose = new Pose2d();
     public void updateNavPoses(){
         boolean poseChangedOld = poseChanged;
         poseChanged = false;
         if(desiredPose == null)
             return;
-        Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0);
+        Pose2d[] outNavPoses = findNavPoses(swerveSubsystem.getEstimatedPosition(),desiredPose,0,Timer.getFPGATimestamp(),5);
         if(outNavPoses.length<1)
             return;
-        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && (engaged && !poseChangedOld))
+        boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,swerveSubsystem.getEstimatedPosition())<Constants.PathingConstants.recalcThreshold;
+        if(getPathLengthFromBot(outNavPoses)>getPathLengthFromBot(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
+        //    SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
             return;
+        }
 
-
+        lastUsedPose = swerveSubsystem.getEstimatedPosition();
         navPoses.clear();
         for(Pose2d  i : outNavPoses)
             navPoses.add(i);
         pTelemetrySub.updateDestinationPose(this.desiredPose);
-        pTelemetrySub.updateNavPoses(navPoses);
+    //    pTelemetrySub.updateNavPoses(navPoses);
     }
     boolean poseChanged = false;
     private double getPathLengthFromBot(Pose2d[] path){
-        if(path.length==0)
+        if(path.length==0 || path[0] == null)
             return Integer.MAX_VALUE;
         double botX = swerveSubsystem.getEstimatedPosition().getX();
         double botY = swerveSubsystem.getEstimatedPosition().getY();
@@ -193,7 +236,7 @@ private Pose2d desiredPose;
     }
     private  double getPathLengthFromBot(ArrayList<Pose2d> path){
         Pose2d[] newPath = new Pose2d[path.size()];
-        for(int i = 0; i<newPath.length; i++)
+        for(int i = 0; i<Math.min(path.size(),newPath.length); i++)
             newPath[i] = path.get(i);
         return getPathLengthFromBot(newPath);
     }
@@ -201,10 +244,11 @@ private Pose2d desiredPose;
 
 public Pose2d getNextNavPoint(){
     if(navPoses.size()<1) return swerveSubsystem.getEstimatedPosition();
-    pTelemetrySub.updateNavPoses(navPoses);
+//    pTelemetrySub.updateNavPoses(navPoses);
     Pose2d botPose = swerveSubsystem.getEstimatedPosition();
     while(navPoses.size()>1 && Math.sqrt(Math.pow(botPose.getX() - navPoses.get(0).getX(),2)+Math.pow(botPose.getY() - navPoses.get(0).getY(),2))<Constants.PathingConstants.reachedInBetweenPointThreshold)
-        navPoses.remove(0);
+        if(navPoses.size()>1)
+            navPoses.remove(0);
     if(navPoses.size()>0)
         return navPoses.get(0);
     return swerveSubsystem.getEstimatedPosition();
@@ -283,11 +327,13 @@ private void createAndStartPathingThread(){
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                 SmartDashboard.putNumber("pathingCompTime",compTime);
                               //  Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
+                                pTelemetrySub.updateNavPoses(navPoses);
                                 Thread.sleep(Constants.PathingConstants.minPathingDelay);
                             }
                         } catch (InterruptedException e) {throw new RuntimeException(e);}
                     });
     pathingThread.setDaemon(true);
+    pathingThread.setName("MB_Pathing");
     pathingThread.setPriority(1); //low priority I hope?
     pathingThread.start();
 }
@@ -313,13 +359,13 @@ private void resetNodes(){
             for(int x = 0; x<=2; x++)
                 for(int y = 0; y<9; y++){
                     if(x==2){
-                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, Node.Level.GROUND));
+                        nodes.add(new Node(nodeX1*revX, topNodeY-y* yDistBetweenNodes, Node.NodeType.HYBRID, StateControllerSubsystem.Level.POS1));
                         continue;
                     }
-                    Node.Level level = Node.Level.LVL1;
+                    StateControllerSubsystem.Level level = StateControllerSubsystem.Level.POS2;
                     double myNodeX = nodeX2;
                     if(x==1) {
-                        level = Node.Level.LVL2;
+                        level = StateControllerSubsystem.Level.POS3;
                         myNodeX = nodeX3;
                     }
                     Node.NodeType type = Node.NodeType.CONE;
@@ -331,7 +377,7 @@ private void resetNodes(){
 
             for(int y = 0; y<9; y++){
                 double yPos = topNodeY - y*yDistBetweenNodes;
-                double xPos = width1/2 - nodesWidth - Constants.PathingConstants.kRobotWidth/2 - Units.inchesToMeters(3); //3 inches from nodes barrier?
+                double xPos = width1/2 - nodesWidth - Constants.PathingConstants.ROBOT_LENGTH /2 - Units.inchesToMeters(12); //3 inches from nodes barrier?
                 xPos*=revX;
                 Rotation2d myRotation = Rotation2d.fromDegrees(180); //red
                 if(revX>0)
@@ -343,22 +389,74 @@ private void resetNodes(){
 
 }
 int setPointIndex = 0;
-    public void iterateSetPoint(){
-        setPointIndex++;
-        updateSetPoint();
-    }
-    public void decimateSetPoint(){
-        setPointIndex--;
-        updateSetPoint();
-    }
-    public void updateSetPoint(){
-        if(setPointIndex>=setPoints.size())
-            setPointIndex = 0;
-        if(setPointIndex<0)
-            setPointIndex = setPoints.size()-1;
+    private int placingLvlIndex = 0;
+    private StateControllerSubsystem.Level placingLevel = StateControllerSubsystem.Level.POS1;
+    private static final StateControllerSubsystem.Level[] nodeLevels = {StateControllerSubsystem.Level.POS1, StateControllerSubsystem.Level.POS2,StateControllerSubsystem.Level.POS3};
 
+
+
+    public void iteratePlacingLevel(){
+        placingLvlIndex++;
+        updateNodeLevel();
+    }
+    public void decimatePlacingLevel(){
+     placingLvlIndex--;
+     updateNodeLevel();
+    }
+
+
+    public void updateSetPoint(int i){
+        if(setPoints.size()==0) return;
+        int adjustedIndex = MB_Math.indexWrap(i, setPoints.size());
         if(setPoints.size()>0)
-            setNavPoint(setPoints.get(setPointIndex));
+            setNavPoint(setPoints.get(adjustedIndex));
+    }
+
+    public void updateNodeLevel(){
+        if(placingLvlIndex >nodeLevels.length-1)
+            placingLvlIndex = nodeLevels.length - 1;
+        if(placingLvlIndex <0)
+            placingLvlIndex = 0;
+        setPlacingLevel(nodeLevels[placingLvlIndex]);
+    }
+    public void setPlacingLevel(StateControllerSubsystem.Level placingLevel){
+        this.placingLevel = placingLevel;
+    }
+    public StateControllerSubsystem.Level getPlacingNodeLevel(){
+        return this.placingLevel;
+    }
+    public Grabber.ArmModes getPlacingArmModeCube(){
+        switch(this.placingLevel){
+            case POS1: return Grabber.ArmModes.PLACING_CUBE_LVL1;
+            case POS2: return Grabber.ArmModes.PLACING_CUBE_LVL2;
+            case POS3: return Grabber.ArmModes.PLACING_CUBE_LVL3;
+        }
+        return null;
+    }
+    public Grabber.ArmModes getPlacingArmModeCone(){
+        switch(this.placingLevel){
+            case POS1: return Grabber.ArmModes.PLACING_CONE_LVL1;
+            case POS2: return Grabber.ArmModes.PLACING_CONE_LVL2;
+            case POS3: return Grabber.ArmModes.PLACING_CONE_LVL3;
+        }
+        return null;
+    }
+
+    public void placeCornerPoints(){
+        cornerPoints.clear();
+
+        cornerPoints.add(new Pose2d(-2.75,3.25, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-2.75,-0.7, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,3.25, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(-6,-0.7, Rotation2d.fromDegrees(0)));
+        
+        cornerPoints.add(new Pose2d(2.75,-0.7, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,3.25, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(6,-0.7, Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(2.75,3.25, Rotation2d.fromDegrees(0)));
+
+
+        pTelemetrySub.updateCornerPoints(cornerPoints);
     }
 
 

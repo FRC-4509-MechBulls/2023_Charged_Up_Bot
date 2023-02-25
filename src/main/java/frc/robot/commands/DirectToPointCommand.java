@@ -8,27 +8,26 @@ import frc.robot.subsystems.nav.NavigationField;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 
 
-public class NavToPointCommand extends CommandBase {
-    private final NavigationField navigationField;
+public class DirectToPointCommand extends CommandBase {
+
     private final SwerveSubsystem swerveSubsystem;
     Pose2d desiredPose;
     double distToFinished;
     double timeout;
     double posTolerance = Constants.DriveConstants.posTolerance;
 
-    public NavToPointCommand(NavigationField navigationField, SwerveSubsystem swerveSubsystem,Pose2d desiredPose, double timeout) {
-        this.navigationField = navigationField;
+    public DirectToPointCommand(SwerveSubsystem swerveSubsystem,Pose2d desiredPose, double timeout) {
         this.swerveSubsystem = swerveSubsystem;
         this.desiredPose = desiredPose;
         this.timeout = timeout;
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.swerveSubsystem);
-        //navigationField.setNavPoint(desiredPose);
+
     }
 
-    public NavToPointCommand(NavigationField navigationField, SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance){
-        this(navigationField,swerveSubsystem,desiredPose,timeout);
+    public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance){
+        this(swerveSubsystem,desiredPose,timeout);
         this.posTolerance = posTolerance;
     }
 
@@ -43,8 +42,6 @@ public class NavToPointCommand extends CommandBase {
 
     public void start(){
         this.startTime = Timer.getFPGATimestamp();
-        navigationField.setNavPoint(desiredPose);
-        navigationField.engageNav();
     }
 
     /**
@@ -59,7 +56,7 @@ public class NavToPointCommand extends CommandBase {
             start();
             firstExecuteDone = true;
         }
-        swerveSubsystem.driveToPose(navigationField.getNextNavPoint());
+        swerveSubsystem.driveToPose(desiredPose);
     }
 
 
@@ -74,6 +71,6 @@ public class NavToPointCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        navigationField.disengageNav();
+
     }
 }

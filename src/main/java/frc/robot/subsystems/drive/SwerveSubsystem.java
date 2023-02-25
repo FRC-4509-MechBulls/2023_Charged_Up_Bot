@@ -2,12 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -24,41 +26,45 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.lib.FieldTag;
-import frc.robot.lib.MathThings;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
+import frc.robot.lib.FieldObjects.FieldTag;
+import frc.robot.lib.MB_Math;
+import frc.robot.subsystems.state.FMSGetter;
+import frc.robot.subsystems.state.StateControllerSubsystem;
 
 public class SwerveSubsystem extends SubsystemBase {
   //Modules
-    private final SwerveModule frontLeft = new SwerveModule(DriveConstants.kFrontLeftDriveMotorPort, 
-                                                            DriveConstants.kFrontLeftTurningMotorPort, 
-                                                            DriveConstants.kFrontLeftDriveEncoderReversed, 
-                                                            DriveConstants.kFrontLeftTurningEncoderReversed, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed);
-    private final SwerveModule frontRight = new SwerveModule(DriveConstants.kFrontRightDriveMotorPort, 
-                                                            DriveConstants.kFrontRightTurningMotorPort, 
-                                                            DriveConstants.kFrontRightDriveEncoderReversed, 
-                                                            DriveConstants.kFrontRightTurningEncoderReversed, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kFrontRightDriveAbsoluteEncoderReversed);
-    private final SwerveModule backLeft = new SwerveModule(DriveConstants.kBackLeftDriveMotorPort, 
-                                                          DriveConstants.kBackLeftTurningMotorPort, 
-                                                          DriveConstants.kBackLeftDriveEncoderReversed, 
-                                                          DriveConstants.kBackLeftTurningEncoderReversed, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderPort, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad, 
-                                                          DriveConstants.kBackLeftDriveAbsoluteEncoderReversed);
-    private final SwerveModule backRight = new SwerveModule(DriveConstants.kBackRightDriveMotorPort, 
-                                                            DriveConstants.kBackRightTurningMotorPort, 
-                                                            DriveConstants.kBackRightDriveEncoderReversed, 
-                                                            DriveConstants.kBackRightTurningEncoderReversed, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderPort, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad, 
-                                                            DriveConstants.kBackRightDriveAbsoluteEncoderReversed);
+    private final SwerveModule frontLeft = new SwerveModule(DriveConstants.FRONT_LEFT_DRIVE_MOTOR_PORT,
+                                                            DriveConstants.FRONT_LEFT_TURNING_MOTOR_PORT,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_LEFT_TURNING_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                            DriveConstants.FRONT_LEFT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
+    private final SwerveModule frontRight = new SwerveModule(DriveConstants.FRONT_RIGHT_DRIVE_MOTOR_PORT,
+                                                            DriveConstants.FRONT_RIGHT_TURNING_MOTOR_PORT,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_RIGHT_TURNING_ENCODER_REVERSED,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                            DriveConstants.FRONT_RIGHT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
+    private final SwerveModule backLeft = new SwerveModule(DriveConstants.BACK_LEFT_DRIVE_MOTOR_PORT,
+                                                          DriveConstants.BACK_LEFT_TURNING_MOTOR_PORT,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ENCODER_REVERSED,
+                                                          DriveConstants.BACK_LEFT_TURNING_ENCODER_REVERSED,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                          DriveConstants.BACK_LEFT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
+    private final SwerveModule backRight = new SwerveModule(DriveConstants.BACK_RIGHT_DRIVE_MOTOR_PORT,
+                                                            DriveConstants.BACK_RIGHT_TURNING_MOTOR_PORT,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ENCODER_REVERSED,
+                                                            DriveConstants.BACK_RIGHT_TURNING_ENCODER_REVERSED,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_PORT,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_OFFSET_RAD,
+                                                            DriveConstants.BACK_RIGHT_DRIVE_ABSOLUTE_ENCODER_REVERSED);
   //Gyro
-    private WPI_Pigeon2 gyro = new WPI_Pigeon2(9);
+    private WPI_Pigeon2 gyro = new WPI_Pigeon2(40);
   public final AHRS navx = new AHRS(SPI.Port.kMXP);
 
   //Odometry
@@ -76,33 +82,30 @@ public class SwerveSubsystem extends SubsystemBase {
   Rotation2d translationDirection;
   Rotation2d rotationDirection;
 
+  private SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
+  private SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ACCELERATION_UNITS_PER_SECOND);
+  private SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.TELE_DRIVE_MAX_ANGULAR_ACCELERATION_UNITS_PER_SECOND);
+  private PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
+StateControllerSubsystem stateControllerSubsystem;
 
   /** Creates a new SwerveSubsystem. */
-  public SwerveSubsystem() {
+  public SwerveSubsystem(StateControllerSubsystem stateControllerSubsystem) {
+    this.stateControllerSubsystem = stateControllerSubsystem;
     initialPose = new Pose2d();
     constructOdometry();
-        //put in thread so it doesn't stop the rest of our code from running
-        new Thread(() -> {
-                try {
-                        Thread.sleep(1000);
-                        gyro.configFactoryDefault();
-                        gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
 
-                        navx.calibrate();
-                        zeroHeading();
-                        Thread.sleep(1000);
-                        constructOdometry(); //constructs odometry with newly correct gyro values
-                } catch (Exception e) {
-                }
-        
-        }).start();
+    gyro.configFactoryDefault();
+    gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
+    gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);
+
+    navx.calibrate();
+    zeroHeading();
+    constructOdometry(); //constructs odometry with newly correct gyro values
+
+
         //allows gyro to calibrate for 1 sec before requesting to reset^^
+    //SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
   }
-
-  SlewRateLimiter xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-  SlewRateLimiter yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-  SlewRateLimiter turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
-  PIDController turningPID = new PIDController(DriveConstants.kPTurning, 0, DriveConstants.kDTurning);
 
 
   public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean limited, boolean fieldOriented){
@@ -112,9 +115,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //  Make the driving smoother, no sudden acceleration from sudden inputs
     if(limited) {
-      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
+      xSpeed = xLimiter.calculate(xSpeed * DriveConstants.TELE_DRIVE_MAX_SPEED_METERS_PER_SECOND);
+      ySpeed = yLimiter.calculate(ySpeed * DriveConstants.TELE_DRIVE_MAX_SPEED_METERS_PER_SECOND);
+      turningSpeed = turningLimiter.calculate(turningSpeed * DriveConstants.TELE_DRIVE_MAX_ANGULAR_SPEED_RADIANS_PER_SECOND);
     }
     // Construct desired chassis speeds (convert to appropriate reference frames)
     ChassisSpeeds chassisSpeeds;
@@ -132,9 +135,11 @@ public class SwerveSubsystem extends SubsystemBase {
     //Debug intput: turningPID.setP(SmartDashboard.getNumber("kPTurning", DriveConstants.kPTurning));
     turningSpeed += turningPID.calculate(getAngularVelocity(), turningSpeed);
 
+    Rotation2d invertFieldOrientedForOtherTeam = stateControllerSubsystem.allianceForwardAngle();
+
 //4 - Convert and send chasis speeds
     if(fieldOriented)
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, getRotation2d());
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, odometry.getEstimatedPosition().getRotation().rotateBy(invertFieldOrientedForOtherTeam));
     else
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
 
@@ -147,7 +152,11 @@ public class SwerveSubsystem extends SubsystemBase {
   public boolean getFieldOriented(){return fieldOriented;}
   public void setFieldOriented(boolean set){fieldOriented = set;}
   public void resetPose(){
-    odometry.resetPosition(new Rotation2d(), getPositions(), new Pose2d());
+    odometry.resetPosition(Rotation2d.fromDegrees(getHeading()), getPositions(), new Pose2d());
+  }
+
+  public void resetPose( Pose2d newPose){
+    odometry.resetPosition(Rotation2d.fromDegrees(getHeading()), getPositions(), newPose);
   }
 
   public void joystickDrive(double xSpeed, double ySpeed, double turningSpeed){
@@ -162,13 +171,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
     //1.55 scale magnitudes to reflect deadzone
     //Translation
-    translationMagnitudeScaled = (1/(1- Constants.OIConstants.kDeadband))*(translationMagnitude - Constants.OIConstants.kDeadband); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
+    translationMagnitudeScaled = (1/(1- Constants.OIConstants.DEADBAND))*(translationMagnitude - Constants.OIConstants.DEADBAND); //converted to be representative of deadzone using point slope form (y-y1)=(m)(x-x1) -> (scaled-minimun raw input)=(maximum input/(1-deadzone))(raw input-deadzone) -> scaled=(maximum input/(1-deadzone))(raw input-deadzone)
     //Rotation
-    scaledMagnitudeRotation = (1/(1- Constants.OIConstants.kDeadband))*(rotationMagnitude- Constants.OIConstants.kDeadband); //same algorithm as scaled magnitude translation
+    scaledMagnitudeRotation = (1/(1- Constants.OIConstants.DEADBAND))*(rotationMagnitude- Constants.OIConstants.DEADBAND); //same algorithm as scaled magnitude translation
 
     //2.0 deadzone and construct outputs
     //Translation
-    if (translationMagnitude > Constants.OIConstants.kDeadband) {
+    if (translationMagnitude > Constants.OIConstants.DEADBAND) {
       ySpeed = translationDirection.getCos() * translationMagnitudeScaled; //original direction, scaled magnitude... this is kinda a misnomer because this x component itself is a magnitude, but it is representative of a direction of the raw input
       xSpeed = translationDirection.getSin() * translationMagnitudeScaled;
     } else {
@@ -176,7 +185,7 @@ public class SwerveSubsystem extends SubsystemBase {
       ySpeed = 0.0; //zero inputs < deadzone
     }
     //Rotation
-    if (rotationMagnitude > Constants.OIConstants.kDeadband) {
+    if (rotationMagnitude > Constants.OIConstants.DEADBAND) {
       turningSpeed = rotationDirection.getCos() * scaledMagnitudeRotation; //same as above for translation
     } else {
       turningSpeed = 0.0; //zero inputs < deadzone
@@ -214,10 +223,22 @@ public class SwerveSubsystem extends SubsystemBase {
     if(Constants.SimulationConstants.simulationEnabled)
       return Math.IEEEremainder(simHeading, 360);
 
-    if(DriveConstants.kUseNavXOverPigeon)
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
       return Math.IEEEremainder(navx.getYaw(), 360);
 
     return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
+  }
+  public double getPitch(){
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
+      return Math.IEEEremainder(navx.getPitch(), 360);
+
+    return Math.IEEEremainder(gyro.getPitch(), 360);
+  }
+  public double getRoll(){
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
+      return Math.IEEEremainder(navx.getRoll(), 360);
+
+    return Math.IEEEremainder(gyro.getRoll(), 360);
   }
 
   // module states
@@ -242,10 +263,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
   // get rotational velocity for closed loop
   public double getAngularVelocity() {
-    if(DriveConstants.kUseNavXOverPigeon)
-      return navx.getRate() * DriveConstants.kDegreesToRadians;
+    if(DriveConstants.USE_NAV_X_OVER_PIGEON)
+      return navx.getRate() * DriveConstants.DEGREES_TO_RADIANS;
 
-    return -gyro.getRate() * DriveConstants.kDegreesToRadians;
+    return gyro.getRate() * DriveConstants.DEGREES_TO_RADIANS;
   }
 
   //since wpilib often wants heading in format of Rotation2d
@@ -261,7 +282,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.PHYSICAL_MAX_SPEED_METERS_PER_SECOND);
     // normalizes wheel speeds in case max speed reached^^
     frontLeft.setDesiredState(desiredStates[0]);
     frontRight.setDesiredState(desiredStates[1]);
@@ -322,15 +343,16 @@ SwerveModulePosition[] simModulePositions;
     //debug output: SmartDashboard.putNumber("CSH", getChassisSpeeds().omegaRadiansPerSecond);
     //debug output: SmartDashboard.putNumber("CSY", getChassisSpeeds().vyMetersPerSecond);
     //debug output: SmartDashboard.putNumber("CSX", getChassisSpeeds().vxMetersPerSecond);
-    SmartDashboard.putNumber("FRAbs",frontRight.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("FLAbs",frontLeft.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("RRAbs",backRight.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("RLAbs",backLeft.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("FRAbs",frontRight.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("FLAbs",frontLeft.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("RRAbs",backRight.getAbsoluteEncoderRad());
+   // SmartDashboard.putNumber("RLAbs",backLeft.getAbsoluteEncoderRad());
   }
 
   // Periodic
   @Override
   public void periodic() {
+
     //constantly updates the gyro angle
   //  var gyroAngle = gyro.getRotation2d();
     //update odometry
@@ -338,9 +360,9 @@ SwerveModulePosition[] simModulePositions;
     updateOdometry();
 
     double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
-    SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
-    SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
-    SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
+   // SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
+  //  SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
+   // SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
 
     //SmartDashboard.putNumber("o_x",odometry.getEstimatedPosition().getX());
     //SmartDashboard.putNumber("o_y",odometry.getEstimatedPosition().getY());
@@ -357,7 +379,7 @@ public Pose2d getEstimatedPosition(){
     // Vision stuff
 
 public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
-  if(ambiguity>Constants.VisionConstants.kMaxAmbiguity) return;
+  if(ambiguity>Constants.VisionConstants.MAX_AMBIGUITY) return;
 
   //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
     Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
@@ -375,7 +397,9 @@ newY-=camYOffset;
 
     //2. Pass vision measurement to odometry
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
-    odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
+  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
+  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1,0.1,0.1));
+
   //  zeroHeading(newRotation.getDegrees());
 
   }
@@ -383,18 +407,19 @@ newY-=camYOffset;
   public double[] getDesiredSpeeds(Pose2d pose){
     //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
+    if(pose == null) return null;
    // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
-    double rotationDiff = MathThings.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
+    double rotationDiff = MB_Math.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
     double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;
     double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY()) * 1.5;
     double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
 
     double dirToPose = Math.atan2(yDiff,xDiff);
 
-    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;
-    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * 0.5;  //sin and cos used to have +rotationDiff for some reason
-    SmartDashboard.putNumber("rotationDiff",rotationDiff);
-    out[2] =  rotationDiff * 1/500.0;
+    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;
+    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;  //sin and cos used to have +rotationDiff for some reason
+  //  SmartDashboard.putNumber("rotationDiff",rotationDiff);
+    out[2] =  rotationDiff * DriveConstants.turnPValue;
 
     if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;
     if(dist<DriveConstants.posTolerance){
@@ -410,16 +435,34 @@ newY-=camYOffset;
 
     double ang = Math.atan2(speeds[1],speeds[0]);
     double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
-    if(mag>0.1){
-      speeds[0] = Math.cos(ang)*0.1;
-      speeds[1] = Math.sin(ang)*0.1;
+    if(mag>DriveConstants.maxPowerOut){
+      speeds[0] = Math.cos(ang)*DriveConstants.maxPowerOut;
+      speeds[1] = Math.sin(ang)*DriveConstants.maxPowerOut;
     }
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
     //speeds[1] = MathThings.absMax(speeds[1],0.2);
-    speeds[2] = MathThings.maxValueCutoff(speeds[2],0.2);
+    speeds[2] = MB_Math.maxValueCutoff(speeds[2],DriveConstants.maxTurningPowerOut);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
+  }
+
+  double getAutoBalanceOut(double setpoint, double measurement, double p, double max){
+    double out = -MB_Math.maxValueCutoff((setpoint - measurement)* p, max);
+    return out;
+  }
+
+
+
+  public void driveAutoBalance(){
+    double setpoint = 0;
+    double pitchMeasurement = getPitch();
+    double rollMeasurement = -getRoll();
+    double p = 1.0/60; //1.0/70
+    double max = 0.3;
+   // drive(getAutoBalanceOut(setpoint,measurement,p,max)*Math.cos(stateControllerSubsystem.allianceForwardAngle().getRadians()),0,0,false,true);
+   // drive(getAutoBalanceOut(setpoint,pitchMeasurement,p,max),getAutoBalanceOut(setpoint,rollMeasurement,p,max),0,false,false); // bad stinky
+    drive(getAutoBalanceOut(setpoint,pitchMeasurement,p,max),0,0,false,false);
   }
 
 
