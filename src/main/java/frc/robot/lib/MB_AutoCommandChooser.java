@@ -60,8 +60,8 @@ public class MB_AutoCommandChooser {
         return setInitialPose.andThen(nav1.andThen(autoBalanceCommand));
     }
     public Command blueBalancerCenter(){
-        Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(6.36,1.33), Rotation2d.fromDegrees(180))));
-        DirectToPointCommand nav1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(4.25,1.33,Rotation2d.fromDegrees(180)),6, Units.inchesToMeters(3));
+        Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(6.36,1.33), Rotation2d.fromDegrees(0))));
+        DirectToPointCommand nav1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(4.25,1.33,Rotation2d.fromDegrees(0)),6, Units.inchesToMeters(3));
         SleepCommand sleepCommand = new SleepCommand(0.2);
         AutoBalanceCommand autoBalanceCommand = new AutoBalanceCommand(swerveSubsystem,15);
         return setInitialPose.andThen(nav1.andThen(autoBalanceCommand));
