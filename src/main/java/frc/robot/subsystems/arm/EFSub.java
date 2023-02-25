@@ -38,16 +38,16 @@ public class EFSub extends SubsystemBase {
     // values need to be changed
     efMotorTop.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(
       true, // enabled
-      10, // Limit (amp)
-      10, // Trigger Threshold (amp)
+      8, // Limit (amp)
+      8, // Trigger Threshold (amp)
       0)); // Trigger Threshold Time(s)
 
     // limits power going to motor to prevent burnout
     // values need to be changed
     efMotorTop.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(
       true, // enabled
-      10, // Limit (amp)
-      10, // Trigger Threshold (amp)
+      8, // Limit (amp)
+      8, // Trigger Threshold (amp)
       0)); // Trigger Threshold Time(s)
     
       cGCoordinateRelativeToPivot = ArmConstants.eFCGCoordinateRelativeToPivot;

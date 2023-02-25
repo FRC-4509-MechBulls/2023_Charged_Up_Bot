@@ -64,13 +64,6 @@ public class RobotContainer {
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
   private final Command rc_autoBalance = new RunCommand(()->swerveSubsystem.driveAutoBalance(),swerveSubsystem);
 
-
-    DigitalInput stageOneLimitSwitch = new DigitalInput(4);
-    DigitalInput stageTwoLimitSwitch = new DigitalInput(5);
-
-
-
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     swerveSubsystem.setDefaultCommand(rc_drive);
@@ -83,11 +76,15 @@ public class RobotContainer {
     efTelemSub.init();
     // Configure the button bindings
     configureButtonBindings();
-      Trigger stageOneZeroTrigger = new Trigger(stageOneLimitSwitch::get);
-      Trigger stageTwoZeroTrigger = new Trigger(stageTwoLimitSwitch::get);
+      //Trigger stageOneSwitchLeadingEdge = new Trigger(()->(stageOneSub.getLimitSwitchValue())); //&& stageOneSub.getVelocity() > 0));
+      //Trigger stageOneSwitchTrailingEdge = new Trigger(()->(stageOneSub.getLimitSwitchValue() && stageOneSub.getVelocity() < 0));
+      //Trigger stageTwoSwitchLeadingEdge = new Trigger(()->(stageTwoSub.getLimitSwitchValue())); //&& stageTwoSub.getVelocity() > 0));
+      //Trigger stageTwoSwitchTrailingEdge = new Trigger(()->(stageTwoSub.getLimitSwitchValue() && stageTwoSub.getVelocity() < 0));
 
-      //stageOneZeroTrigger.onTrue(new InstantCommand(()->stageOneSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchAngle)));
-      //stageTwoZeroTrigger.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchAngle)));
+      //stageOneSwitchLeadingEdge.onTrue(new InstantCommand(()->stageOneSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchLeadingAngle)));
+      //stageOneSwitchTrailingEdge.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageOneLimitSwitchTrailingAngle)));
+      //stageTwoSwitchLeadingEdge.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchLeadingAngle)));
+      //stageTwoSwitchTrailingEdge.onTrue(new InstantCommand(()->stageTwoSub.setSensorPosition(Constants.ArmConstants.stageTwoLimitSwitchTrailingAngle)));
 
     //inputs
 //    SmartDashboard.putNumber("x1",0);

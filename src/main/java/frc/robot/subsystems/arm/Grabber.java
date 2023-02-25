@@ -334,8 +334,9 @@ public class Grabber extends SubsystemBase {
     if(getEFMode()!= getDesiredEFMode()){
       double distFromDest = MB_Math.dist(eFPositionButInMeters[0],eFPositionButInMeters[1],eFNavSystem.getDesiredPose().getX(),eFNavSystem.getDesiredPose().getY());
       SmartDashboard.putNumber("distFromDest",distFromDest);
-      if(distFromDest<Units.inchesToMeters(2))
-        setEndEffectorMode(desiredEFMode);
+      if(desiredEFMode!= EFModes.PLACING_CONE && desiredEFMode!=EFModes.PLACING_CUBE) setEndEffectorMode(desiredEFMode);
+      //if(distFromDest<Units.inchesToMeters(2))
+        //setEndEffectorMode(desiredEFMode);
     }
 
 
