@@ -49,6 +49,8 @@ public class Grabber extends SubsystemBase {
     this.endEffectorSubsystem = endEffectorSubsystem;
     this.stateController = stateController;
     this.eFNavSystem = eFNavSystem;
+    SmartDashboard.putNumber("test_inX",1);
+    SmartDashboard.putNumber("test_inY",1);
   }
   //random???
   public void setArmPosition(ArmModes armMode){
@@ -337,7 +339,16 @@ public class Grabber extends SubsystemBase {
       if(desiredEFMode!= EFModes.PLACING_CONE && desiredEFMode!=EFModes.PLACING_CUBE) setEndEffectorMode(desiredEFMode);
       //if(distFromDest<Units.inchesToMeters(2))
         //setEndEffectorMode(desiredEFMode);
+
     }
+
+    
+    double inX = SmartDashboard.getNumber("test_inX",1);
+    double inY = SmartDashboard.getNumber("test_inY",1);
+
+    double[] thetaPhi = convertGrabberXYToThetaPhi(new double[]{inX,inY});
+    SmartDashboard.putNumber("test_outX",Units.radiansToDegrees(thetaPhi[0]));
+    SmartDashboard.putNumber("test_outY",Units.radiansToDegrees(thetaPhi[1]));
 
 
 
