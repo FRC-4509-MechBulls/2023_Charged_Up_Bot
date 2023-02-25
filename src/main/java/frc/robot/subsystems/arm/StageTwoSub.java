@@ -206,11 +206,12 @@ public class StageTwoSub extends SubsystemBase {
     }
     if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
       setSensorPosition(ArmConstants.stageTwoLimitSwitchLeadingAngle);
+      SmartDashboard.putNumber("stageTwoLSAngle", Units.radiansToDegrees(angle));
       lastInLimitZone = true;
-    }
+    }/*
     if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
       setSensorPosition(ArmConstants.stageTwoLimitSwitchTrailingAngle);
       lastInLimitZone = true;
-    }
+    }*/
   }
 }

@@ -55,8 +55,8 @@ public final class Constants {
     }
 
     public static final class EFPathingConstants{
-        public static final double BUMPER_Y_FROM_ORIGIN = Units.inchesToMeters(8); //5 real
-        public static final double BUMPER_X_FROM_ORIGIN = Units.inchesToMeters(34/2); //34/2 real
+        public static final double BUMPER_Y_FROM_ORIGIN = Units.inchesToMeters(7); //6.5 real
+        public static final double BUMPER_X_FROM_ORIGIN = Units.inchesToMeters(18); //17.5 real
 
         public static final double EF_WIDTH = Units.inchesToMeters(17);
         public static final double EF_HEIGHT = Units.inchesToMeters(12.5);
@@ -86,7 +86,7 @@ public final class Constants {
         public static final double radiansPerRotation = 2 * Math.PI;
         public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
         public static final double stageOneLimitSwitchLeadingAngle = Units.degreesToRadians(39.745231);
-        public static final double stageOneLimitSwitchTrailingAngle = Units.degreesToRadians(53.280768);
+        public static final double stageOneLimitSwitchTrailingAngle = Units.degreesToRadians(50.162); //50.162, 
         public static final int stageOneTalonLeftID = 11;
         public static final int stageOneTalonRightID = 12;
         public static final double[] stageOneDefaultCGCoordinateRelativeToPivot = {6, 0};
@@ -121,7 +121,7 @@ public final class Constants {
         public static final double stageOne_kD = 0; //undecided
 
         public static final double revEncoderCountsPerRotation = 2048;
-        public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-39.987);
+        public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
         public static final double stageTwoLimitSwitchTrailingAngle = Units.degreesToRadians(-27.133);
         public static final int stageTwoSparkLeftID = 1; 
         public static final int stageTwoSparkRightID = 2; 
@@ -160,7 +160,7 @@ public final class Constants {
         public static final double eFMass = 12.7;
 
         public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66)}; //undecided
-        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(22), Units.inchesToMeters(4.625)}; //undecided
+        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(25), Units.inchesToMeters(4.625)}; //22, 4.625
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(3.66 + 8.5)}; //undecided
         public static final double[] holdingArmPos = {0.315,0.324}; //undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 

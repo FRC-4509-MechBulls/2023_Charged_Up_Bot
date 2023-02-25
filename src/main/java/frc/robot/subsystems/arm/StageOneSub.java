@@ -220,13 +220,14 @@ public class StageOneSub extends SubsystemBase {
     SmartDashboard.putNumber("stageOneVelocity", velocity);
     if (!getLimitSwitch()) {
       lastInLimitZone = false;
-    }
+    }/* 
     if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
       setSensorPosition(ArmConstants.stageOneLimitSwitchLeadingAngle);
       lastInLimitZone = true;
-    }
+    }*/
     if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
       setSensorPosition(ArmConstants.stageOneLimitSwitchTrailingAngle);
+      SmartDashboard.putNumber("stageOneLSAngle", Units.radiansToDegrees(angle));
       lastInLimitZone = true;
     }
   }
