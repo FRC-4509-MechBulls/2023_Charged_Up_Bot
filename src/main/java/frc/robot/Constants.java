@@ -159,13 +159,13 @@ public final class Constants {
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;
 
-        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66)}; //undecided
+        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66 - .25)}; //undecided
         public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(25), Units.inchesToMeters(4.625)}; //22, 4.625
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(3.66 + 8.5)}; //undecided
         public static final double[] holdingArmPos = {0.315,0.324}; //undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //undecided
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(22.80887), Units.inchesToMeters(38.174883)}; //undecided
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(22.80887), Units.inchesToMeters(38.174883 + 8)}; //undecided
         public static final double[] placingConeArmPosThree = {Units.inchesToMeters(39.854341), Units.inchesToMeters(49.39670)}; //undecided
 
         public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(2.40714), Units.inchesToMeters(12.767167)}; //undecided
