@@ -111,7 +111,7 @@ public final class Constants {
         public static final double stageOneMass = 10.64;
         public static final double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = {-8.125, 9};
         public static final double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = {12.14, 1.723};
-        public static final double stageOneSoftLimitForward = Units.degreesToRadians(55);
+        public static final double stageOneSoftLimitForward = Units.degreesToRadians(90);
         public static final double stageOneSoftLimitReverse = Units.degreesToRadians(25);
         public static final double stageOneContinuousCurrentLimit = 20;
         public static final double stageOnePeakCurrentLimit = 40;
@@ -159,9 +159,9 @@ public final class Constants {
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;
 
-        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(9.84971 + 4), Units.inchesToMeters(10.951019)}; //undecided
-        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(18.72625 + 6 + 4), Units.inchesToMeters(3.6)}; //undecided
-        public static final double[] intakingCubesArmPos = {Units.inchesToMeters(15.001167 + + 4), Units.inchesToMeters(10.85000)}; //undecided
+        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66)}; //undecided
+        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(22), Units.inchesToMeters(4.625)}; //undecided
+        public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(3.66 + 8.5)}; //undecided
         public static final double[] holdingArmPos = {0.315,0.324}; //undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //undecided
