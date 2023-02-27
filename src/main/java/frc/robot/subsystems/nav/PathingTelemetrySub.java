@@ -21,7 +21,7 @@ import java.util.List;
 public class PathingTelemetrySub extends GraphicalTelemetrySubsystem {
     private StateControllerSubsystem stateControllerSubsystem;
     public PathingTelemetrySub(StateControllerSubsystem stateControllerSubsystem) {
-        super("FieldNav",768,480,2);
+        super("FieldNav",768,480,8);
         this.stateControllerSubsystem = stateControllerSubsystem;
     }
 
