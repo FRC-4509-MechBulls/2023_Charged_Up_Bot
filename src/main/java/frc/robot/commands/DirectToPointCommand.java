@@ -15,6 +15,7 @@ public class DirectToPointCommand extends CommandBase {
     double distToFinished;
     double timeout;
     double posTolerance = Constants.DriveConstants.posTolerance;
+    double rotationTolerance = Constants.DriveConstants.rotationTolerance;
 
     public DirectToPointCommand(SwerveSubsystem swerveSubsystem,Pose2d desiredPose, double timeout) {
         this.swerveSubsystem = swerveSubsystem;
@@ -26,9 +27,10 @@ public class DirectToPointCommand extends CommandBase {
 
     }
 
-    public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance){
+    public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance, double rotationTolerance){
         this(swerveSubsystem,desiredPose,timeout);
         this.posTolerance = posTolerance;
+        this.rotationTolerance = rotationTolerance;
     }
 
     /**
@@ -65,7 +67,8 @@ public class DirectToPointCommand extends CommandBase {
         // TODO: Make this return true when this Command no longer needs to run execute()
         boolean timedOut = Timer.getFPGATimestamp() - startTime>timeout;
         boolean reachedGoal = Math.sqrt(Math.pow(desiredPose.getX() - swerveSubsystem.getEstimatedPosition().getX(),2)+Math.pow(desiredPose.getY() - swerveSubsystem.getEstimatedPosition().getY(),2)) < posTolerance;
-        return timedOut || reachedGoal;
+        boolean reachedRotation = Math.abs(desiredPose.getRotation().getDegrees() - swerveSubsystem.getEstimatedPosition().getRotation().getDegrees()) < rotationTolerance;
+        return timedOut || (reachedGoal && reachedRotation);
     }
 
 
