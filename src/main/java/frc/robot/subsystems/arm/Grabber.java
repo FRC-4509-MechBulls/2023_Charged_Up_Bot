@@ -53,8 +53,8 @@ public class Grabber extends SubsystemBase {
     this.stateController = stateController;
     this.eFNavSystem = eFNavSystem;
     this.telemetrySub = telemetrySub;
-    SmartDashboard.putNumber("test_inX",1);
-    SmartDashboard.putNumber("test_inY",1);
+    //SmartDashboard.putNumber("test_inX",1);
+    //SmartDashboard.putNumber("test_inY",1);
   }
   //random???
   public void setArmPosition(ArmModes armMode){
@@ -332,16 +332,16 @@ public class Grabber extends SubsystemBase {
     Pose2d nextNavPoint = eFNavSystem.getNextNavPoint();
     double[] navPointInInches = new double[]{Units.metersToInches(nextNavPoint.getX()), Units.metersToInches(nextNavPoint.getY())};
     setSetpointXY(navPointInInches);
-    SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
-    SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
+    //SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
+    //SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
 
     calculateGrabberData();
     updateGrabberData();
 
     double[] eFPositionButInMeters = new double[]{Units.inchesToMeters(eFPosition[0]),Units.inchesToMeters(eFPosition[1])};
     eFNavSystem.updatePivotPoint(eFPositionButInMeters);
-    SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
-    SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
+    //SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
+   // SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
     eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
 
     setDesiredEFMode(stateController.getEFMode());
@@ -356,12 +356,12 @@ public class Grabber extends SubsystemBase {
     }
 
     
-    double inX = SmartDashboard.getNumber("test_inX",1);
-    double inY = SmartDashboard.getNumber("test_inY",1);
+   // double inX = SmartDashboard.getNumber("test_inX",1);
+   // double inY = SmartDashboard.getNumber("test_inY",1);
 
-    double[] thetaPhi = convertGrabberXYToThetaPhi(new double[]{inX,inY});
-    SmartDashboard.putNumber("test_outX",Units.radiansToDegrees(thetaPhi[0]));
-    SmartDashboard.putNumber("test_outY",Units.radiansToDegrees(thetaPhi[1]));
+    //double[] thetaPhi = convertGrabberXYToThetaPhi(new double[]{inX,inY});
+   // SmartDashboard.putNumber("test_outX",Units.radiansToDegrees(thetaPhi[0]));
+   // SmartDashboard.putNumber("test_outY",Units.radiansToDegrees(thetaPhi[1]));
 
     telemetrySub.updateStageOneAngle(stageOneSub.getAngle());
     telemetrySub.updateStageTwoAngle(stageTwoSub.getAngle());

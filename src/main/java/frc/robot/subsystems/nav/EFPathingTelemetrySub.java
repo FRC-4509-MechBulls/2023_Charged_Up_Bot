@@ -51,7 +51,7 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
         Point pivotPointPixels = metersPosToPixelsPos(new Point(this.pivotPoint.x,this.pivotPoint.y));
         Imgproc.circle(mat,pivotPointPixels,3,new Scalar(255,255,255),2); //pivot point
 
-        SmartDashboard.putString("efPose","x:"+efPose.getX()+", y:"+efPose.getY());
+       // SmartDashboard.putString("efPose","x:"+efPose.getX()+", y:"+efPose.getY());
 
         drawRotatedRectMeters(mat, efPose.getX(),efPose.getY(),Constants.EFPathingConstants.EF_WIDTH,Constants.EFPathingConstants.EF_HEIGHT,efPose.getRotation(),new Scalar(0,0,255),2);
 
@@ -115,7 +115,7 @@ void drawNavigationLines(Mat mat){
         Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
     if(navPoses.size()==1)
         Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(0).getX(), navPoses.get(0).getY())),metersPosToPixelsPos(new Point(pivotPoint.getX(),pivotPoint.getY())),new Scalar(255,0,100),2);
-    SmartDashboard.putNumber("EFNavPosesSize", navPoses.size());
+   // SmartDashboard.putNumber("EFNavPosesSize", navPoses.size());
 }
 
 public void drawDebugText(Mat mat){
