@@ -10,8 +10,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.nav.EFNavSystem;
+import frc.robot.subsystems.nav.EFPathingTelemetrySub;
 import frc.robot.subsystems.state.StateControllerSubsystem;
 
 import static frc.robot.Constants.ArmConstants;
@@ -41,14 +43,18 @@ public class Grabber extends SubsystemBase {
   private ArmModes armMode = ArmModes.HOLDING;
   private EFModes desiredEFMode = EFModes.STOPPED;
   private ArmModes desiredArmMode = ArmModes.HOLDING;
+  EFPathingTelemetrySub telemetrySub;
 
   /** Creates a new Grabber. */
-  public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController, EFNavSystem eFNavSystem) {
+  public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController, EFNavSystem eFNavSystem, EFPathingTelemetrySub telemetrySub) {
     this.stageOneSub = stageOneSub;
     this.stageTwoSub = stageTwoSub;
     this.endEffectorSubsystem = endEffectorSubsystem;
     this.stateController = stateController;
     this.eFNavSystem = eFNavSystem;
+    this.telemetrySub = telemetrySub;
+    //SmartDashboard.putNumber("test_inX",1);
+    //SmartDashboard.putNumber("test_inY",1);
   }
   //random???
   public void setArmPosition(ArmModes armMode){
@@ -284,6 +290,15 @@ public class Grabber extends SubsystemBase {
   private double[] convertGrabberXYToThetaPhi(double[] coordinate) {
     double[] rawCoordinate = coordinate;
 
+    //scale rawCoordinate back so the arm doesn't go crazy go stupid
+    if(MB_Math.dist(ArmConstants.stageOnePivotCoordinate[0],ArmConstants.stageOnePivotCoordinate[1],rawCoordinate[0],rawCoordinate[1])>=ArmConstants.maxExtension){
+      double angleToXY = Math.atan2(coordinate[1] - ArmConstants.stageOnePivotCoordinate[1],coordinate[0]- ArmConstants.stageOnePivotCoordinate[0]);
+      double totalArmLength = ArmConstants.maxExtension;
+      double x = ArmConstants.stageOnePivotCoordinate[0] + Math.cos(angleToXY) * totalArmLength;
+      double y = ArmConstants.stageOnePivotCoordinate[1] + Math.sin(angleToXY) * totalArmLength;
+      rawCoordinate = new double[]{x,y};
+    }
+
     double[] pivotOne = stageOneSub.getPivotCoordinate();
 
     double[] coordinateRelativeToPivotOne = subtractCoordinates(rawCoordinate, pivotOne);
@@ -317,16 +332,16 @@ public class Grabber extends SubsystemBase {
     Pose2d nextNavPoint = eFNavSystem.getNextNavPoint();
     double[] navPointInInches = new double[]{Units.metersToInches(nextNavPoint.getX()), Units.metersToInches(nextNavPoint.getY())};
     setSetpointXY(navPointInInches);
-    SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
-    SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
+    //SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
+    //SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
 
     calculateGrabberData();
     updateGrabberData();
 
     double[] eFPositionButInMeters = new double[]{Units.inchesToMeters(eFPosition[0]),Units.inchesToMeters(eFPosition[1])};
     eFNavSystem.updatePivotPoint(eFPositionButInMeters);
-    SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
-    SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
+    //SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
+   // SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
     eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
 
     setDesiredEFMode(stateController.getEFMode());
@@ -337,9 +352,19 @@ public class Grabber extends SubsystemBase {
       if(desiredEFMode!= EFModes.PLACING_CONE && desiredEFMode!=EFModes.PLACING_CUBE) setEndEffectorMode(desiredEFMode);
       //if(distFromDest<Units.inchesToMeters(2))
         //setEndEffectorMode(desiredEFMode);
+
     }
 
+    
+   // double inX = SmartDashboard.getNumber("test_inX",1);
+   // double inY = SmartDashboard.getNumber("test_inY",1);
 
+    //double[] thetaPhi = convertGrabberXYToThetaPhi(new double[]{inX,inY});
+   // SmartDashboard.putNumber("test_outX",Units.radiansToDegrees(thetaPhi[0]));
+   // SmartDashboard.putNumber("test_outY",Units.radiansToDegrees(thetaPhi[1]));
+
+    telemetrySub.updateStageOneAngle(stageOneSub.getAngle());
+    telemetrySub.updateStageTwoAngle(stageTwoSub.getAngle());
 
     //setEndEffectorMode(stateController.getEFMode()); //???
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -41,6 +42,7 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
         drawCornerPoints(mat);
         drawNavigationLines(mat);
         drawDebugText(mat);
+        drawArms(mat);
         dontTouchMe = false;
     }
 
@@ -49,7 +51,7 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
         Point pivotPointPixels = metersPosToPixelsPos(new Point(this.pivotPoint.x,this.pivotPoint.y));
         Imgproc.circle(mat,pivotPointPixels,3,new Scalar(255,255,255),2); //pivot point
 
-        SmartDashboard.putString("efPose","x:"+efPose.getX()+", y:"+efPose.getY());
+       // SmartDashboard.putString("efPose","x:"+efPose.getX()+", y:"+efPose.getY());
 
         drawRotatedRectMeters(mat, efPose.getX(),efPose.getY(),Constants.EFPathingConstants.EF_WIDTH,Constants.EFPathingConstants.EF_HEIGHT,efPose.getRotation(),new Scalar(0,0,255),2);
 
@@ -77,6 +79,34 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
             Imgproc.circle(mat, metersPosToPixelsPos(new Point(pose.getX(), pose.getY())),2,new Scalar(100,100,100),2);
 
     }
+    double stageOneAngle = 0;
+    double stageTwoAngle = 0;
+    public void updateStageOneAngle(double stageOneAngle){
+        if(dontTouchMe) return;
+        this.stageOneAngle = stageOneAngle;
+    }
+    public void updateStageTwoAngle(double stageTwoAngle){
+        if(dontTouchMe) return;
+        this.stageTwoAngle = stageTwoAngle;
+    }
+    void drawArms(Mat mat){
+        double originX = Units.inchesToMeters(Constants.ArmConstants.stageOnePivotCoordinate[0]);
+        double originY = Units.inchesToMeters(Constants.ArmConstants.stageOnePivotCoordinate[1]);
+        double l1 = Units.inchesToMeters(Constants.ArmConstants.stageOneLength);
+        double l2 = Units.inchesToMeters(Constants.ArmConstants.stageTwoLength);
+        double dir1 = stageOneAngle;
+        double dir2 = stageOneAngle+stageTwoAngle;
+        drawArmsMeters(mat, originX,originY,l1,dir1,l2,dir2);
+    }
+    void drawArmsMeters(Mat mat, double originX,double originY, double l1, double dir1, double l2, double dir2){
+        double x1 = originX; double y1 = originY;
+        double x2 = originX + l1* Math.cos(dir1);
+        double y2 = originY + l1*Math.sin(dir1);
+        double x3 = x2 + l2*Math.cos(dir2); //might be dir1+dir2
+        double y3 = y2 + l2*Math.sin(dir2); //might be dir1+dir2
+        Imgproc.line(mat, metersPosToPixelsPos(new Point(x1,y1)),metersPosToPixelsPos(new Point(x2,y2)),new Scalar(255,255,255),2);
+        Imgproc.line(mat, metersPosToPixelsPos(new Point(x2,y2)),metersPosToPixelsPos(new Point(x3,y3)),new Scalar(255,255,255),2);
+    }
 
 void drawNavigationLines(Mat mat){
         if(navPoses.size()<2) return;
@@ -85,7 +115,7 @@ void drawNavigationLines(Mat mat){
         Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
     if(navPoses.size()==1)
         Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(0).getX(), navPoses.get(0).getY())),metersPosToPixelsPos(new Point(pivotPoint.getX(),pivotPoint.getY())),new Scalar(255,0,100),2);
-    SmartDashboard.putNumber("EFNavPosesSize", navPoses.size());
+   // SmartDashboard.putNumber("EFNavPosesSize", navPoses.size());
 }
 
 public void drawDebugText(Mat mat){
@@ -218,7 +248,7 @@ void updateNavPoses(ArrayList<Pose2d> navPoses){
    //     posInMeters.x += SmartDashboard.getNumber("TCamX",0);
      //   posInMeters.y += SmartDashboard.getNumber("TCamY",0);
 
-        posInMeters.x += 1.25;
+        posInMeters.x += 1.0; //1.25
         posInMeters.y += -0.9;
 
      //   double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
