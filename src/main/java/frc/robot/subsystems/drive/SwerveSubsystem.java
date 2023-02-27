@@ -73,7 +73,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private ChassisSpeeds chassisSpeeds;
 
   //Values
-    static boolean fieldOriented;
+    static boolean fieldOriented = true;
   private double translationMagnitude;
 
   private double translationMagnitudeScaled;
