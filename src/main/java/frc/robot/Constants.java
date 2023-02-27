@@ -168,9 +168,9 @@ public final class Constants {
         public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(22.80887), Units.inchesToMeters(38.174883 + 8)}; //undecided
         public static final double[] placingConeArmPosThree = {Units.inchesToMeters(39.854341), Units.inchesToMeters(49.39670)}; //undecided
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(2.40714), Units.inchesToMeters(12.767167)}; //undecided
-        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(14.938901), Units.inchesToMeters(23.556361)}; //undecided
-        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(32.348569), Units.inchesToMeters(34.207880)}; //undecided
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(15), Units.inchesToMeters(17)}; //(2.5, 13)(15, 17)
+        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
+        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)}; //(34, 37)
 
         public static final double angleToleranceToUpdateEF = 0.5;
         public static final double maxExtension = 55; //slightly lower than total length of arm = 57.5 inches
