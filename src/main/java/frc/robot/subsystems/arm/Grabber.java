@@ -356,6 +356,7 @@ public class Grabber extends SubsystemBase {
 
     }
     SmartDashboard.putBoolean("EFMatches", getEFMode()==getDesiredEFMode());
+    SmartDashboard.putString("EFMode",getEFMode().toString());
 
     
    // double inX = SmartDashboard.getNumber("test_inX",1);
