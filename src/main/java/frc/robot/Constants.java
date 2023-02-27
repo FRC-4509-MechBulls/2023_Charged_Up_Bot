@@ -162,7 +162,7 @@ public final class Constants {
         public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66 - .25)}; //undecided
         public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(25), Units.inchesToMeters(4.625)}; //22, 4.625
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(3.66 + 8.5)}; //undecided
-        public static final double[] holdingArmPos = {0.315,0.324}; //undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
+        public static final double[] holdingArmPos = {Units.inchesToMeters(2), Units.inchesToMeters(17)}; //(.315m, .324m)(2, 17)//undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //(8, 14)
         public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(24.5), Units.inchesToMeters(38.5)}; //(23, 46)(24.5, 38.5)
