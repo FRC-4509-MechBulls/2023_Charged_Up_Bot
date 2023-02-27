@@ -278,8 +278,8 @@ public final class Constants {
         public static final boolean USE_NAV_X_OVER_PIGEON = false;
 
 
-        public static final double posTolerance = Units.inchesToMeters(0.5);
-        public static final double rotationTolerance = 2;
+        public static final double posTolerance = Units.inchesToMeters(0.25);
+        public static final double rotationTolerance = 0.5; //adds half an inch with arm fully extended
 
         
         public static final double GYRO_Z_ERROR = 0.674; //.674
