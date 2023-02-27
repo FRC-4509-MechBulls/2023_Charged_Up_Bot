@@ -125,7 +125,8 @@ lastPlacingPOV = placingPOV;
     if(agnosticGrabberMode == AgnosticGrabberMode.PLACING){
       switch (itemType){
         case CONE: return Grabber.EFModes.PLACING_CONE;
-        case CUBE: return Grabber.EFModes.PLACING_CUBE;
+        //place cube bottom for l1 and l2, top for l3
+        case CUBE: if(placingLevel == Level.POS3) return Grabber.EFModes.PLACING_CUBE_TOP; else return Grabber.EFModes.PLACING_CUBE_BOTTOM;
       }
     }
   return Grabber.EFModes.STOPPED;

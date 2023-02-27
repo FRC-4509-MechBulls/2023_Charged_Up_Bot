@@ -37,7 +37,7 @@ public class Grabber extends SubsystemBase {
   private double[] eFPosition;
 
   public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
-  public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE, PLACING_CONE, STOPPED}
+  public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE_BOTTOM,PLACING_CUBE_TOP, PLACING_CONE, STOPPED}
 
   private EFModes efMode = EFModes.STOPPED;
   private ArmModes armMode = ArmModes.HOLDING;
@@ -70,7 +70,8 @@ public class Grabber extends SubsystemBase {
       case HOLDING_CONE: endEffectorSubsystem.holdCone(); break;
       case HOLDING_CUBE: endEffectorSubsystem.holdCube(); break;
       case PLACING_CONE: endEffectorSubsystem.placeCone(); break;
-      case PLACING_CUBE: endEffectorSubsystem.placeCube(); break;
+      case PLACING_CUBE_BOTTOM: endEffectorSubsystem.placeCubeBottom(); break;
+      case PLACING_CUBE_TOP: endEffectorSubsystem.placeCubeTop(); break;
       case STOPPED: endEffectorSubsystem.stopMotors(); break;
     }
     efMode = effectorMode;
@@ -349,11 +350,12 @@ public class Grabber extends SubsystemBase {
     if(getEFMode()!= getDesiredEFMode()){
       double distFromDest = MB_Math.dist(eFPositionButInMeters[0],eFPositionButInMeters[1],eFNavSystem.getDesiredPose().getX(),eFNavSystem.getDesiredPose().getY());
       SmartDashboard.putNumber("distFromDest",distFromDest);
-      if(desiredEFMode!= EFModes.PLACING_CONE && desiredEFMode!=EFModes.PLACING_CUBE) setEndEffectorMode(desiredEFMode);
+      if(desiredEFMode!= EFModes.PLACING_CONE && desiredEFMode!=EFModes.PLACING_CUBE_TOP && desiredEFMode!=EFModes.PLACING_CUBE_BOTTOM) setEndEffectorMode(desiredEFMode);
       //if(distFromDest<Units.inchesToMeters(2))
         //setEndEffectorMode(desiredEFMode);
 
     }
+    SmartDashboard.putBoolean("EFMatches", getEFMode()==getDesiredEFMode());
 
     
    // double inX = SmartDashboard.getNumber("test_inX",1);
