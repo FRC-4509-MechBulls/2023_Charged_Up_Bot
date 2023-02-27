@@ -87,7 +87,7 @@ pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
         }
     }
     if(minIndex!=-1)
-        closestSetpoint = new Pose2d(setPoints.get(minIndex).getX(),setPoints.get(minIndex).getY(), closestSetpoint.getRotation());
+        closestSetpoint = new Pose2d(setPoints.get(minIndex).getX(),setPoints.get(minIndex).getY(), setPoints.get(minIndex).getRotation());
 
 }
 Pose2d closestSetpoint = new Pose2d();
