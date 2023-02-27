@@ -173,6 +173,7 @@ public final class Constants {
         public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(32.348569), Units.inchesToMeters(34.207880)}; //undecided
 
         public static final double angleToleranceToUpdateEF = 0.5;
+        public static final double maxExtension = 55; //slightly lower than total length of arm = 57.5 inches
     }
 
 

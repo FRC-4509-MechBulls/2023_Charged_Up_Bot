@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.nav.EFNavSystem;
 import frc.robot.subsystems.nav.EFPathingTelemetrySub;
@@ -289,6 +290,15 @@ public class Grabber extends SubsystemBase {
   private double[] convertGrabberXYToThetaPhi(double[] coordinate) {
     double[] rawCoordinate = coordinate;
 
+    //scale rawCoordinate back so the arm doesn't go crazy go stupid
+    if(MB_Math.dist(ArmConstants.stageOnePivotCoordinate[0],ArmConstants.stageOnePivotCoordinate[1],rawCoordinate[0],rawCoordinate[1])>=ArmConstants.maxExtension){
+      double angleToXY = Math.atan2(coordinate[1] - ArmConstants.stageOnePivotCoordinate[1],coordinate[0]- ArmConstants.stageOnePivotCoordinate[0]);
+      double totalArmLength = ArmConstants.maxExtension;
+      double x = ArmConstants.stageOnePivotCoordinate[0] + Math.cos(angleToXY) * totalArmLength;
+      double y = ArmConstants.stageOnePivotCoordinate[1] + Math.sin(angleToXY) * totalArmLength;
+      rawCoordinate = new double[]{x,y};
+    }
+
     double[] pivotOne = stageOneSub.getPivotCoordinate();
 
     double[] coordinateRelativeToPivotOne = subtractCoordinates(rawCoordinate, pivotOne);
@@ -353,8 +363,8 @@ public class Grabber extends SubsystemBase {
     SmartDashboard.putNumber("test_outX",Units.radiansToDegrees(thetaPhi[0]));
     SmartDashboard.putNumber("test_outY",Units.radiansToDegrees(thetaPhi[1]));
 
-    telemetrySub.updateStageOneAngle(thetaPhi[0]);
-    telemetrySub.updateStageTwoAngle(thetaPhi[1]);
+    telemetrySub.updateStageOneAngle(stageOneSub.getAngle());
+    telemetrySub.updateStageTwoAngle(stageTwoSub.getAngle());
 
     //setEndEffectorMode(stateController.getEFMode()); //???
 
