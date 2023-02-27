@@ -198,15 +198,15 @@ public class StageTwoSub extends SubsystemBase {
   public void periodic() {
     calculateStageData();
     setArmPosition();
-    SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
-    SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
-    SmartDashboard.putNumber("stageTwoVelocity", velocity);
+    //SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
+    //SmartDashboard.putNumber("stageTwoVelocity", velocity);
     if (!getLimitSwitch()) {
       lastInLimitZone = false;
     }
     if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
       setSensorPosition(ArmConstants.stageTwoLimitSwitchLeadingAngle);
-      SmartDashboard.putNumber("stageTwoLSAngle", Units.radiansToDegrees(angle));
+      //SmartDashboard.putNumber("stageTwoLSAngle", Units.radiansToDegrees(angle));
       lastInLimitZone = true;
     }/*
     if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {

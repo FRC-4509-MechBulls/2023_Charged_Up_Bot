@@ -344,7 +344,7 @@ private void createAndStartPathingThread(){
                             //        disengageNav(); //disengage if engaged for >10s
                                 updateNavPoses();
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
-                                SmartDashboard.putNumber("pathingCompTime",compTime);
+                                //SmartDashboard.putNumber("pathingCompTime",compTime);
                               //  Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
                                 pTelemetrySub.updateNavPoses(navPoses);
                                 Thread.sleep(Constants.PathingConstants.minPathingDelay);
