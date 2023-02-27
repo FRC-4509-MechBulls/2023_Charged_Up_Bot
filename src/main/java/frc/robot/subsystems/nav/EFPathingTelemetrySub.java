@@ -2,6 +2,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -41,6 +42,7 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
         drawCornerPoints(mat);
         drawNavigationLines(mat);
         drawDebugText(mat);
+        drawArms(mat);
         dontTouchMe = false;
     }
 
@@ -76,6 +78,34 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
         for(Pose2d pose : cornerPoints)
             Imgproc.circle(mat, metersPosToPixelsPos(new Point(pose.getX(), pose.getY())),2,new Scalar(100,100,100),2);
 
+    }
+    double stageOneAngle = 0;
+    double stageTwoAngle = 0;
+    public void updateStageOneAngle(double stageOneAngle){
+        if(dontTouchMe) return;
+        this.stageOneAngle = stageOneAngle;
+    }
+    public void updateStageTwoAngle(double stageTwoAngle){
+        if(dontTouchMe) return;
+        this.stageTwoAngle = stageTwoAngle;
+    }
+    void drawArms(Mat mat){
+        double originX = Units.inchesToMeters(Constants.ArmConstants.stageOnePivotCoordinate[0]);
+        double originY = Units.inchesToMeters(Constants.ArmConstants.stageOnePivotCoordinate[1]);
+        double l1 = Units.inchesToMeters(Constants.ArmConstants.stageOneLength);
+        double l2 = Units.inchesToMeters(Constants.ArmConstants.stageTwoLength);
+        double dir1 = stageOneAngle;
+        double dir2 = stageOneAngle+stageTwoAngle;
+        drawArmsMeters(mat, originX,originY,l1,dir1,l2,dir2);
+    }
+    void drawArmsMeters(Mat mat, double originX,double originY, double l1, double dir1, double l2, double dir2){
+        double x1 = originX; double y1 = originY;
+        double x2 = originX + l1* Math.cos(dir1);
+        double y2 = originY + l1*Math.sin(dir1);
+        double x3 = x2 + l2*Math.cos(dir2); //might be dir1+dir2
+        double y3 = y2 + l2*Math.sin(dir2); //might be dir1+dir2
+        Imgproc.line(mat, metersPosToPixelsPos(new Point(x1,y1)),metersPosToPixelsPos(new Point(x2,y2)),new Scalar(255,255,255),2);
+        Imgproc.line(mat, metersPosToPixelsPos(new Point(x2,y2)),metersPosToPixelsPos(new Point(x3,y3)),new Scalar(255,255,255),2);
     }
 
 void drawNavigationLines(Mat mat){

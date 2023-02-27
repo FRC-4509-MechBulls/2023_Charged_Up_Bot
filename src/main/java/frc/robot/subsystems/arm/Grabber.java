@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.nav.EFNavSystem;
+import frc.robot.subsystems.nav.EFPathingTelemetrySub;
 import frc.robot.subsystems.state.StateControllerSubsystem;
 
 import static frc.robot.Constants.ArmConstants;
@@ -41,14 +42,16 @@ public class Grabber extends SubsystemBase {
   private ArmModes armMode = ArmModes.HOLDING;
   private EFModes desiredEFMode = EFModes.STOPPED;
   private ArmModes desiredArmMode = ArmModes.HOLDING;
+  EFPathingTelemetrySub telemetrySub;
 
   /** Creates a new Grabber. */
-  public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController, EFNavSystem eFNavSystem) {
+  public Grabber(StageOneSub stageOneSub, StageTwoSub stageTwoSub, EFSub endEffectorSubsystem, StateControllerSubsystem stateController, EFNavSystem eFNavSystem, EFPathingTelemetrySub telemetrySub) {
     this.stageOneSub = stageOneSub;
     this.stageTwoSub = stageTwoSub;
     this.endEffectorSubsystem = endEffectorSubsystem;
     this.stateController = stateController;
     this.eFNavSystem = eFNavSystem;
+    this.telemetrySub = telemetrySub;
     SmartDashboard.putNumber("test_inX",1);
     SmartDashboard.putNumber("test_inY",1);
   }
@@ -350,7 +353,8 @@ public class Grabber extends SubsystemBase {
     SmartDashboard.putNumber("test_outX",Units.radiansToDegrees(thetaPhi[0]));
     SmartDashboard.putNumber("test_outY",Units.radiansToDegrees(thetaPhi[1]));
 
-
+    telemetrySub.updateStageOneAngle(stageOneSub.getAngle());
+    telemetrySub.updateStageTwoAngle(stageTwoSub.getAngle());
 
     //setEndEffectorMode(stateController.getEFMode()); //???
 
