@@ -98,7 +98,12 @@ public class EFSub extends SubsystemBase {
     efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CONE_BOTTOM_OUTPUT);
   }
 
-  public void placeCube() {
+  public void placeCubeBottom() {
+    // reverses direction of motors to place cube
+    efMotorTop.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.PLACE_CUBE_TOP_OUTPUT);
+    efMotorBottom.set(TalonSRXControlMode.PercentOutput, -EndEffectorConstants.PLACE_CUBE_BOTTOM_OUTPUT);
+  }
+  public void placeCubeTop() {
     // reverses direction of motors to place cube
     efMotorTop.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CUBE_TOP_OUTPUT);
     efMotorBottom.set(TalonSRXControlMode.PercentOutput, EndEffectorConstants.PLACE_CUBE_BOTTOM_OUTPUT);

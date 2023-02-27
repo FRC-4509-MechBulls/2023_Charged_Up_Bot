@@ -215,9 +215,9 @@ public class StageOneSub extends SubsystemBase {
   public void periodic() {
     calculateStageData();
     setArmPosition();
-    SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
-    SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
-    SmartDashboard.putNumber("stageOneVelocity", velocity);
+    //SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
+    //SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
+    //SmartDashboard.putNumber("stageOneVelocity", velocity);
     if (!getLimitSwitch()) {
       lastInLimitZone = false;
     }/* 
@@ -227,7 +227,7 @@ public class StageOneSub extends SubsystemBase {
     }*/
     if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
       setSensorPosition(ArmConstants.stageOneLimitSwitchTrailingAngle);
-      SmartDashboard.putNumber("stageOneLSAngle", Units.radiansToDegrees(angle));
+      //SmartDashboard.putNumber("stageOneLSAngle", Units.radiansToDegrees(angle));
       lastInLimitZone = true;
     }
   }
