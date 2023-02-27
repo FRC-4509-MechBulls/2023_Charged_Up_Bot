@@ -353,8 +353,8 @@ public class Grabber extends SubsystemBase {
     SmartDashboard.putNumber("test_outX",Units.radiansToDegrees(thetaPhi[0]));
     SmartDashboard.putNumber("test_outY",Units.radiansToDegrees(thetaPhi[1]));
 
-    telemetrySub.updateStageOneAngle(stageOneSub.getAngle());
-    telemetrySub.updateStageTwoAngle(stageTwoSub.getAngle());
+    telemetrySub.updateStageOneAngle(thetaPhi[0]);
+    telemetrySub.updateStageTwoAngle(thetaPhi[1]);
 
     //setEndEffectorMode(stateController.getEFMode()); //???
 

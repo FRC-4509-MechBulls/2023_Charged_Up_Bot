@@ -248,7 +248,7 @@ void updateNavPoses(ArrayList<Pose2d> navPoses){
    //     posInMeters.x += SmartDashboard.getNumber("TCamX",0);
      //   posInMeters.y += SmartDashboard.getNumber("TCamY",0);
 
-        posInMeters.x += 1.25;
+        posInMeters.x += 1.0; //1.25
         posInMeters.y += -0.9;
 
      //   double zoom = SmartDashboard.getNumber("TCamZoom",1) * 0.6  ;
