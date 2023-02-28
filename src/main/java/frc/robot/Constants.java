@@ -165,8 +165,8 @@ public final class Constants {
         public static final double[] holdingArmPos = {Units.inchesToMeters(2), Units.inchesToMeters(17)}; //(.315m, .324m)(2, 17)//undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //(8, 14)
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(24.5), Units.inchesToMeters(38.5)}; //(23, 46)(24.5, 38.5)
-        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(41), Units.inchesToMeters(50)}; //(40, 49.5)(41.5, 50)
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(23.5), Units.inchesToMeters(42 + 1.5)}; //()(23, 46)(24.5, 38.5)
+        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42), Units.inchesToMeters(55)}; //(40, 49.5)(41.5, 50)
 
         public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(15), Units.inchesToMeters(17)}; //(2.5, 13)(15, 17)
         public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
@@ -290,8 +290,8 @@ public final class Constants {
         public static double drivePValue = 3; //% speed for every meter away from target
         public static  double turnPValue = 0.010; //% speed for every degree away from target
 
-        public static final double maxPowerOut = 0.3;
-        public static final double maxTurningPowerOut = 0.1;
+        public static final double maxPowerOut = 0.1;
+        public static final double maxTurningPowerOut = 0.2;
 
     }
 

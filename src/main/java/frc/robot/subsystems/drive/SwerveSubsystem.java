@@ -103,6 +103,8 @@ StateControllerSubsystem stateControllerSubsystem;
     zeroHeading();
     constructOdometry(); //constructs odometry with newly correct gyro values
 
+   // SmartDashboard.putNumber("drivePValue",0.1);
+  //  SmartDashboard.putNumber("turningPValue",0.1);
 
         //allows gyro to calibrate for 1 sec before requesting to reset^^
     //SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
@@ -355,6 +357,8 @@ SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new Swerv
   // Periodic
   @Override
   public void periodic() {
+    //DriveConstants.drivePValue = SmartDashboard.getNumber("drivePValue",0.1);
+    //DriveConstants.turnPValue = SmartDashboard.getNumber("turningPValue",0.1);
 
     //constantly updates the gyro angle
   //  var gyroAngle = gyro.getRotation2d();
