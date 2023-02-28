@@ -287,8 +287,8 @@ public final class Constants {
         public static final double GYRO_MOUNT_POSE_YAW = 0;
         public static final double GYRO_MOUNT_POSE_ROLL = 0;
 
-        public static final double drivePValue = 0.4; //% speed for every meter away from target
-        public static final double turnPValue = 2/180.0; //% speed for every degree away from target
+        public static double drivePValue = 3; //% speed for every meter away from target
+        public static  double turnPValue = 0.010; //% speed for every degree away from target
 
         public static final double maxPowerOut = 0.3;
         public static final double maxTurningPowerOut = 0.1;
