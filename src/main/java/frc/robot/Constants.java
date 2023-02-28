@@ -61,7 +61,7 @@ public final class Constants {
         public static final double EF_WIDTH = Units.inchesToMeters(17);
         public static final double EF_HEIGHT = Units.inchesToMeters(12.5);
 
-        public static final double EF_RADIUS = Units.inchesToMeters(14.32); //this should be fine since it doesn't rotate?
+        public static final double EF_RADIUS = Units.inchesToMeters(14.32 + 0.5); //this should be fine since it doesn't rotate?
 
         public static final int innerLineTestCount = 5;
 
@@ -116,7 +116,7 @@ public final class Constants {
         public static final double stageOneContinuousCurrentLimit = 20;
         public static final double stageOnePeakCurrentLimit = 40;
         public static final double stageOnePeakCurrentTime = 500;
-        public static final double stageOne_kP = 4;//4, 1 for testing
+        public static final double stageOne_kP = 1;//4, 1 for testing
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
 
@@ -152,7 +152,7 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-175);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
-        public static final double stageTwo_kP = 1;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
+        public static final double stageTwo_kP = 0.5;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 
@@ -287,11 +287,11 @@ public final class Constants {
         public static final double GYRO_MOUNT_POSE_YAW = 0;
         public static final double GYRO_MOUNT_POSE_ROLL = 0;
 
-        public static final double drivePValue = 0.5; //% speed for every meter away from target
-        public static final double turnPValue = 1/180.0; //% speed for every degree away from target
+        public static final double drivePValue = 0.4; //% speed for every meter away from target
+        public static final double turnPValue = 2/180.0; //% speed for every degree away from target
 
         public static final double maxPowerOut = 0.3;
-        public static final double maxTurningPowerOut = 0.3;
+        public static final double maxTurningPowerOut = 0.1;
 
     }
 

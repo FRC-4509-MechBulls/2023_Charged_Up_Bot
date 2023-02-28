@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -397,9 +398,8 @@ newY-=camYOffset;
 
     //2. Pass vision measurement to odometry
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
-  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1,0.1,0.1));
-
+  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
+  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(Units.inchesToMeters(2),Units.inchesToMeters(2),Units.degreesToRadians(3)));
   //  zeroHeading(newRotation.getDegrees());
 
   }
