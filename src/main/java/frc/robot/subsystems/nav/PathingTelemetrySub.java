@@ -16,6 +16,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,6 +162,10 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem {
                 Imgproc.circle(mat, metersPosToPixelsPos(new Point(x,y)),3,new Scalar(255,255,255),2);
             }
         }
+
+        //draw arrow to show heading on robot
+        Point robotPosePixels = metersPosToPixelsPos(new Point(robotPose.getX(),robotPose.getY()));
+        drawArrow(mat, robotPosePixels.x,robotPosePixels.y, robotPose.getRotation().getRadians(), 15, new Scalar(0,0,255));
 
         dontTouchMe = false;
     }
