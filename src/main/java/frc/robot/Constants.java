@@ -116,7 +116,7 @@ public final class Constants {
         public static final double stageOneContinuousCurrentLimit = 20;
         public static final double stageOnePeakCurrentLimit = 40;
         public static final double stageOnePeakCurrentTime = 500;
-        public static final double stageOne_kP = 1;//4, 1 for testing
+        public static final double stageOne_kP = 4;//4, 1 for testing
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
 
@@ -152,7 +152,7 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-175);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
-        public static final double stageTwo_kP = 0.5;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
+        public static final double stageTwo_kP = 1;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
 
@@ -162,15 +162,15 @@ public final class Constants {
         public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66 - .25)}; //undecided
         public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(25), Units.inchesToMeters(4.625)}; //22, 4.625
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(3.66 + 8.5)}; //undecided
-        public static final double[] holdingArmPos = {0.315,0.324}; //undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
+        public static final double[] holdingArmPos = {Units.inchesToMeters(2), Units.inchesToMeters(17)}; //(.315m, .324m)(2, 17)//undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 
-        public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //undecided
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(22.80887), Units.inchesToMeters(38.174883 + 8)}; //undecided
-        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(39.854341), Units.inchesToMeters(49.39670)}; //undecided
+        public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //(8, 14)
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(24.5), Units.inchesToMeters(38.5)}; //(23, 46)(24.5, 38.5)
+        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(41), Units.inchesToMeters(50)}; //(40, 49.5)(41.5, 50)
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(2.40714), Units.inchesToMeters(12.767167)}; //undecided
-        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(14.938901), Units.inchesToMeters(23.556361)}; //undecided
-        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(32.348569), Units.inchesToMeters(34.207880)}; //undecided
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(15), Units.inchesToMeters(17)}; //(2.5, 13)(15, 17)
+        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
+        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)}; //(34, 37)
 
         public static final double angleToleranceToUpdateEF = 0.5;
         public static final double maxExtension = 55; //slightly lower than total length of arm = 57.5 inches
