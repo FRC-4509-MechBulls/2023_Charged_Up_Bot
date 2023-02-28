@@ -251,6 +251,8 @@ StateControllerSubsystem stateControllerSubsystem;
   // module positions
   // groups each individual module position into an array to be used in other functions
   public SwerveModulePosition[] getPositions() {
+    if(Constants.SimulationConstants.simulationEnabled)
+      return simModulePositions;
     return new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
   }
 
@@ -302,7 +304,7 @@ StateControllerSubsystem stateControllerSubsystem;
     backRight.stop();
     lastSetStates = new SwerveModuleState[]{new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
   }
-SwerveModulePosition[] simModulePositions;
+SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(), new SwerveModulePosition()};
   double lastSimUpdateTime = Timer.getFPGATimestamp();
   double lastSimUpdateLength = 0;
   public void updateOdometry() {
@@ -431,6 +433,7 @@ newY-=camYOffset;
   }
 
   public void driveToPose(Pose2d pose, double posP, double rotP){
+    if(pose == null) return;
     double[] speeds = getDesiredSpeeds(pose, posP, rotP);
 
     double ang = Math.atan2(speeds[1],speeds[0]);
