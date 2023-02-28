@@ -23,7 +23,7 @@ public final class Constants {
     public static final class SimulationConstants{
         public static final boolean simulationEnabled = false;
         public static final double speedMultiplier = 1.5;
-        public static final double turningSpeedMultiplier = 50;
+        public static final double turningSpeedMultiplier = 100;
 
     }
 
