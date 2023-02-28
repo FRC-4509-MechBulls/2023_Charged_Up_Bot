@@ -89,10 +89,12 @@ public Command redCenter_scoreLeaveAndBalance(){
     DirectToPointCommand backAway1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.70,1.25,Rotation2d.fromDegrees(180)),3,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue);
     SleepCommand sleepCommand3 = new SleepCommand(0);
     Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
+    DirectToPointCommand navToLeaveCommunity = new DirectToPointCommand(swerveSubsystem,new Pose2d(-3.45,1.25,Rotation2d.fromDegrees(180)),6,Units.inchesToMeters(3),5,0.5,Constants.DriveConstants.turnPValue);
     DirectToPointCommand navToBalancer = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.25,1.25,Rotation2d.fromDegrees(180)),6, Units.inchesToMeters(3),2,0.5,Constants.DriveConstants.turnPValue);
+
     AutoBalanceCommand autoBalanceCommand = new AutoBalanceCommand(swerveSubsystem,15);
 
-    return setInitialPose.andThen(backAway.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(sleepCommand1.andThen(place.andThen(sleepCommand2.andThen(backAway1.andThen(sleepCommand3).andThen(retractArm.andThen(navToBalancer.andThen(autoBalanceCommand))))))))))); //kill me
+    return setInitialPose.andThen(backAway.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(sleepCommand1.andThen(place.andThen(sleepCommand2.andThen(backAway1.andThen(sleepCommand3).andThen(retractArm.andThen(navToLeaveCommunity.andThen(navToBalancer.andThen(autoBalanceCommand)))))))))))); //kill me
 }
 
 
