@@ -47,7 +47,7 @@ public class RobotContainer {
   private final EFSub efSub = new EFSub();
   private final Grabber grabberSubsystem = new Grabber(stageOneSub, stageTwoSub, efSub, stateControllerSubsystem, efNavSystem,efTelemSub);
 
-    private final MB_AutoCommandChooser autoChooser = new MB_AutoCommandChooser(navigationField,swerveSubsystem);
+    private final MB_AutoCommandChooser autoChooser = new MB_AutoCommandChooser(navigationField,swerveSubsystem,stateControllerSubsystem,grabberSubsystem);
 
   private final XboxController driverController = new XboxController(OIConstants.DRIVER_CONTROLLER_PORT);
   private final XboxController operatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER_PORT);
