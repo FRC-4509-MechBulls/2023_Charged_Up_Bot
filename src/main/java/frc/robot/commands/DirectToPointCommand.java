@@ -27,10 +27,15 @@ public class DirectToPointCommand extends CommandBase {
 
     }
 
-    public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance, double rotationTolerance){
+    double posP = 0.2;
+    double rotP = 0.2;
+
+    public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance, double rotationTolerance, double posP, double rotP){
         this(swerveSubsystem,desiredPose,timeout);
         this.posTolerance = posTolerance;
         this.rotationTolerance = rotationTolerance;
+        this.posP = posP;
+        this.rotP = rotP;
     }
 
     /**
@@ -58,7 +63,7 @@ public class DirectToPointCommand extends CommandBase {
             start();
             firstExecuteDone = true;
         }
-        swerveSubsystem.driveToPose(desiredPose);
+        swerveSubsystem.driveToPose(desiredPose,posP,rotP);
     }
 
 

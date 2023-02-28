@@ -16,6 +16,8 @@ public class NavToPointCommand extends CommandBase {
     double timeout;
     double posTolerance = Constants.DriveConstants.posTolerance;
 
+    double posP = 0.1;
+    double rotP = 0.1;
     public NavToPointCommand(NavigationField navigationField, SwerveSubsystem swerveSubsystem,Pose2d desiredPose, double timeout) {
         this.navigationField = navigationField;
         this.swerveSubsystem = swerveSubsystem;
@@ -59,7 +61,7 @@ public class NavToPointCommand extends CommandBase {
             start();
             firstExecuteDone = true;
         }
-        swerveSubsystem.driveToPose(navigationField.getNextNavPoint());
+        swerveSubsystem.driveToPose(navigationField.getNextNavPoint(),posP, rotP);
     }
 
 

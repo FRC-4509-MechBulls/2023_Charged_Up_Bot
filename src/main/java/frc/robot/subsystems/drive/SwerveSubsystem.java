@@ -360,7 +360,7 @@ SwerveModulePosition[] simModulePositions;
       
     updateOdometry();
 
-    double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+   // double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)),Consta);
    // SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
   //  SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
    // SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
@@ -404,22 +404,22 @@ newY-=camYOffset;
 
   }
 
-  public double[] getDesiredSpeeds(Pose2d pose){
+  public double[] getDesiredSpeeds(Pose2d pose, double posP, double rotP){
     //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
     if(pose == null) return null;
    // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
     double rotationDiff = MB_Math.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
-    double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;
-    double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY()) * 1.5;
+    double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX());
+    double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY());
     double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
 
     double dirToPose = Math.atan2(yDiff,xDiff);
 
-    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;
-    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;  //sin and cos used to have +rotationDiff for some reason
+    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * posP;
+    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * posP;  //sin and cos used to have +rotationDiff for some reason
   //  SmartDashboard.putNumber("rotationDiff",rotationDiff);
-    out[2] =  rotationDiff * DriveConstants.turnPValue;
+    out[2] =  rotationDiff * rotP;
 
     if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;
     if(dist<DriveConstants.posTolerance){
@@ -430,8 +430,8 @@ newY-=camYOffset;
     return out;
   }
 
-  public void driveToPose(Pose2d pose){
-    double[] speeds = getDesiredSpeeds(pose);
+  public void driveToPose(Pose2d pose, double posP, double rotP){
+    double[] speeds = getDesiredSpeeds(pose, posP, rotP);
 
     double ang = Math.atan2(speeds[1],speeds[0]);
     double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
