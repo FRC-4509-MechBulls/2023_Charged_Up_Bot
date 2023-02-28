@@ -2,6 +2,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -151,6 +152,16 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem {
 
         //   SmartDashboard.putNumber("point?",barriers.size());
         drawStateTelem(mat);
+
+        //draw preplaced items
+        for(int i = 0; i<Constants.FieldConstants.preplacedItemXDiffsFromCenterInches.length; i++){
+            for(int j = 0; j<Constants.FieldConstants.preplacedItemYDiffsFromCenterInches.length; j++){
+                double x = Units.inchesToMeters(Constants.FieldConstants.preplacedItemXDiffsFromCenterInches[i]);
+                double y = -Units.inchesToMeters(Constants.FieldConstants.preplacedItemYDiffsFromCenterInches[j]);
+                Imgproc.circle(mat, metersPosToPixelsPos(new Point(x,y)),3,new Scalar(255,255,255),2);
+            }
+        }
+
         dontTouchMe = false;
     }
 
