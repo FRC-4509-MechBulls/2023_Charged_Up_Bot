@@ -336,8 +336,8 @@ public final class Constants {
 
     public static final class VisionConstants {
         public static final double MAX_AMBIGUITY = 0.05;
-        public static final double CAM_X_OFFSET = Units.inchesToMeters(15.5-21);
-        public static final double CAM_Y_OFFSET = Units.inchesToMeters(15.5-6);
+        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7.55);
+        public static final double CAM_Y_OFFSET = Units.inchesToMeters(9.10);
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
 
