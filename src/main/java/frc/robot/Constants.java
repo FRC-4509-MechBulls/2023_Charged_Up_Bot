@@ -384,6 +384,10 @@ public final class Constants {
         public static final double[] aprilTagYDiffsFromOriginInches = {610.77,610.77,610.77,636.96,14.25,40.45,40.45,40.45}; //https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
         public static final double[] aprilTagXDiffsFromOriginInches = {42.19,108.19,174.19,265.74,265.74,174.19,108.19,42.19};
 
+        //                                                                    B1      B2      B3      B4     R1     R2     R3     R4
+        public static final double[] preplacedItemXDiffsFromCenterInches = {-47.36, -47.36, -47.36, -47.36, 47.36, 47.36, 47.36, 47.36};
+        public static final double[] preplacedItemYDiffsFromCenterInches = {22.39, -25.61, -73.61, -121.61, 22.39, -25.61, -73.61, -121.61};
+
         public static final double nodeX1 = 7.071332;
         public static final double nodeX2 = 7.426611 + Units.inchesToMeters(1);
         public static final double nodeX3 = nodeX2+0.432133;
