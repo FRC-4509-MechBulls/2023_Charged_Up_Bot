@@ -39,7 +39,7 @@ public final class Constants {
         public static final double HOLD_CONE_BOTTOM_OUTPUT = 0.3;
 
         public static final double PLACE_CONE_TOP_OUTPUT = -1;
-        public static final double PLACE_CONE_BOTTOM_OUTPUT = -1;
+        public static final double PLACE_CONE_BOTTOM_OUTPUT = -0.5;
 
 
         public static final double INTAKE_CUBE_TOP_OUTPUT = 0.0;
