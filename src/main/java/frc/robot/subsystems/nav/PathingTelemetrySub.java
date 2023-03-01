@@ -2,6 +2,7 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
@@ -15,6 +16,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,6 +153,20 @@ public class PathingTelemetrySub extends GraphicalTelemetrySubsystem {
 
         //   SmartDashboard.putNumber("point?",barriers.size());
         drawStateTelem(mat);
+
+        //draw preplaced items
+        for(int i = 0; i<Constants.FieldConstants.preplacedItemXDiffsFromCenterInches.length; i++){
+            for(int j = 0; j<Constants.FieldConstants.preplacedItemYDiffsFromCenterInches.length; j++){
+                double x = Units.inchesToMeters(Constants.FieldConstants.preplacedItemXDiffsFromCenterInches[i]);
+                double y = -Units.inchesToMeters(Constants.FieldConstants.preplacedItemYDiffsFromCenterInches[j]);
+                Imgproc.circle(mat, metersPosToPixelsPos(new Point(x,y)),3,new Scalar(255,255,255),2);
+            }
+        }
+
+        //draw arrow to show heading on robot
+        Point robotPosePixels = metersPosToPixelsPos(new Point(robotPose.getX(),robotPose.getY()));
+        drawArrow(mat, robotPosePixels.x,robotPosePixels.y, robotPose.getRotation().getRadians(), 15, new Scalar(0,0,255));
+
         dontTouchMe = false;
     }
 

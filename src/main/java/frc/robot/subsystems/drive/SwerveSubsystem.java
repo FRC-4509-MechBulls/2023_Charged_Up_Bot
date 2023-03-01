@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -103,6 +104,8 @@ StateControllerSubsystem stateControllerSubsystem;
     zeroHeading();
     constructOdometry(); //constructs odometry with newly correct gyro values
 
+   // SmartDashboard.putNumber("drivePValue",0.1);
+  //  SmartDashboard.putNumber("turningPValue",0.1);
 
         //allows gyro to calibrate for 1 sec before requesting to reset^^
     //SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
@@ -214,7 +217,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose);
+    initialPose, VecBuilder.fill(Units.inchesToMeters(1),Units.inchesToMeters(1), Units.degreesToRadians(1)), VecBuilder.fill(0.9, 0.9, 0.9));
   }
   
   // Getters
@@ -251,6 +254,8 @@ StateControllerSubsystem stateControllerSubsystem;
   // module positions
   // groups each individual module position into an array to be used in other functions
   public SwerveModulePosition[] getPositions() {
+    if(Constants.SimulationConstants.simulationEnabled)
+      return simModulePositions;
     return new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
   }
 
@@ -302,7 +307,7 @@ StateControllerSubsystem stateControllerSubsystem;
     backRight.stop();
     lastSetStates = new SwerveModuleState[]{new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
   }
-SwerveModulePosition[] simModulePositions;
+SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(), new SwerveModulePosition()};
   double lastSimUpdateTime = Timer.getFPGATimestamp();
   double lastSimUpdateLength = 0;
   public void updateOdometry() {
@@ -353,6 +358,8 @@ SwerveModulePosition[] simModulePositions;
   // Periodic
   @Override
   public void periodic() {
+    //DriveConstants.drivePValue = SmartDashboard.getNumber("drivePValue",0.1);
+    //DriveConstants.turnPValue = SmartDashboard.getNumber("turningPValue",0.1);
 
     //constantly updates the gyro angle
   //  var gyroAngle = gyro.getRotation2d();
@@ -399,7 +406,7 @@ newY-=camYOffset;
     //2. Pass vision measurement to odometry
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
   //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(Units.inchesToMeters(2),Units.inchesToMeters(2),Units.degreesToRadians(3)));
+  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
   //  zeroHeading(newRotation.getDegrees());
 
   }
@@ -430,7 +437,8 @@ newY-=camYOffset;
     return out;
   }
 
-  public void driveToPose(Pose2d pose, double posP, double rotP){
+  public void   driveToPose(Pose2d pose, double posP, double rotP){
+    if(pose == null) return;
     double[] speeds = getDesiredSpeeds(pose, posP, rotP);
 
     double ang = Math.atan2(speeds[1],speeds[0]);
