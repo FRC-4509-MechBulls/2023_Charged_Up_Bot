@@ -152,7 +152,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         DirectToPointCommand navToPlace2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.28*finalReverseX,-0.98,Rotation2d.fromDegrees(180+finalZeroAngle)),7, Units.inchesToMeters(0.5),2,1,Constants.DriveConstants.turnPValue);
         InstantCommand place2 = new InstantCommand(()->grabber.overrideDesiredEFWait()); //6.454, -.975 ^
 
-        return setInitialPose.andThen(backAway.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(backAway1.andThen(retractArm.andThen(backAway2.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup).andThen(setToHoldCone).andThen(alignToPickup_reversed.andThen(backAway2_again.andThen(setToPlacingCone.andThen(sleepCommand3.andThen(navToPlace2.andThen(place2.andThen())))))))))))))))))));
+        return setInitialPose.andThen(backAway.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(backAway1.andThen(retractArm.andThen(backAway2.andThen(alignToPickup))))))))));
     }
 
     public Command redRight_Debug_goToStartPos(boolean reverseForBlue){
