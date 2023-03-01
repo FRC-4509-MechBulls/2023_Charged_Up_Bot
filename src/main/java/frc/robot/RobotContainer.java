@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OIConstants;
 import frc.robot.lib.MB_AutoCommandChooser;
 import frc.robot.subsystems.arm.Grabber;
@@ -47,9 +45,9 @@ public class RobotContainer {
   private final StageOneSub stageOneSub = new StageOneSub();
   private final StageTwoSub stageTwoSub = new StageTwoSub();
   private final EFSub efSub = new EFSub();
-  private final Grabber grabberSubsystem = new Grabber(stageOneSub, stageTwoSub, efSub, stateControllerSubsystem, efNavSystem);
+  private final Grabber grabberSubsystem = new Grabber(stageOneSub, stageTwoSub, efSub, stateControllerSubsystem, efNavSystem,efTelemSub);
 
-    private final MB_AutoCommandChooser autoChooser = new MB_AutoCommandChooser(navigationField,swerveSubsystem);
+    private final MB_AutoCommandChooser autoChooser = new MB_AutoCommandChooser(navigationField,swerveSubsystem,stateControllerSubsystem,grabberSubsystem);
 
   private final XboxController driverController = new XboxController(OIConstants.DRIVER_CONTROLLER_PORT);
   private final XboxController operatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER_PORT);
@@ -59,8 +57,9 @@ public class RobotContainer {
  // private final Command rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
  // private final Command rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
   private final Command rc_generateNavPoses = new InstantCommand(()->navigationField.setNavPoint(new Pose2d(2.5,0,new Rotation2d())));
-  private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint()),swerveSubsystem);
-  private final Command rc_directToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getDesiredPose()),swerveSubsystem);
+  private final Command rc_navToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getNextNavPoint(), Constants.DriveConstants.drivePValue, Constants.DriveConstants.turnPValue),swerveSubsystem);
+  private final Command rc_directToClosestNode = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getClosestSetpoint(), Constants.DriveConstants.drivePValue, Constants.DriveConstants.turnPValue),swerveSubsystem);
+  private final Command rc_directToPose = new RunCommand(()->swerveSubsystem.driveToPose(navigationField.getDesiredPose(), Constants.DriveConstants.drivePValue, Constants.DriveConstants.turnPValue),swerveSubsystem);
   private final Command swerve_resetPose = new InstantCommand(swerveSubsystem::resetPose);
   private final Command rc_autoBalance = new RunCommand(()->swerveSubsystem.driveAutoBalance(),swerveSubsystem);
 
@@ -113,9 +112,10 @@ public class RobotContainer {
 
 
     //new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whileTrue(rc_directToPose);
-    new JoystickButton(driverController, XboxController.Button.kA.value).whileTrue(rc_navToPose);
-    new JoystickButton(driverController, XboxController.Button.kA.value).onTrue(new InstantCommand(navigationField::engageNav));
-    new JoystickButton(driverController, XboxController.Button.kA.value).onFalse(new InstantCommand(navigationField::disengageNav));
+      new JoystickButton(driverController, XboxController.Button.kA.value).whileTrue(rc_directToClosestNode);
+      new JoystickButton(driverController, XboxController.Button.kY.value).whileTrue(rc_navToPose);
+    new JoystickButton(driverController, XboxController.Button.kY.value).onTrue(new InstantCommand(navigationField::engageNav));
+    new JoystickButton(driverController, XboxController.Button.kY.value).onFalse(new InstantCommand(navigationField::disengageNav));
 
     new JoystickButton(operatorController, XboxController.Button.kLeftBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::itemCubeButton));
       new JoystickButton(operatorController,XboxController.Button.kRightBumper.value).onTrue(new InstantCommand(stateControllerSubsystem::itemConeUprightButton));

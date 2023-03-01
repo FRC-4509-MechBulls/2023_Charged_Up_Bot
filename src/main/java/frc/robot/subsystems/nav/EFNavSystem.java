@@ -56,7 +56,7 @@ Pose2d efPose = new Pose2d();
                                     updateNavPoses();
                                     
                                     double compTime = Timer.getFPGATimestamp()*1000 - startTime;
-                                    SmartDashboard.putNumber("EFpathingCompTime",compTime);
+                                    //SmartDashboard.putNumber("EFpathingCompTime",compTime);
                                     telemetrySub.updateNavPoses(navPoses);
 
                                     Thread.sleep(minPathingDelay);
@@ -129,7 +129,7 @@ Pose2d efPose = new Pose2d();
 
     public void periodic(){
         //updatePivotPoint(new Point2D.Double(SmartDashboard.getNumber("EFPivotX",0),SmartDashboard.getNumber("EFPivotY",0)));
-        SmartDashboard.putBoolean("clearPathToSetpoint",barrierOnLine(new Line2D.Double(pivotPoint.getX(),pivotPoint.getY(),desiredPose.getX(),desiredPose.getY())));
+      //  SmartDashboard.putBoolean("clearPathToSetpoint",barrierOnLine(new Line2D.Double(pivotPoint.getX(),pivotPoint.getY(),desiredPose.getX(),desiredPose.getY())));
    //     SmartDashboard.putNumber("nextNavX",getNextNavPoint().getX());
     //    SmartDashboard.putNumber("nextNavY",getNextNavPoint().getY());
 

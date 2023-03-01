@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -73,7 +75,7 @@ public class SwerveSubsystem extends SubsystemBase {
     private ChassisSpeeds chassisSpeeds;
 
   //Values
-    static boolean fieldOriented;
+    static boolean fieldOriented = true;
   private double translationMagnitude;
 
   private double translationMagnitudeScaled;
@@ -102,6 +104,8 @@ StateControllerSubsystem stateControllerSubsystem;
     zeroHeading();
     constructOdometry(); //constructs odometry with newly correct gyro values
 
+   // SmartDashboard.putNumber("drivePValue",0.1);
+  //  SmartDashboard.putNumber("turningPValue",0.1);
 
         //allows gyro to calibrate for 1 sec before requesting to reset^^
     //SmartDashboard.putNumber("kPTurning", DriveConstants.kPTurning);
@@ -213,7 +217,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose);
+    initialPose, VecBuilder.fill(Units.inchesToMeters(1),Units.inchesToMeters(1), Units.degreesToRadians(1)), VecBuilder.fill(0.9, 0.9, 0.9));
   }
   
   // Getters
@@ -250,6 +254,8 @@ StateControllerSubsystem stateControllerSubsystem;
   // module positions
   // groups each individual module position into an array to be used in other functions
   public SwerveModulePosition[] getPositions() {
+    if(Constants.SimulationConstants.simulationEnabled)
+      return simModulePositions;
     return new SwerveModulePosition[] {frontLeft.getPosition(), frontRight.getPosition(), backLeft.getPosition(), backRight.getPosition()};
   }
 
@@ -301,7 +307,7 @@ StateControllerSubsystem stateControllerSubsystem;
     backRight.stop();
     lastSetStates = new SwerveModuleState[]{new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
   }
-SwerveModulePosition[] simModulePositions;
+SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(), new SwerveModulePosition()};
   double lastSimUpdateTime = Timer.getFPGATimestamp();
   double lastSimUpdateLength = 0;
   public void updateOdometry() {
@@ -352,6 +358,8 @@ SwerveModulePosition[] simModulePositions;
   // Periodic
   @Override
   public void periodic() {
+    //DriveConstants.drivePValue = SmartDashboard.getNumber("drivePValue",0.1);
+    //DriveConstants.turnPValue = SmartDashboard.getNumber("turningPValue",0.1);
 
     //constantly updates the gyro angle
   //  var gyroAngle = gyro.getRotation2d();
@@ -359,7 +367,7 @@ SwerveModulePosition[] simModulePositions;
       
     updateOdometry();
 
-    double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+   // double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)),Consta);
    // SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
   //  SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
    // SmartDashboard.putNumber("desRto00", desiredSpeeds[2]);
@@ -397,29 +405,28 @@ newY-=camYOffset;
 
     //2. Pass vision measurement to odometry
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
+  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
   odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.1,0.1,0.1));
-
   //  zeroHeading(newRotation.getDegrees());
 
   }
 
-  public double[] getDesiredSpeeds(Pose2d pose){
+  public double[] getDesiredSpeeds(Pose2d pose, double posP, double rotP){
     //get desired X and Y speed to reach a given pose
     double[] out = new double[3];
     if(pose == null) return null;
    // double rotationDiff = (pose.getRotation().getDegrees()-odometry.getEstimatedPosition().getRotation().getDegrees());
     double rotationDiff = MB_Math.angleDiffDeg(odometry.getEstimatedPosition().getRotation().getDegrees(),pose.getRotation().getDegrees());
-    double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX()) * 1.5;
-    double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY()) * 1.5;
+    double xDiff = (pose.getX() - odometry.getEstimatedPosition().getX());
+    double yDiff = (pose.getY() - odometry.getEstimatedPosition().getY());
     double dist = Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2));
 
     double dirToPose = Math.atan2(yDiff,xDiff);
 
-    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;
-    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * DriveConstants.drivePValue;  //sin and cos used to have +rotationDiff for some reason
+    out[0] = dist * Math.cos(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * posP;
+    out[1] = dist * Math.sin(dirToPose - odometry.getEstimatedPosition().getRotation().getRadians()) * posP;  //sin and cos used to have +rotationDiff for some reason
   //  SmartDashboard.putNumber("rotationDiff",rotationDiff);
-    out[2] =  rotationDiff * DriveConstants.turnPValue;
+    out[2] =  rotationDiff * rotP;
 
     if(Math.abs(rotationDiff)< DriveConstants.rotationTolerance) out[2] = 0;
     if(dist<DriveConstants.posTolerance){
@@ -430,8 +437,9 @@ newY-=camYOffset;
     return out;
   }
 
-  public void driveToPose(Pose2d pose){
-    double[] speeds = getDesiredSpeeds(pose);
+  public void   driveToPose(Pose2d pose, double posP, double rotP){
+    if(pose == null) return;
+    double[] speeds = getDesiredSpeeds(pose, posP, rotP);
 
     double ang = Math.atan2(speeds[1],speeds[0]);
     double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));

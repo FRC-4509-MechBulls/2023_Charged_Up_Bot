@@ -23,7 +23,7 @@ public final class Constants {
     public static final class SimulationConstants{
         public static final boolean simulationEnabled = false;
         public static final double speedMultiplier = 1.5;
-        public static final double turningSpeedMultiplier = 50;
+        public static final double turningSpeedMultiplier = 100;
 
     }
 
@@ -39,7 +39,7 @@ public final class Constants {
         public static final double HOLD_CONE_BOTTOM_OUTPUT = 0.3;
 
         public static final double PLACE_CONE_TOP_OUTPUT = -1;
-        public static final double PLACE_CONE_BOTTOM_OUTPUT = -1;
+        public static final double PLACE_CONE_BOTTOM_OUTPUT = -0.5;
 
 
         public static final double INTAKE_CUBE_TOP_OUTPUT = 0.0;
@@ -61,7 +61,7 @@ public final class Constants {
         public static final double EF_WIDTH = Units.inchesToMeters(17);
         public static final double EF_HEIGHT = Units.inchesToMeters(12.5);
 
-        public static final double EF_RADIUS = Units.inchesToMeters(14.32); //this should be fine since it doesn't rotate?
+        public static final double EF_RADIUS = Units.inchesToMeters(14.32 + 0.5); //this should be fine since it doesn't rotate?
 
         public static final int innerLineTestCount = 5;
 
@@ -162,17 +162,18 @@ public final class Constants {
         public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66 - .25)}; //undecided
         public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(25), Units.inchesToMeters(4.625)}; //22, 4.625
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(3.66 + 8.5)}; //undecided
-        public static final double[] holdingArmPos = {0.315,0.324}; //undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
+        public static final double[] holdingArmPos = {Units.inchesToMeters(2), Units.inchesToMeters(17)}; //(.315m, .324m)(2, 17)//undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
 
-        public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //undecided
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(22.80887), Units.inchesToMeters(38.174883 + 8)}; //undecided
-        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(39.854341), Units.inchesToMeters(49.39670)}; //undecided
+        public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //(8, 14)
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(23.5), Units.inchesToMeters(42 + 1.5)}; //()(23, 46)(24.5, 38.5)
+        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42), Units.inchesToMeters(55)}; //(40, 49.5)(41.5, 50)
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(2.40714), Units.inchesToMeters(12.767167)}; //undecided
-        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(14.938901), Units.inchesToMeters(23.556361)}; //undecided
-        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(32.348569), Units.inchesToMeters(34.207880)}; //undecided
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(15), Units.inchesToMeters(17)}; //(2.5, 13)(15, 17)
+        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
+        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)}; //(34, 37)
 
         public static final double angleToleranceToUpdateEF = 0.5;
+        public static final double maxExtension = 55; //slightly lower than total length of arm = 57.5 inches
     }
 
 
@@ -277,8 +278,8 @@ public final class Constants {
         public static final boolean USE_NAV_X_OVER_PIGEON = false;
 
 
-        public static final double posTolerance = Units.inchesToMeters(0.5);
-        public static final double rotationTolerance = 2;
+        public static final double posTolerance = Units.inchesToMeters(0.25);
+        public static final double rotationTolerance = 0.5; //adds half an inch with arm fully extended
 
         
         public static final double GYRO_Z_ERROR = 0.674; //.674
@@ -286,11 +287,11 @@ public final class Constants {
         public static final double GYRO_MOUNT_POSE_YAW = 0;
         public static final double GYRO_MOUNT_POSE_ROLL = 0;
 
-        public static final double drivePValue = 0.5; //% speed for every meter away from target
-        public static final double turnPValue = 1/180.0; //% speed for every degree away from target
+        public static double drivePValue = 3; //% speed for every meter away from target
+        public static  double turnPValue = 0.010; //% speed for every degree away from target
 
         public static final double maxPowerOut = 0.3;
-        public static final double maxTurningPowerOut = 0.3;
+        public static final double maxTurningPowerOut = 0.2;
 
     }
 
@@ -312,8 +313,8 @@ public final class Constants {
     }
 
     public static final class PathingConstants{
-        public static final double ROBOT_LENGTH = Units.inchesToMeters(34);
-        public static final double ROBOT_WIDTH = Units.inchesToMeters(34);
+        public static final double ROBOT_LENGTH = Units.inchesToMeters(35);
+        public static final double ROBOT_WIDTH = Units.inchesToMeters(35);
         public static final double ROBOT_RADIUS =  Math.sqrt(Math.pow(ROBOT_LENGTH /2,2)+Math.pow(ROBOT_WIDTH /2,2));
 
         public static final double maxLineDist = 8.0;
@@ -335,8 +336,8 @@ public final class Constants {
 
     public static final class VisionConstants {
         public static final double MAX_AMBIGUITY = 0.05;
-        public static final double CAM_X_OFFSET = Units.inchesToMeters(15.5-21);
-        public static final double CAM_Y_OFFSET = Units.inchesToMeters(15.5-6);
+        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7); // -4.5 //7
+        public static final double CAM_Y_OFFSET = Units.inchesToMeters(27-17.5); //9.5 //9.125
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
 
@@ -382,6 +383,10 @@ public final class Constants {
         public static final double aprilTagOriginY = topWallPos;
         public static final double[] aprilTagYDiffsFromOriginInches = {610.77,610.77,610.77,636.96,14.25,40.45,40.45,40.45}; //https://firstfrc.blob.core.windows.net/frc2023/FieldAssets/2023LayoutMarkingDiagram.pdf
         public static final double[] aprilTagXDiffsFromOriginInches = {42.19,108.19,174.19,265.74,265.74,174.19,108.19,42.19};
+
+        //                                                                    B1      B2      B3      B4     R1     R2     R3     R4
+        public static final double[] preplacedItemXDiffsFromCenterInches = {-47.36, -47.36, -47.36, -47.36, 47.36, 47.36, 47.36, 47.36};
+        public static final double[] preplacedItemYDiffsFromCenterInches = {22.39, -25.61, -73.61, -121.61, 22.39, -25.61, -73.61, -121.61};
 
         public static final double nodeX1 = 7.071332;
         public static final double nodeX2 = 7.426611 + Units.inchesToMeters(1);

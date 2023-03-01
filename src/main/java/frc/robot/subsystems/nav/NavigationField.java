@@ -56,6 +56,7 @@ boolean queueNodeReset = true;
 int oldSetpointIndex = 0;
 public void periodic(){
 pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
+
 //Line2D.Double testLine = new Line2D.Double(SmartDashboard.getNumber("x1",0),SmartDashboard.getNumber("y1",0),SmartDashboard.getNumber("x2",0),SmartDashboard.getNumber("y2",0));
 //    SmartDashboard.putBoolean("barrierOnLine", barrierOnLine(testLine));
     if(Timer.getFPGATimestamp() - lastAllianceCheck>3){
@@ -74,6 +75,24 @@ pTelemetrySub.updateRobotPose(swerveSubsystem.getEstimatedPosition());
         oldSetpointIndex = stateControllerSub.getSetpointIndex();
     }
 
+    //set the setpoint to the closest setpoint to the robot
+    Pose2d robotPose = swerveSubsystem.getEstimatedPosition();
+    double minDist = Double.MAX_VALUE;
+    int minIndex = -1;
+    for(int i = 0; i<setPoints.size(); i++){
+        double dist = Math.sqrt(Math.pow(robotPose.getTranslation().getX() - setPoints.get(i).getX(),2) + Math.pow(robotPose.getTranslation().getY() - setPoints.get(i).getY(),2));
+        if(dist<minDist){
+            minDist = dist;
+            minIndex = i;
+        }
+    }
+    if(minIndex!=-1)
+        closestSetpoint = new Pose2d(setPoints.get(minIndex).getX(),setPoints.get(minIndex).getY(), setPoints.get(minIndex).getRotation());
+
+}
+Pose2d closestSetpoint = new Pose2d();
+public Pose2d getClosestSetpoint(){
+    return closestSetpoint;
 }
 
 public  boolean barrierOnLine(Line2D.Double line){
@@ -325,7 +344,7 @@ private void createAndStartPathingThread(){
                             //        disengageNav(); //disengage if engaged for >10s
                                 updateNavPoses();
                                 double compTime = Timer.getFPGATimestamp()*1000 - startTime;
-                                SmartDashboard.putNumber("pathingCompTime",compTime);
+                                //SmartDashboard.putNumber("pathingCompTime",compTime);
                               //  Thread.sleep((int) (Math.max(compTime/Constants.PathingConstants.maxCPUTime, Constants.PathingConstants.minPathingDelay)));
                                 pTelemetrySub.updateNavPoses(navPoses);
                                 Thread.sleep(Constants.PathingConstants.minPathingDelay);
@@ -377,7 +396,8 @@ private void resetNodes(){
 
             for(int y = 0; y<9; y++){
                 double yPos = topNodeY - y*yDistBetweenNodes;
-                double xPos = width1/2 - nodesWidth - Constants.PathingConstants.ROBOT_LENGTH /2 - Units.inchesToMeters(12); //3 inches from nodes barrier?
+                //double xPos = width1/2 - nodesWidth - Constants.PathingConstants.ROBOT_LENGTH /2 - Units.inchesToMeters(12); //3 inches from nodes barrier?
+                double xPos = width1/2 - nodesWidth - Units.inchesToMeters(35.0/2 - 7); //3 inches from nodes barrier?
                 xPos*=revX;
                 Rotation2d myRotation = Rotation2d.fromDegrees(180); //red
                 if(revX>0)
