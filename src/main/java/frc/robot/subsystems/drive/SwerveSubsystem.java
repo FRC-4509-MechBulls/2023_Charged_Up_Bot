@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -216,7 +217,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose);
+    initialPose, VecBuilder.fill(Units.inchesToMeters(1),Units.inchesToMeters(1), Units.degreesToRadians(1)), VecBuilder.fill(0.9, 0.9, 0.9));
   }
   
   // Getters
@@ -405,7 +406,7 @@ newY-=camYOffset;
     //2. Pass vision measurement to odometry
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
   //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000), new MatBuilder<>(Nat.N3(), Nat.N1()).fill(Units.inchesToMeters(2),Units.inchesToMeters(2),Units.degreesToRadians(3)));
+  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
   //  zeroHeading(newRotation.getDegrees());
 
   }
@@ -436,7 +437,7 @@ newY-=camYOffset;
     return out;
   }
 
-  public void driveToPose(Pose2d pose, double posP, double rotP){
+  public void   driveToPose(Pose2d pose, double posP, double rotP){
     if(pose == null) return;
     double[] speeds = getDesiredSpeeds(pose, posP, rotP);
 

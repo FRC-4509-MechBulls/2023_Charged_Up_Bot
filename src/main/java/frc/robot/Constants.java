@@ -313,8 +313,8 @@ public final class Constants {
     }
 
     public static final class PathingConstants{
-        public static final double ROBOT_LENGTH = Units.inchesToMeters(34);
-        public static final double ROBOT_WIDTH = Units.inchesToMeters(34);
+        public static final double ROBOT_LENGTH = Units.inchesToMeters(35);
+        public static final double ROBOT_WIDTH = Units.inchesToMeters(35);
         public static final double ROBOT_RADIUS =  Math.sqrt(Math.pow(ROBOT_LENGTH /2,2)+Math.pow(ROBOT_WIDTH /2,2));
 
         public static final double maxLineDist = 8.0;
@@ -336,8 +336,8 @@ public final class Constants {
 
     public static final class VisionConstants {
         public static final double MAX_AMBIGUITY = 0.05;
-        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7.55);
-        public static final double CAM_Y_OFFSET = Units.inchesToMeters(9.10);
+        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7); // -4.5 //7
+        public static final double CAM_Y_OFFSET = Units.inchesToMeters(27-17.5); //9.5 //9.125
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
 
