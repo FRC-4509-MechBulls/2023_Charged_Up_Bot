@@ -79,6 +79,6 @@ public class DirectToPointCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-
+        swerveSubsystem.stopModules();
     }
 }
