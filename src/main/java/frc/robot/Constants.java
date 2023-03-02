@@ -168,7 +168,7 @@ public final class Constants {
         public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(23.5), Units.inchesToMeters(42 + 1.5)}; //()(23, 46)(24.5, 38.5)
         public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42), Units.inchesToMeters(55)}; //(40, 49.5)(41.5, 50)
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(15), Units.inchesToMeters(17)}; //(2.5, 13)(15, 17)
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)}; //(2.5, 13)(15, 17)
         public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
         public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)}; //(34, 37)
 
