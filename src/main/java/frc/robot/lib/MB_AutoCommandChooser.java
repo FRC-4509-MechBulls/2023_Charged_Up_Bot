@@ -167,6 +167,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         }
         int finalReverseX = reverseX;
         double finalZeroAngle = zeroAngle;
+        double finalPickupAngle = pickupAngle;
         double standardPosTolerance = Units.inchesToMeters(4);
         double posP = 3;
 
@@ -178,10 +179,10 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         SleepCommand sleepCommand2 = new SleepCommand(1.5);
         DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.247*finalReverseX,-0.762,Rotation2d.fromDegrees(180+finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
         Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
-        DirectToPointCommand alignToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d(-2.554*finalReverseX,-0.762,Rotation2d.fromDegrees(pickupAngle)),4,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
+        DirectToPointCommand alignToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d(-2.554*finalReverseX,-0.762,Rotation2d.fromDegrees(finalPickupAngle)),4,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
         Command setToIntakingCone = new InstantCommand(()->stateController.setAgArmToIntake()).andThen(new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setItemFallen(StateControllerSubsystem.ItemFallen.FALLEN_CONE))));
         SleepCommand pauseForIntake = new SleepCommand(1);
-        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.775*finalReverseX,-0.645,Rotation2d.fromDegrees(pickupAngle)),4,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue);
+        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.775*finalReverseX,-0.645,Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue);
         Command waitAfterPickup = new SleepCommand(0.25);
         Command setToHoldCone = new InstantCommand(()->stateController.setAgArmToHolding());
         DirectToPointCommand intermediate2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.39*finalReverseX,-0.787,Rotation2d.fromDegrees(180+finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
