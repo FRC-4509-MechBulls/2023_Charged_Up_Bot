@@ -76,6 +76,7 @@ public class NavToPointCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
+        swerveSubsystem.stopModules();
         navigationField.disengageNav();
     }
 }

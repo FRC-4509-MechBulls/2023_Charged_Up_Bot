@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.nav.NavigationField;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 
@@ -72,13 +73,13 @@ public class DirectToPointCommand extends CommandBase {
         // TODO: Make this return true when this Command no longer needs to run execute()
         boolean timedOut = Timer.getFPGATimestamp() - startTime>timeout;
         boolean reachedGoal = Math.sqrt(Math.pow(desiredPose.getX() - swerveSubsystem.getEstimatedPosition().getX(),2)+Math.pow(desiredPose.getY() - swerveSubsystem.getEstimatedPosition().getY(),2)) < posTolerance;
-        boolean reachedRotation = Math.abs(desiredPose.getRotation().getDegrees() - swerveSubsystem.getEstimatedPosition().getRotation().getDegrees()) < rotationTolerance;
+        boolean reachedRotation = Math.abs(MB_Math.angleDiffDeg(desiredPose.getRotation().getDegrees(),swerveSubsystem.getEstimatedPosition().getRotation().getDegrees())) < rotationTolerance;
         return timedOut || (reachedGoal && reachedRotation);
     }
 
 
     @Override
     public void end(boolean interrupted) {
-
+        swerveSubsystem.stopModules();
     }
 }
