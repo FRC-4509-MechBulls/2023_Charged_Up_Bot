@@ -162,7 +162,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
     }
 
 
-    public Command redRight_scoreLeaveIntakeScore_untested(boolean reverseForBlue){
+    public Command  redRight_scoreLeaveIntakeScore_untested(boolean reverseForBlue){
         int reverseX = 1;
         double zeroAngle = 0;
         double pickupAngle = 8.54;
@@ -174,7 +174,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         int finalReverseX = reverseX;
         double finalZeroAngle = zeroAngle;
         double finalPickupAngle = pickupAngle;
-        double standardPosTolerance = Units.inchesToMeters(4);
+        double standardPosTolerance = Units.inchesToMeters(2);
         double posP = 3;
 
         Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-5.362*finalReverseX,-1.047), Rotation2d.fromDegrees(180+finalZeroAngle)))); //-6.21*reverse, -0.43
@@ -197,7 +197,8 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         DirectToPointCommand navToPlace2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.454*finalReverseX,-0.975,Rotation2d.fromDegrees(180+finalZeroAngle)),3, Units.inchesToMeters(0.5),2,1,Constants.DriveConstants.turnPValue);
         InstantCommand place2 = new InstantCommand(()->grabber.overrideDesiredEFWait()); //6.454, -.975 ^
 
-        return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(intermediate2.andThen(setToPlacingCone.andThen(sleepCommand3.andThen(navToPlace2.andThen(place2))))))))))))))))));
+     //   return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(intermediate2.andThen(setToPlacingCone.andThen(sleepCommand3.andThen(navToPlace2.andThen(place2))))))))))))))))));
+        return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(intermediate2))))))))))))));
 //
     }
 
