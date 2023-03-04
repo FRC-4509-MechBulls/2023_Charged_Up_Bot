@@ -31,18 +31,19 @@ public class MB_AutoCommandChooser {
         this.stateController = stateController;
         this.grabber = grabber;
         autoChooser = new SendableChooser<Command>();
-        autoChooser.addOption("debug_red_goToStart",redRight_Debug_goToStartPos(false));
+     //   autoChooser.addOption("debug_red_goToStart",redRight_Debug_goToStartPos(false));
+        autoChooser.addOption("do-nothing",doNothing());
 
-        autoChooser.addOption("r_c_justBalance",redBalancerCenter(false));
+      //  autoChooser.addOption("r_c_justBalance",redBalancerCenter(false));
         autoChooser.addOption("r_c_placeAndBalance",redCenter_scoreLeaveAndBalance(false));
-        autoChooser.addOption("r_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(false));
+      //  autoChooser.addOption("r_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(false));
         autoChooser.addOption("r_r_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(false));
 
 
 
-        autoChooser.addOption("b_c_justBalance",redBalancerCenter(true));
+        //autoChooser.addOption("b_c_justBalance",redBalancerCenter(true));
         autoChooser.addOption("b_c_placeAndBalance",redCenter_scoreLeaveAndBalance(true));
-        autoChooser.addOption("b_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(true));
+        //autoChooser.addOption("b_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(true));
         autoChooser.addOption("b_r_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(true));
 
 
@@ -65,6 +66,9 @@ public class MB_AutoCommandChooser {
 
         return nav1.andThen(nav2.andThen(nav3.andThen(nav4.andThen(nav5.andThen(nav6)))));
 
+    }
+    public Command doNothing(){
+        return new SleepCommand(1);
     }
 
     public Command redBalancerCenter(boolean reverseForBlue){
@@ -93,6 +97,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
     int finalReverseX = reverseX;
     double finalZeroAngle = zeroAngle;
     double posP = 2;
+    double extraCommunityTravelDist = Units.inchesToMeters(0);
 
     Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.21*finalReverseX,1.25), Rotation2d.fromDegrees(180+finalZeroAngle)))); //cube placing position
     DirectToPointCommand backAway = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.70*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(1),2,posP, Constants.DriveConstants.turnPValue);
@@ -105,7 +110,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
     DirectToPointCommand backAway1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.70*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(1),2,posP,Constants.DriveConstants.turnPValue);
     SleepCommand sleepCommand3 = new SleepCommand(0);
     Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
-    DirectToPointCommand navToLeaveCommunity = new DirectToPointCommand(swerveSubsystem,new Pose2d(-3.45*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(3),5,posP,Constants.DriveConstants.turnPValue);
+    DirectToPointCommand navToLeaveCommunity = new DirectToPointCommand(swerveSubsystem,new Pose2d(-3.45*finalReverseX + extraCommunityTravelDist,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(3),5,posP,Constants.DriveConstants.turnPValue);
     DirectToPointCommand navToBalancer = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.25*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3, Units.inchesToMeters(3),2,posP,Constants.DriveConstants.turnPValue);
 
     AutoBalanceCommand autoBalanceCommand = new AutoBalanceCommand(swerveSubsystem,15);
