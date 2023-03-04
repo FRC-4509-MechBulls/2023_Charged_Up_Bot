@@ -101,7 +101,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
     Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.21*finalReverseX,1.25), Rotation2d.fromDegrees(180+finalZeroAngle)))); //cube placing position
     DirectToPointCommand backAway = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.70*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(1),2,posP, Constants.DriveConstants.turnPValue);
-    Command setToPlacingCube = new InstantCommand(()->stateController.setAgArmToPlacing()).andThen(new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CUBE))).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS2)));
+    Command setToPlacingCube = new InstantCommand(()->stateController.setAgArmToPlacing()).andThen(new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CUBE))).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3)));
     SleepCommand sleepCommand = new SleepCommand(1);
     DirectToPointCommand navToPlace = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.21*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3, Units.inchesToMeters(0.25),2,posP,Constants.DriveConstants.turnPValue);
     SleepCommand sleepCommand1 = new SleepCommand(0);
