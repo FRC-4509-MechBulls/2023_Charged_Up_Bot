@@ -457,6 +457,7 @@ newY-=camYOffset;
 
   double getAutoBalanceOut(double setpoint, double measurement, double p, double max){
     double out = -MB_Math.maxValueCutoff((setpoint - measurement)* p, max);
+    if(Math.abs(measurement)>10) return 0.35*-(measurement/Math.abs(measurement));
     return out;
   }
 
