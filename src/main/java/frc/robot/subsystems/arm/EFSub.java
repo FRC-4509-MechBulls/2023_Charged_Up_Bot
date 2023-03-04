@@ -32,7 +32,8 @@ public class EFSub extends SubsystemBase {
     efMotorTop.setNeutralMode(NeutralMode.Coast);
     efMotorBottom.setNeutralMode(NeutralMode.Coast);
 
-    efMotorBottom.setInverted(true);
+    efMotorBottom.setInverted(false);
+    efMotorTop.setInverted(true);
     
     // limits power going to motor to prevent burnout
     // values need to be changed

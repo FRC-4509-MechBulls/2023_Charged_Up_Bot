@@ -168,7 +168,7 @@ public final class Constants {
         public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(23.5), Units.inchesToMeters(42 + 1.5)}; //()(23, 46)(24.5, 38.5)
         public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42), Units.inchesToMeters(55)}; //(40, 49.5)(41.5, 50)
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(15), Units.inchesToMeters(17)}; //(2.5, 13)(15, 17)
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)}; //(2.5, 13)(15, 17)
         public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
         public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)}; //(34, 37)
 
@@ -337,7 +337,7 @@ public final class Constants {
     public static final class VisionConstants {
         public static final double MAX_AMBIGUITY = 0.05;
         public static final double CAM_X_OFFSET = Units.inchesToMeters(-7); // -4.5 //7
-        public static final double CAM_Y_OFFSET = Units.inchesToMeters(27-17.5); //9.5 //9.125
+        public static final double CAM_Y_OFFSET = Units.inchesToMeters(9.125); //9.5 //9.125
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
 
