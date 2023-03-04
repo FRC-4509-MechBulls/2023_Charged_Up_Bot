@@ -97,7 +97,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
     int finalReverseX = reverseX;
     double finalZeroAngle = zeroAngle;
     double posP = 2;
-    double extraCommunityTravelDist = Units.inchesToMeters(0);
+    double extraCommunityTravelDist = Units.inchesToMeters(48);
 
     Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.21*finalReverseX,1.25), Rotation2d.fromDegrees(180+finalZeroAngle)))); //cube placing position
     DirectToPointCommand backAway = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.70*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(1),2,posP, Constants.DriveConstants.turnPValue);
@@ -110,12 +110,13 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
     DirectToPointCommand backAway1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.70*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(1),2,posP,Constants.DriveConstants.turnPValue);
     SleepCommand sleepCommand3 = new SleepCommand(0);
     Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
-    DirectToPointCommand navToLeaveCommunity = new DirectToPointCommand(swerveSubsystem,new Pose2d(-3.45*finalReverseX + extraCommunityTravelDist,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(3),5,posP,Constants.DriveConstants.turnPValue);
+    DirectToPointCommand navToLeaveCommunity = new DirectToPointCommand(swerveSubsystem,new Pose2d((-3.45+ extraCommunityTravelDist)*finalReverseX ,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3,Units.inchesToMeters(3),5,posP,Constants.DriveConstants.turnPValue);
+    SleepCommand waitToReenter = new SleepCommand(1.5);
     DirectToPointCommand navToBalancer = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.25*finalReverseX,1.25,Rotation2d.fromDegrees(180+finalZeroAngle)),3, Units.inchesToMeters(3),2,posP,Constants.DriveConstants.turnPValue);
 
     AutoBalanceCommand autoBalanceCommand = new AutoBalanceCommand(swerveSubsystem,15);
 
-    return setInitialPose.andThen(backAway.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(sleepCommand1.andThen(place.andThen(sleepCommand2.andThen(backAway1.andThen(sleepCommand3).andThen(retractArm.andThen(navToLeaveCommunity.andThen(navToBalancer.andThen(autoBalanceCommand)))))))))))); //kill me
+    return setInitialPose.andThen(backAway.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(sleepCommand1.andThen(place.andThen(sleepCommand2.andThen(backAway1.andThen(sleepCommand3).andThen(retractArm.andThen(navToLeaveCommunity.andThen(waitToReenter).andThen(navToBalancer.andThen(autoBalanceCommand)))))))))))); //kill me
 }
 
 
