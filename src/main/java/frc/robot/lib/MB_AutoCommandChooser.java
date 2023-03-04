@@ -179,18 +179,20 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
         Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-5.362*finalReverseX,-1.047), Rotation2d.fromDegrees(180+finalZeroAngle)))); //-6.21*reverse, -0.43
         Command setToPlacingCube = new InstantCommand(()->stateController.setAgArmToPlacing()).andThen(new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CUBE))).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3)));
-        SleepCommand sleepCommand = new SleepCommand(1);
+        SleepCommand sleepCommand = new SleepCommand(2);
         DirectToPointCommand navToPlace = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.454*finalReverseX,-0.416,Rotation2d.fromDegrees(180+finalZeroAngle)),3, Units.inchesToMeters(0.5),2,0.3,Constants.DriveConstants.turnPValue);
         InstantCommand place = new InstantCommand(()->grabber.overrideDesiredEFWait());
-        SleepCommand sleepCommand2 = new SleepCommand(1.5);
+        SleepCommand sleepCommand2 = new SleepCommand(2);
         DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.247*finalReverseX,-0.762,Rotation2d.fromDegrees(180+finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
         Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
+        Command waitAfterRetract = new SleepCommand(1);
         DirectToPointCommand alignToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d(-2.554*finalReverseX,-0.762,Rotation2d.fromDegrees(finalPickupAngle)),4,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
         Command setToIntakingCone = new InstantCommand(()->stateController.setAgArmToIntake()).andThen(new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setItemFallen(StateControllerSubsystem.ItemFallen.FALLEN_CONE))));
-        SleepCommand pauseForIntake = new SleepCommand(1);
+        SleepCommand pauseForIntake = new SleepCommand(2);
         DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.775*finalReverseX,-0.645,Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue);
-        Command waitAfterPickup = new SleepCommand(0.25);
+        Command waitAfterPickup = new SleepCommand(1);
         Command setToHoldCone = new InstantCommand(()->stateController.setAgArmToHolding());
+        Command waitAfterHold = new SleepCommand(2);
         DirectToPointCommand intermediate2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.39*finalReverseX,-0.787,Rotation2d.fromDegrees(180+finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
         Command setToPlacingCone = new InstantCommand(()->stateController.setAgArmToPlacing()).andThen(new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE))).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3)).andThen(new InstantCommand(()->stateController.setItemFallen(StateControllerSubsystem.ItemFallen.FALLEN_CONE))));
         SleepCommand sleepCommand3 = new SleepCommand(1);
@@ -198,7 +200,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         InstantCommand place2 = new InstantCommand(()->grabber.overrideDesiredEFWait()); //6.454, -.975 ^
 
      //   return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(intermediate2.andThen(setToPlacingCone.andThen(sleepCommand3.andThen(navToPlace2.andThen(place2))))))))))))))))));
-        return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(intermediate2))))))))))))));
+        return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(waitAfterRetract).andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(waitAfterHold.andThen(intermediate2)))))))))))))));
 //
     }
 
