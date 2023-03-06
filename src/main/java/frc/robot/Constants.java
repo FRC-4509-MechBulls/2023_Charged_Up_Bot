@@ -170,7 +170,7 @@ public final class Constants {
 
         public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)}; //(2.5, 13)(15, 17)
         public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
-        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)}; //(34, 37)
+        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37 + 5)}; //(34, 37)
 
         public static final double angleToleranceToUpdateEF = 0.5;
         public static final double maxExtension = 55; //slightly lower than total length of arm = 57.5 inches
