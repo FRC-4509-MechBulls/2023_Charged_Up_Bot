@@ -18,6 +18,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.RobotConstants;
 
 import static frc.robot.Constants.ArmConstants;
@@ -47,6 +48,8 @@ public class StageOneSub extends SubsystemBase {
   private double velocity;
   private boolean limitSwitchValue;
   private boolean lastInLimitZone = true;
+
+  private double simArmPosition;
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
