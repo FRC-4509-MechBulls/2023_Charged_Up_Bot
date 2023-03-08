@@ -90,7 +90,7 @@ public class StageOneSub extends SubsystemBase {
     armMotorPrimary.configForwardSoftLimitEnable(true, 1000);
     armMotorPrimary.configReverseSoftLimitEnable(true, 1000);
     //encoder
-    armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
+    armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0,1000);
     //PID
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
@@ -115,7 +115,6 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
   }
   private void configEncoder() {
-    setSensorPosition(ArmConstants.stageOneStartAngle);
   }
   //Getters
   public double getLength() {
@@ -158,12 +157,6 @@ public class StageOneSub extends SubsystemBase {
   }
   public void setSetpoint(double setpoint) {
     this.setpoint = setpoint;
-  }
-  public void setSensorPosition(double position){
-    double radians = position;
-    double encoder = calculateEncoderFromOutput(radians);
-
-    armMotorPrimary.setSelectedSensorPosition(encoder, 0, 1000);
   }
   //Util
   public void calculateStageData() {

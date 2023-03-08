@@ -84,7 +84,7 @@ public final class Constants {
     }
 
     public static final class ArmConstants{
-        public static final double magEncoderCountsPerRotation = 4096;
+        public static final double magEncoderCountsPerRotation = 1;//4096
         public static final double radiansPerRotation = 2 * Math.PI;
         public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
         public static final double stageOneLimitSwitchLeadingAngle = Units.degreesToRadians(39.745231);
@@ -94,7 +94,7 @@ public final class Constants {
         public static final double[] stageOneDefaultCGCoordinateRelativeToPivot = {6, 0};
         public static final double stageOneLength = 28.75;
         public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
-        public static final double stageOneEncoderRatio = 54.0/16;
+        public static final double stageOneEncoderRatio = 1;//54.0/16
         public static final double stageOneStartAngle = Units.degreesToRadians(52.7);//?
         public static final double stageOne12VStallTorque = 21.3302973;
         public static final double stageOneMotorVoltsPerTorque = (12.0/stageOne12VStallTorque);
@@ -121,6 +121,7 @@ public final class Constants {
         public static final double stageOne_kP = 1;//4, 1 for testing
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
+        public static final double stageOneEncoderOffset = 0.0;
 
         public static final double revEncoderCountsPerRotation = 2048;
         public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
@@ -130,7 +131,7 @@ public final class Constants {
         public static final double[] stageTwoDefaultCGCoordinateRelativeToPivot = {10.9, 0};
         public static final double stageTwoLength = 28.75;
         public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
-        public static final double stageTwoEncoderRatio = 32.0/22;
+        public static final double stageTwoEncoderRatio = 1;//32.0/22
         public static final int stageTwoMPRatio = 5*5*4;
         public static final double stageTwoStartAngle = Units.degreesToRadians(-90.0-Units.radiansToDegrees(stageOneStartAngle));
         public static final double stageTwo12VStallTorque = 29.03044612;
@@ -157,6 +158,7 @@ public final class Constants {
         public static final double stageTwo_kP = 0.5;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
+        public static final double stageTwoEncoderOffset = 0.0;
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;

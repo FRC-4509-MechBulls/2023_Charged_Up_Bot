@@ -7,6 +7,7 @@ package frc.robot.subsystems.arm;
 import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,7 +26,7 @@ public class StageTwoSub extends SubsystemBase {
   private CANSparkMax armMotorSecondary;
 
   private SparkMaxPIDController pidController;
-  private RelativeEncoder encoder;
+  private AbsoluteEncoder encoder;
 
   private double setpoint;
   private double AFF;
@@ -84,13 +85,13 @@ public class StageTwoSub extends SubsystemBase {
     armMotorSecondary.setCANTimeout(1000);
   }
   private void instantiateEncoder() {
-    encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192);
+    encoder = armMotorPrimary.getAbsoluteEncoder(Type.kDutyCycle);
   }
   private void configEncoder() {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
     encoder.setVelocityConversionFactor(((2 * Math.PI) / encoderRatio) / 60);
     encoder.setInverted(false);
-    setSensorPosition(ArmConstants.stageTwoStartAngle);
+    encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset);
   }
   private void configMotorControllers() {
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) softLimitForward);
@@ -161,9 +162,6 @@ public class StageTwoSub extends SubsystemBase {
   }
   public void setSetpoint(double setpoint) {
     this.setpoint = setpoint;
-  }
-  public void setSensorPosition(double position) {
-    encoder.setPosition(position);
   }
   public double getVelocity() {
     return velocity;
