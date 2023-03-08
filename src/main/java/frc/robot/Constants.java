@@ -117,7 +117,7 @@ public final class Constants {
         public static final double stageOneSoftLimitReverse = Units.degreesToRadians(-15.212513);
         public static final double stageOneContinuousCurrentLimit = 20;
         public static final double stageOnePeakCurrentLimit = 40;
-        public static final double stageOnePeakCurrentTime = 500;
+        public static final double stageOnePeakCurrentTime = 250;
         public static final double stageOne_kP = 1;//4, 1 for testing
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
