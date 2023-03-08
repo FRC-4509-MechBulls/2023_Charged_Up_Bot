@@ -22,7 +22,7 @@ public final class Constants {
 
     public static final class SimulationConstants{
         public static final boolean simulationEnabled = false;
-        public static final double speedMultiplier = 1.5;
+        public static final double driveSpeedMultiplier = 1.5;
         public static final double turningSpeedMultiplier = 100;
 
     }
@@ -344,7 +344,7 @@ public final class Constants {
     }
 
     public static final class FieldConstants{
-        public static final double width1 = 16.56;
+        public static final double width1 = 16.56; //total field width
         public static final double height1 = 8.05; // 8.176  //we might need to re-measure some things 😭
 
         public static final double leftWallPos = -width1/2;
@@ -352,22 +352,22 @@ public final class Constants {
         public static final double bottomWallPos = -height1/2;
         public static final double topWallPos = height1/2;
 
-        public static final double nodesWidth = 1.55;
+        public static final double nodesWidth = 0.1; //distance from wall to edge of nodes
         public static final double nodesHeight = 5.497;
 
-        public static final double barrierLength = 1.984;
+        public static final double barrierLength = 1.984; //transparent barrier thingy length
 
-        public static final double chargeStationX = 4.417;
-        public static final double chargeStationY = 1.267;
-        public static final double chargeStationWidth = 1.931;
-        public static final double chargeStationHeight = 2.471;
+        public static final double chargeStationX = 4.417; //charge station center x
+        public static final double chargeStationY = 1.267; //charge station center y
+        public static final double chargeStationWidth = 1.931; //charge station total width
+        public static final double chargeStationHeight = 2.471; //charge station total height
 
         public static final double chargeStationFarX = chargeStationX + chargeStationWidth/2; //roughly 5.374
         public static final double chargeStationCloseX = chargeStationX - chargeStationWidth/2;
         public static final double chargeStationTopY = chargeStationY + chargeStationHeight/2;
         public static final double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
 
-        public static final double doubleSubstationDepth = 0.404;
+        public static final double doubleSubstationDepth = 0.404; //distance from far wall to double substation wall
 
         public static final double distFromFarEdgesToTags = 1.013143;
 
