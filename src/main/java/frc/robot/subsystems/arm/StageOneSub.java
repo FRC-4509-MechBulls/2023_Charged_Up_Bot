@@ -25,7 +25,6 @@ import static frc.robot.Constants.ArmConstants;
 public class StageOneSub extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
-  private DigitalInput limitSwitch;
   private double setpoint;
   private double angle;
   private double AFF;
@@ -45,8 +44,6 @@ public class StageOneSub extends SubsystemBase {
   private double peakCurrentLimit;
   private double peakCurrentTime;
   private double velocity;
-  private boolean limitSwitchValue;
-  private boolean lastInLimitZone = true;
 
   private double simulatedAngleRad = 0;
 
@@ -57,7 +54,6 @@ public class StageOneSub extends SubsystemBase {
     resetMotorControllers();
     configMotorControllers();
     configEncoder();
-    instantiateLimitSwitch();
   }
   //Config
   private void instantiateConstants() {
@@ -121,9 +117,6 @@ public class StageOneSub extends SubsystemBase {
   private void configEncoder() {
     setSensorPosition(ArmConstants.stageOneStartAngle);
   }
-  private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(4);
-  }
   //Getters
   public double getLength() {
     return length;
@@ -159,9 +152,6 @@ public class StageOneSub extends SubsystemBase {
   public double getVelocity() {
     return velocity;
   }
-  public boolean getLimitSwitchValue() {
-    return limitSwitchValue;
-  }
   //Setters
   public void setAFF(double AFF){
     this.AFF = AFF;
@@ -179,7 +169,6 @@ public class StageOneSub extends SubsystemBase {
   public void calculateStageData() {
     angle = getEncoderPosition();
     velocity = getEncoderVelocity();
-    limitSwitchValue = getLimitSwitch();
   }
   public double calculateOutputFromEncoder(double encoder) {
     double radians = encoder * ArmConstants.stageOneEncoderTicksToRadians;
@@ -211,9 +200,6 @@ public class StageOneSub extends SubsystemBase {
 
     return output;
   }
-  private boolean getLimitSwitch() {
-    return !limitSwitch.get();
-  }
   double timeSinceLastSimUpdate = Timer.getFPGATimestamp();
   @Override
   public void periodic() {
@@ -228,17 +214,5 @@ public class StageOneSub extends SubsystemBase {
     //SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
     //SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
-    if (!getLimitSwitch()) {
-      lastInLimitZone = false;
-    }/* 
-    if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageOneLimitSwitchLeadingAngle);
-      lastInLimitZone = true;
-    }*/
-    if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageOneLimitSwitchTrailingAngle);
-      //SmartDashboard.putNumber("stageOneLSAngle", Units.radiansToDegrees(angle));
-      lastInLimitZone = true;
-    }
   }
 }

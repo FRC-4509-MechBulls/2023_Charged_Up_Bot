@@ -27,8 +27,6 @@ public class StageTwoSub extends SubsystemBase {
   private SparkMaxPIDController pidController;
   private RelativeEncoder encoder;
 
-  private DigitalInput limitSwitch;
-
   private double setpoint;
   private double AFF;
   private double angle;
@@ -46,8 +44,6 @@ public class StageTwoSub extends SubsystemBase {
   private int smartCurrentLimit;
   private double secondaryCurrentLimit;
   private double velocity;
-  private boolean limitSwitchValue;
-  private boolean lastInLimitZone = true;
   private double simulatedAngleRad = 0;
 
   /** Creates a new ArmStageTwo. */
@@ -60,7 +56,6 @@ public class StageTwoSub extends SubsystemBase {
     configMotorControllers();
     configPIDController();
     burnConfigs();
-    instantiateLimitSwitch();
   }
   //config
   private void instantiateConstants() {
@@ -131,9 +126,6 @@ public class StageTwoSub extends SubsystemBase {
     armMotorPrimary.burnFlash();
     armMotorSecondary.burnFlash();
   }
-  private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(5);
-  }
   //getters
   public double getLength() {
     return length;
@@ -163,9 +155,6 @@ public class StageTwoSub extends SubsystemBase {
   public double getVoltsPerTorque() {
     return voltsPerTorque;
   }
-  public boolean getLimitSwitchValue() {
-    return limitSwitchValue;
-  }
   //setters
   public void setAFF(double AFF) {
     this.AFF = AFF;
@@ -183,7 +172,6 @@ public class StageTwoSub extends SubsystemBase {
   private void calculateStageData() {
     angle = getEncoderPosition();
     velocity = getEncoderVelocity();
-    limitSwitchValue = getLimitSwitch();
   }
   private void setArmPosition(){
     pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
@@ -193,9 +181,6 @@ public class StageTwoSub extends SubsystemBase {
   }
   private double getEncoderVelocity() {
     return encoder.getVelocity();
-  }
-  private boolean getLimitSwitch() {
-    return !limitSwitch.get();
   }
   double timeSinceLastSimUpdate = Timer.getFPGATimestamp();
 
@@ -211,17 +196,5 @@ public class StageTwoSub extends SubsystemBase {
     //SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
-    if (!getLimitSwitch()) {
-      lastInLimitZone = false;
-    }
-    if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageTwoLimitSwitchLeadingAngle);
-      //SmartDashboard.putNumber("stageTwoLSAngle", Units.radiansToDegrees(angle));
-      lastInLimitZone = true;
-    }/*
-    if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageTwoLimitSwitchTrailingAngle);
-      lastInLimitZone = true;
-    }*/
   }
 }
