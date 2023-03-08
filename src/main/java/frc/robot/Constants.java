@@ -113,8 +113,8 @@ public final class Constants {
         public static final double stageOneMass = 10.64;
         public static final double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = {-8.125, 9};
         public static final double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = {12.14, 1.723};
-        public static final double stageOneSoftLimitForward = Units.degreesToRadians(90);
-        public static final double stageOneSoftLimitReverse = Units.degreesToRadians(25);
+        public static final double stageOneSoftLimitForward = Units.degreesToRadians(105.944319);
+        public static final double stageOneSoftLimitReverse = Units.degreesToRadians(-15.212513);
         public static final double stageOneContinuousCurrentLimit = 20;
         public static final double stageOnePeakCurrentLimit = 40;
         public static final double stageOnePeakCurrentTime = 500;
@@ -151,8 +151,8 @@ public final class Constants {
         public static final double stageTwoMass = 2.0;
         public static final double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = {-16.61, 1.723};
         public static final double[] stageTwoDefaultSpringEndCoordinateRelativeToPivot = {-3.5, 0.3895};
-        public static final double stageTwoSoftLimitForward = Units.degreesToRadians(-20);
-        public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-175);
+        public static final double stageTwoSoftLimitForward = Units.degreesToRadians(20);
+        public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-180+7.990375);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
         public static final double stageTwo_kP = 0.5;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
