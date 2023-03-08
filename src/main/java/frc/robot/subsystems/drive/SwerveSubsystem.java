@@ -8,8 +8,6 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -29,10 +27,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Robot;
-import frc.robot.RobotContainer;
 import frc.robot.lib.FieldObjects.FieldTag;
 import frc.robot.lib.MB_Math;
-import frc.robot.subsystems.state.FMSGetter;
 import frc.robot.subsystems.state.StateControllerSubsystem;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -327,7 +323,7 @@ SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new Swerv
 
       if (lastSetStates != null) {
         for (int i = 0; i < 4; i++) {
-          simModulePositions[i].distanceMeters += lastSetStates[i].speedMetersPerSecond * (lastSimUpdateLength) * Constants.SimulationConstants.speedMultiplier;
+          simModulePositions[i].distanceMeters += lastSetStates[i].speedMetersPerSecond * (lastSimUpdateLength) * Constants.SimulationConstants.driveSpeedMultiplier;
           simModulePositions[i].angle = lastSetStates[i].angle;
         }
       }

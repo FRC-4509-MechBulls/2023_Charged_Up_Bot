@@ -111,8 +111,9 @@ public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
 void drawNavigationLines(Mat mat){
         if(navPoses.size()<2) return;
     /** Draw navigation lines */
-    for(int i = 1; i<navPoses.size(); i++)
-        Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
+    if(navPoses.size()>2)
+        for(int i = 1; i<navPoses.size(); i++)
+            Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(i-1).getX(), navPoses.get(i-1).getY())),metersPosToPixelsPos(new Point(navPoses.get(i).getX(), navPoses.get(i).getY())),new Scalar(255,0,255),2);
     if(navPoses.size()==1)
         Imgproc.line(mat, metersPosToPixelsPos(new Point(navPoses.get(0).getX(), navPoses.get(0).getY())),metersPosToPixelsPos(new Point(pivotPoint.getX(),pivotPoint.getY())),new Scalar(255,0,100),2);
    // SmartDashboard.putNumber("EFNavPosesSize", navPoses.size());

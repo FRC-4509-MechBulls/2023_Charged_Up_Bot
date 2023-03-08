@@ -12,8 +12,10 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.RobotConstants;
 
 import static frc.robot.Constants.ArmConstants;
@@ -46,6 +48,7 @@ public class StageTwoSub extends SubsystemBase {
   private double velocity;
   private boolean limitSwitchValue;
   private boolean lastInLimitZone = true;
+  private double simulatedAngleRad = 0;
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
@@ -136,6 +139,7 @@ public class StageTwoSub extends SubsystemBase {
     return length;
   }
   public double getAngle() {
+    if(Constants.SimulationConstants.simulationEnabled) return simulatedAngleRad;
     return angle;
   }
   public double getSpringConstant() {
@@ -193,9 +197,15 @@ public class StageTwoSub extends SubsystemBase {
   private boolean getLimitSwitch() {
     return !limitSwitch.get();
   }
+  double timeSinceLastSimUpdate = Timer.getFPGATimestamp();
 
   @Override
   public void periodic() {
+    if(Constants.SimulationConstants.simulationEnabled){
+      simulatedAngleRad += ((Timer.getFPGATimestamp() - timeSinceLastSimUpdate) * (setpoint - simulatedAngleRad) * Constants.SimulationConstants.armStageTwoSpeedMultiplier);
+      timeSinceLastSimUpdate = Timer.getFPGATimestamp();
+    }
+
     calculateStageData();
     setArmPosition();
     //SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
