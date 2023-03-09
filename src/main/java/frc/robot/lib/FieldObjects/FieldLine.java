@@ -21,6 +21,9 @@ private boolean isABarrier = true;
         this.color = color;
     }
 
+    public void setLine(Line2D.Double line){
+        this.line.setLine(line.getP1(),line.getP2());
+    }
 
     public Line2D.Double getLine(){
         return line;

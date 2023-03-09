@@ -23,7 +23,7 @@ import java.util.List;
 public class EFPathingTelemetrySub extends GraphicalTelemetrySubsystem {
 
     public EFPathingTelemetrySub() {
-        super("EFNav",480,360,2);
+        super("EFNav",480,360,16);
     }
         Point2D.Double pivotPoint = new Point2D.Double(1,1);
 

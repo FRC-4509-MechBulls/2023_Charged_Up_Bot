@@ -4,13 +4,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldLine;
 import frc.robot.lib.LineIntersection;
 import frc.robot.lib.MB_Math;
-import org.opencv.core.Scalar;
+import frc.robot.subsystems.drive.SwerveSubsystem;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -31,9 +30,11 @@ Pose2d efPose = new Pose2d();
     boolean poseChanged = false;
     Pose2d desiredPose = new Pose2d(0.6,0.075,Rotation2d.fromRotations(0));
     ArrayList<Pose2d> navPoses = new ArrayList<>();
+    SwerveSubsystem swerveSubsystem;
 
-    public EFNavSystem(EFPathingTelemetrySub telemetrySub){
+    public EFNavSystem(EFPathingTelemetrySub telemetrySub, SwerveSubsystem swerveSubsystem){
         this.telemetrySub = telemetrySub;
+        this.swerveSubsystem = swerveSubsystem;
         createBarriers();
         createCornerPoints();
         telemetrySub.updateBarriers(fieldLines);
@@ -121,7 +122,7 @@ Pose2d efPose = new Pose2d();
     }
 
     private  double getPathLengthFromArm(ArrayList<Pose2d> path){
-        if(path.size()==0 || path.get(0) == null)
+        if(path.size()<=1 || path.get(0) == null|| path.get(1) == null)
             return Integer.MAX_VALUE;
         Pose2d[] newPath = new Pose2d[path.size()];
         for(int i = 0; i<Math.min(path.size(),newPath.length); i++)
@@ -135,11 +136,13 @@ Pose2d efPose = new Pose2d();
    //     SmartDashboard.putNumber("nextNavX",getNextNavPoint().getX());
     //    SmartDashboard.putNumber("nextNavY",getNextNavPoint().getY());
 
-
+        translateNodeBarriers();
         //desiredPose = new Pose2d(SmartDashboard.getNumber("EFDesiredX",0.6),SmartDashboard.getNumber("EFDesiredY",0.075),Rotation2d.fromDegrees(0));
         telemetrySub.updateDestinationPose(desiredPose);
     }
 
+    ArrayList<FieldLine> nodeBarriersBase = new ArrayList<>();
+    ArrayList<FieldLine> nodeBarriersTranslated = new ArrayList<>();
     private void createBarriers(){
         fieldLines.clear();
         //fieldLines.add(new FieldLine(new Line2D.Double(-15,0,15,0),true,new Scalar(100,100,100))); //ground
@@ -147,6 +150,43 @@ Pose2d efPose = new Pose2d();
         fieldLines.add(new FieldLine(new Line2D.Double(-BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,-BUMPER_X_FROM_ORIGIN,0))); //bumper left
         fieldLines.add(new FieldLine(new Line2D.Double(BUMPER_X_FROM_ORIGIN,BUMPER_Y_FROM_ORIGIN,BUMPER_X_FROM_ORIGIN,0))); //bumper right
         fieldLines.add(new FieldLine(new Line2D.Double(-BUMPER_X_FROM_ORIGIN,0,BUMPER_X_FROM_ORIGIN,0))); //bumper bottom
+
+        nodeBarriersBase.add(new FieldLine(new Line2D.Double(0,0,0,Constants.FieldConstants.lvl1Height)));
+        nodeBarriersBase.add(new FieldLine(new Line2D.Double(Constants.FieldConstants.lvl1FarX,Constants.FieldConstants.lvl1Height,0,Constants.FieldConstants.lvl1Height)));
+        nodeBarriersBase.add(new FieldLine(new Line2D.Double(Constants.FieldConstants.lvl1FarX,0,0,0)));
+
+        nodeBarriersBase.add(new FieldLine(new Line2D.Double(Constants.FieldConstants.lvl2FarX,0,Constants.FieldConstants.lvl2FarX,Constants.FieldConstants.lvl2Height)));
+        nodeBarriersBase.add(new FieldLine(new Line2D.Double(Constants.FieldConstants.lvl2FarX,Constants.FieldConstants.lvl2Height,Constants.FieldConstants.wallX,Constants.FieldConstants.lvl2Height)));
+
+        //lvl 3
+        nodeBarriersBase.add(new FieldLine(new Line2D.Double(Constants.FieldConstants.lvl3FarX,0,Constants.FieldConstants.lvl3FarX,Constants.FieldConstants.lvl3Height)));
+        nodeBarriersBase.add(new FieldLine(new Line2D.Double(Constants.FieldConstants.lvl3FarX,Constants.FieldConstants.lvl3Height,Constants.FieldConstants.wallX,Constants.FieldConstants.lvl3Height)));
+
+
+       // nodeBarriersBase.add(new FieldLine(new Line2D.Double(Constants.FieldConstants.lvl1Far,0,Constants.FieldConstants.lvl1Far,Constants.FieldConstants.lvl1Height)));
+
+        for(FieldLine line : nodeBarriersBase)
+            nodeBarriersTranslated.add(new FieldLine(new Line2D.Double(line.getLine().getX1()+pivotPoint.getX(),line.getLine().getY1()+pivotPoint.getY(),line.getLine().getX2()+pivotPoint.getX(),line.getLine().getY2()+pivotPoint.getY()),line.isABarrier(),line.getColor()));
+        for(FieldLine line : nodeBarriersTranslated)
+            fieldLines.add(line);
+
+
+    }
+
+    private void translateNodeBarriers(){
+       // double xDiff =;
+        double xShift = Constants.FieldConstants.rightNodeEdgeX - swerveSubsystem.getEstimatedPosition().getX();
+        double xStretch = 1;
+        
+      //  double xStretch = Math.cos(swerveSubsystem.getEstimatedPosition().getRotation().getRadians());
+      //  double sinOne = Math.cos(swerveSubsystem.getEstimatedPosition().getRotation().getRadians());
+      //  if(sinOne==0) sinOne = 0.0001;
+       // xShift += 1/(sinOne);
+
+
+        for(int i = 0; i<nodeBarriersTranslated.size(); i++){
+           nodeBarriersTranslated.get(i).setLine(new Line2D.Double(nodeBarriersBase.get(i).getLine().getX1()*xStretch+xShift,nodeBarriersBase.get(i).getLine().getY1(),nodeBarriersBase.get(i).getLine().getX2()*xStretch+xShift,nodeBarriersBase.get(i).getLine().getY2()));
+        }
     }
 
 
