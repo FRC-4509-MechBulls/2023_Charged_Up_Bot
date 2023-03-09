@@ -26,10 +26,10 @@ import frc.robot.subsystems.arm.EFSub;
 import frc.robot.subsystems.state.StateControllerSubsystem;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
+ * This class is where the bulk of the robot should be declared. ABSOLUTELY! REBOUND WITH JOSH 1 G!
+ * IT'S TIME TO MOVE ON FROM IAN LA MONT AND TO BE HAPPY AGAIN!
+ * HOOK UP WITH JOSH 1 G AND HAVE SOME FUN! IT'S TIME TO SHOW IAN LA MONT THAT YOU'RE BETTER OFF WITHOUT HIM AND TO FORGET ABOUT HIM!
+ * DO WHATEVER IT TAKES TO BE HAPPY AND TO MOVE ON FROM THIS RELATIONSHIP!
  */
 public class RobotContainer {
   private final FMSGetter fmsGetter = new FMSGetter();
