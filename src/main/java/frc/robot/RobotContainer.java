@@ -51,9 +51,11 @@ public class RobotContainer {
 
   private final XboxController driverController = new XboxController(OIConstants.DRIVER_CONTROLLER_PORT);
   private final XboxController operatorController = new XboxController(OIConstants.OPERATOR_CONTROLLER_PORT);
-  private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
+    private final Command rc_drive = new RunCommand(()-> swerveSubsystem.joystickDrive(driverController.getLeftY()*-1,driverController.getLeftX()*-1,driverController.getRightX()*-1), swerveSubsystem);
   private final Command stateController_processInputs = new RunCommand(()-> stateControllerSubsystem.processRawAxisValues(operatorController.getPOV(), operatorController.getRightTriggerAxis()),stateControllerSubsystem);
-  private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
+    private final Command rc_XPattern = new RunCommand(()-> swerveSubsystem.drivebaseXPattern(), swerveSubsystem);
+
+    private final Command swerve_toggleFieldOriented = new InstantCommand(swerveSubsystem::toggleFieldOriented);
  // private final Command rc_goToTag = new RunCommand(()->swerveSubsystem.drive(visionSubsystem.getDesiredSpeeds()[0],visionSubsystem.getDesiredSpeeds()[1],visionSubsystem.getDesiredSpeeds()[2],true,false), swerveSubsystem);
  // private final Command rc_goToPose = new RunCommand(()->swerveSubsystem.driveToPose(new Pose2d()), swerveSubsystem);
   private final Command rc_generateNavPoses = new InstantCommand(()->navigationField.setNavPoint(new Pose2d(2.5,0,new Rotation2d())));
@@ -113,7 +115,7 @@ public class RobotContainer {
 
     //new JoystickButton(driverController, XboxController.Button.kRightBumper.value).whileTrue(rc_directToPose);
       new JoystickButton(driverController, XboxController.Button.kA.value).whileTrue(rc_directToClosestNode);
-      new JoystickButton(driverController, XboxController.Button.kY.value).whileTrue(rc_navToPose);
+    //  new JoystickButton(driverController, XboxController.Button.kY.value).whileTrue(rc_navToPose);
     new JoystickButton(driverController, XboxController.Button.kY.value).onTrue(new InstantCommand(navigationField::engageNav));
     new JoystickButton(driverController, XboxController.Button.kY.value).onFalse(new InstantCommand(navigationField::disengageNav));
 
@@ -129,7 +131,7 @@ public class RobotContainer {
       new JoystickButton(operatorController,XboxController.Button.kY.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
       new JoystickButton(operatorController,XboxController.Button.kX.value).onTrue(new InstantCommand(grabberSubsystem::overrideDesiredEFWait));
 
-
+    new JoystickButton(driverController,XboxController.Button.kY.value).onTrue(new InstantCommand(stateControllerSubsystem::setAgArmToPlacing));
 
   }
 
