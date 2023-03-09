@@ -100,6 +100,10 @@ public class StageTwoSub extends SubsystemBase {
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
     armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
     armMotorPrimary.setSecondaryCurrentLimit(secondaryCurrentLimit);
     armMotorPrimary.setSmartCurrentLimit(smartCurrentLimit);
     armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
