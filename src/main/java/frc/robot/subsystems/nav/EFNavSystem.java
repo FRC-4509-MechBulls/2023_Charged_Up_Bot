@@ -121,7 +121,7 @@ Pose2d efPose = new Pose2d();
     }
 
     private  double getPathLengthFromArm(ArrayList<Pose2d> path){
-        if(path.size()==0 || path.get(0) == null)
+        if(path.size()<=1 || path.get(0) == null|| path.get(1) == null)
             return Integer.MAX_VALUE;
         Pose2d[] newPath = new Pose2d[path.size()];
         for(int i = 0; i<Math.min(path.size(),newPath.length); i++)

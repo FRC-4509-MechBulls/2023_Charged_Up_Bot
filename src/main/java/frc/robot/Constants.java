@@ -174,6 +174,19 @@ public final class Constants {
         public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
         public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37 + 5)}; //(34, 37)
 
+
+
+        public static final double[] postPlacingConeArmPosOne = {placingConeArmPosOne[0], placingConeArmPosOne[1] + Units.inchesToMeters(0)};
+        public static final double[] postPlacingConeArmPosTwo = {placingConeArmPosTwo[0], placingConeArmPosTwo[1] + Units.inchesToMeters(4)};
+        public static final double[] postPlacingConeArmPosThree = {placingConeArmPosThree[0], placingConeArmPosThree[1] + Units.inchesToMeters(4)};
+
+        public static final double[] postPlacingCubeArmPosOne = {placingCubeArmPosOne[0], placingCubeArmPosOne[1] + Units.inchesToMeters(0)};
+        public static final double[] postPlacingCubeArmPosTwo = {placingCubeArmPosTwo[0], placingCubeArmPosTwo[1] + Units.inchesToMeters(0)};
+        public static final double[] postPlacingCubeArmPosThree = {placingCubeArmPosThree[0], placingCubeArmPosThree[1] + Units.inchesToMeters(0)};
+
+
+
+
         public static final double angleToleranceToUpdateEF = 0.5;
         public static final double maxExtension = 55; //slightly lower than total length of arm = 57.5 inches
     }
@@ -354,7 +367,7 @@ public final class Constants {
         public static final double bottomWallPos = -height1/2;
         public static final double topWallPos = height1/2;
 
-        public static final double nodesWidth = 0.1; //distance from wall to edge of nodes
+        public static final double nodesWidth = 1.55; //distance from wall to edge of nodes
         public static final double nodesHeight = 5.497;
 
         public static final double barrierLength = 1.984; //transparent barrier thingy length

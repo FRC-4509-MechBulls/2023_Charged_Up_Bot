@@ -36,7 +36,7 @@ public class Grabber extends SubsystemBase {
   private double[] setpointThetaPhi;
   private double[] eFPosition;
 
-  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
+  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3, POST_PLACING_CONE_LVL1, POST_PLACING_CONE_LVL2, POST_PLACING_CONE_LVL3, POST_PLACING_CUBE_LVL1, POST_PLACING_CUBE_LVL2, POST_PLACING_CUBE_LVL3}
   public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE_BOTTOM,PLACING_CUBE_TOP, PLACING_CONE, STOPPED}
 
   private EFModes efMode = EFModes.STOPPED;
@@ -90,6 +90,14 @@ public class Grabber extends SubsystemBase {
       case PLACING_CUBE_LVL1: return ArmConstants.placingCubeArmPosOne;
       case PLACING_CUBE_LVL2: return ArmConstants.placingCubeArmPosTwo;
       case PLACING_CUBE_LVL3: return ArmConstants.placingCubeArmPosThree;
+
+        case POST_PLACING_CONE_LVL1: return ArmConstants.postPlacingConeArmPosOne;
+        case POST_PLACING_CONE_LVL2: return ArmConstants.postPlacingConeArmPosTwo;
+        case POST_PLACING_CONE_LVL3: return ArmConstants.postPlacingConeArmPosThree;
+
+        case POST_PLACING_CUBE_LVL1: return ArmConstants.postPlacingCubeArmPosOne;
+        case POST_PLACING_CUBE_LVL2: return ArmConstants.postPlacingCubeArmPosTwo;
+        case POST_PLACING_CUBE_LVL3: return ArmConstants.postPlacingCubeArmPosThree;
     }
     return new double[]{};
   }
@@ -357,6 +365,11 @@ public class Grabber extends SubsystemBase {
     }
     SmartDashboard.putBoolean("EFMatches", getEFMode()==getDesiredEFMode());
     SmartDashboard.putString("EFMode",getEFMode().toString());
+
+    //when the arm is in place cone L2 or L3 and the EF matches the desired EF, move the arm to the appropriate post-placing position
+    if(getEFMode()==getDesiredEFMode() && (stateController.getArmMode()==ArmModes.PLACING_CONE_LVL2 || stateController.getArmMode()==ArmModes.PLACING_CONE_LVL3)){
+        stateController.setAgArmToPostPlacing();
+    }
 
     
    // double inX = SmartDashboard.getNumber("test_inX",1);
