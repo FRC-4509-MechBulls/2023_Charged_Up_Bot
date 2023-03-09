@@ -8,6 +8,7 @@ import com.revrobotics.*;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -126,6 +127,9 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setD(ArmConstants.stageTwo_kD);
     pidController.setOutputRange(-12,12);
     pidController.setPositionPIDWrappingEnabled(false);
+    pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+    pidController.setSmartMotionMaxAccel((Units.degreesToRotations(110/2) * 60) / .5, 0);
+    pidController.setSmartMotionMaxVelocity(Units.degreesToRotations(110/2) * 60, 0);
   }
   private void burnConfigs() {
     armMotorPrimary.burnFlash();
@@ -176,7 +180,7 @@ public class StageTwoSub extends SubsystemBase {
     velocity = getEncoderVelocity();
   }
   private void setArmPosition(){
-    pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+    pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
     return encoder.getPosition();
