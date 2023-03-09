@@ -9,6 +9,7 @@ import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldLine;
 import frc.robot.lib.LineIntersection;
 import frc.robot.lib.MB_Math;
+import frc.robot.subsystems.arm.Grabber;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 
 import java.awt.geom.Line2D;
@@ -287,6 +288,8 @@ Pose2d efPose = new Pose2d();
                     branchHeadY = cornerPoints.get(randIndexes[cornerIndex]).getY();
 
                 }
+                if(Grabber.isCoordinateOutOfBounds(branchHeadX,branchHeadY))
+                    continue;
 
 
                 Line2D.Double lineToTestPoint = new Line2D.Double(myPose.getX(), myPose.getY(),branchHeadX ,branchHeadY );

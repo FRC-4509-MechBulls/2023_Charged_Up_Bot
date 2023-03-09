@@ -77,7 +77,7 @@ public final class Constants {
 
         public static final int minPathingDelay = 10;
 
-        public static final double reachedInBetweenPointThreshold = 0.05;
+        public static final double reachedInBetweenPointThreshold = Units.inchesToMeters(3);
         public static final double recalcThreshold = Units.inchesToMeters(3); // max distance to travel before recalculating trajectory
 
 
