@@ -84,7 +84,7 @@ public final class Constants {
     }
 
     public static final class ArmConstants{
-        public static final double magEncoderCountsPerRotation = 1;//4096
+        public static final double magEncoderCountsPerRotation = 4096;//4096
         public static final double radiansPerRotation = 2 * Math.PI;
         public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
         public static final double stageOneLimitSwitchLeadingAngle = Units.degreesToRadians(39.745231);

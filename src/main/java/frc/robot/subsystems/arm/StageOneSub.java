@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -204,7 +205,7 @@ public class StageOneSub extends SubsystemBase {
 
     calculateStageData();
     setArmPosition();
-    //SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
+    SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
     //SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
