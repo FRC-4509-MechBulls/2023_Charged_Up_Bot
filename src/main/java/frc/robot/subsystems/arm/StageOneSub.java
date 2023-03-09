@@ -114,6 +114,10 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 1000, 1000);
     armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1000, 1000);
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
+    //motion magic
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/1))) * 10, 1000);
+    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/1))) * 10)/.5, 1000);
+    armMotorPrimary.configMotionSCurveStrength(1, 1000);
   }
   private void configEncoder() {
   }
@@ -180,7 +184,7 @@ public class StageOneSub extends SubsystemBase {
     double output = setpoint;
     double encoder = calculateEncoderFromOutput(output);
 
-    armMotorPrimary.set(TalonSRXControlMode.Position, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
+    armMotorPrimary.set(TalonSRXControlMode.MotionMagic, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
   }
   private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
