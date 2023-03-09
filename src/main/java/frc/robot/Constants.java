@@ -367,7 +367,7 @@ public final class Constants {
         public static final double bottomWallPos = -height1/2;
         public static final double topWallPos = height1/2;
 
-        public static final double nodesWidth = 0.1; //distance from wall to edge of nodes
+        public static final double nodesWidth = 1.55; //distance from wall to edge of nodes
         public static final double nodesHeight = 5.497;
 
         public static final double barrierLength = 1.984; //transparent barrier thingy length
