@@ -91,7 +91,7 @@ public class StageTwoSub extends SubsystemBase {
   private void configEncoder() {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
     encoder.setVelocityConversionFactor(((2 * Math.PI) / encoderRatio) / 60);
-    encoder.setInverted(false);
+    encoder.setInverted(true);
     encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset);
   }
   private void configMotorControllers() {
