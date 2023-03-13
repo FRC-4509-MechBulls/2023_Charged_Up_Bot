@@ -219,7 +219,8 @@ public class StageOneSub extends SubsystemBase {
   public void periodic() {
     SmartDashboard.putNumber("stageOne_setpoint",setpoint);
     if(Constants.SimulationConstants.simulationEnabled){
-      simulatedAngleRad += ((Timer.getFPGATimestamp() - timeSinceLastSimUpdate) * (setpoint - simulatedAngleRad) * Constants.SimulationConstants.armStageOneSpeedMultiplier);
+      double tempSpeed = SmartDashboard.getNumber("stageOneSpeed", 0);
+      simulatedAngleRad += ((Timer.getFPGATimestamp() - timeSinceLastSimUpdate) * (setpoint - simulatedAngleRad) * tempSpeed);
       timeSinceLastSimUpdate = Timer.getFPGATimestamp();
     }
 

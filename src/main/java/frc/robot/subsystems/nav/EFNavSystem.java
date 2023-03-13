@@ -12,6 +12,7 @@ import frc.robot.lib.LineIntersection;
 import frc.robot.lib.MB_Math;
 import org.opencv.core.Scalar;
 
+import javax.sound.sampled.Line;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ Pose2d efPose = new Pose2d();
                                     double compTime = Timer.getFPGATimestamp()*1000 - startTime;
                                     //SmartDashboard.putNumber("EFpathingCompTime",compTime);
                                     telemetrySub.updateNavPoses(navPoses);
+                                    SmartDashboard.putBoolean("clearPath",barrierOnLine(new Line2D.Double(pivotPoint,new Point2D.Double(desiredPose.getX(),desiredPose.getY()))));
 
                                     Thread.sleep(minPathingDelay);
                                 }
@@ -162,7 +164,10 @@ Pose2d efPose = new Pose2d();
         updatePivotPoint(new Point2D.Double(pivotPoint[0],pivotPoint[1]));
     }
 
-    public  boolean barrierOnLine(Line2D.Double line){
+    public boolean barrierOnLine(Line2D.Double line){
+        return barrierOnLineBad(line) || barrierOnLineBad(new Line2D.Double(line.getX2(),line.getY2(),line.getX1(),line.getY1()));
+    }
+    public  boolean barrierOnLineBad(Line2D.Double line){
         //shift the line to check from the center of the box. The pivot point to pivot point is what's being passed in
         line.setLine(line.getX1() + CENTER_OFFSET_FROM_PIVOT_POINT_X, line.getY1() + CENTER_OFFSET_FROM_PIVOT_POINT_Y, line.getX2() + CENTER_OFFSET_FROM_PIVOT_POINT_X, line.getY2() + CENTER_OFFSET_FROM_PIVOT_POINT_Y);
         if(Math.sqrt(Math.pow(line.getX1()-line.getX2(),2)+Math.pow(line.getY1()+line.getY2(),2))< recalcThreshold) return false;

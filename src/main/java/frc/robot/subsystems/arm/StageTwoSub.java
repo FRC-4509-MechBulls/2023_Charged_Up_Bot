@@ -61,6 +61,9 @@ public class StageTwoSub extends SubsystemBase {
     configPIDController();
     burnConfigs();
     instantiateLimitSwitch();
+
+    SmartDashboard.putNumber("stageOneSpeed", 0);
+    SmartDashboard.putNumber("stageTwoSpeed", 0);
   }
   //config
   private void instantiateConstants() {
@@ -202,7 +205,8 @@ public class StageTwoSub extends SubsystemBase {
   @Override
   public void periodic() {
     if(Constants.SimulationConstants.simulationEnabled){
-      simulatedAngleRad += ((Timer.getFPGATimestamp() - timeSinceLastSimUpdate) * (setpoint - simulatedAngleRad) * Constants.SimulationConstants.armStageTwoSpeedMultiplier);
+      double tempSpeed = SmartDashboard.getNumber("stageTwoSpeed", 0);
+      simulatedAngleRad += ((Timer.getFPGATimestamp() - timeSinceLastSimUpdate) * (setpoint - simulatedAngleRad) * tempSpeed);
       timeSinceLastSimUpdate = Timer.getFPGATimestamp();
     }
 
