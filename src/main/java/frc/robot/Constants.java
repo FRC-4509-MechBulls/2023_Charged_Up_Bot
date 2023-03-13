@@ -121,7 +121,7 @@ public final class Constants {
         public static final double stageOne_kP = 1;//4, 1 for testing
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
-        public static final double stageOneEncoderOffset = -220.078125;
+        public static final double stageOneEncoderOffset = Units.degreesToRadians(-220.078125);
 
         public static final double revEncoderCountsPerRotation = 2048;
         public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
