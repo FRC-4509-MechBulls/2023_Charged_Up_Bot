@@ -237,13 +237,17 @@ StateControllerSubsystem stateControllerSubsystem;
 
     return Math.IEEEremainder(gyro.getYaw(), 360); //clamps value between -/+ 180 deg where zero is forward
   }
-  public double getPitch(){
+
+  public double getOdomHeading(){
+    return Math.IEEEremainder(odometry.getEstimatedPosition().getRotation().getDegrees(), 360);
+  }
+  public double getPitch(){ // x axis
     if(DriveConstants.USE_NAV_X_OVER_PIGEON)
       return Math.IEEEremainder(navx.getPitch(), 360);
 
     return Math.IEEEremainder(gyro.getPitch(), 360);
   }
-  public double getRoll(){
+  public double getRoll(){ // y axis
     if(DriveConstants.USE_NAV_X_OVER_PIGEON)
       return Math.IEEEremainder(navx.getRoll(), 360);
 
@@ -466,9 +470,32 @@ newY-=camYOffset;
     return out;
   }
 
-
+  double[] get2DAutoBalanceOut(double pitch, double roll, double heading, double p, double max){
+    double setpoint = 0;
+    double rollPitchAngle = Math.atan2(roll,pitch);
+    double rollPitchMag = Math.sqrt(Math.pow(roll,2)+Math.pow(pitch,2));
+    double rollPitchFieldRelativeAngle = rollPitchAngle+heading;
+    double moveOutMagnitude = Math.sin(rollPitchFieldRelativeAngle)*rollPitchMag;
+    double moveOutAngle = -heading;
+    double moveOutX = moveOutMagnitude*Math.cos(moveOutAngle);
+    double moveOutY = moveOutMagnitude*Math.sin(moveOutAngle);
+    return new double[]{moveOutX,moveOutY};
+  }
 
   public void driveAutoBalance(){
+    double setpoint = 0;
+    double pitchMeasurement = getPitch();
+    double rollMeasurement = -getRoll();
+    double heading = getOdomHeading();
+    double p = 1.0/60; //1.0/70
+    double max = 0.3;
+    double[] out = get2DAutoBalanceOut(pitchMeasurement,rollMeasurement,heading,p,max);
+    drive(out[0],out[1],0,false,false);
+  }
+
+
+
+  public void driveAutoBalanceOld(){
     double setpoint = 0;
     double pitchMeasurement = getPitch();
     double rollMeasurement = -getRoll();
