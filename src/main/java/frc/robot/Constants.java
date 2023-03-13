@@ -77,7 +77,7 @@ public final class Constants {
 
         public static final int minPathingDelay = 10;
 
-        public static final double reachedInBetweenPointThreshold = 0.05;
+        public static final double reachedInBetweenPointThreshold = Units.inchesToMeters(3);
         public static final double recalcThreshold = Units.inchesToMeters(3); // max distance to travel before recalculating trajectory
 
 
@@ -367,7 +367,9 @@ public final class Constants {
         public static final double bottomWallPos = -height1/2;
         public static final double topWallPos = height1/2;
 
-        public static final double nodesWidth = 1.55; //distance from wall to edge of nodes
+        public static final double nodesWidth = 1.55;//distance from wall to edge of nodes
+
+        public static final double rightNodeEdgeX = rightWallPos - nodesWidth;
         public static final double nodesHeight = 5.497;
 
         public static final double barrierLength = 1.984; //transparent barrier thingy length
@@ -412,9 +414,24 @@ public final class Constants {
 
         public static final double chargeStationEdgeLength = Units.inchesToMeters(6);
 
+        // EF constants
+        public static final double wallX = Units.inchesToMeters(54);
+        public static final double lvl1FarX = wallX - Units.inchesToMeters(0); //distance from wall to farthest edge of lvl 1
+        public static final double lvl2FarX = wallX - Units.inchesToMeters(40.406);
+        public static final double lvl3FarX = wallX - Units.inchesToMeters(22.908);
+        public static final double lvl1Height = Units.inchesToMeters(5.251);
+        public static final double lvl2Height = Units.inchesToMeters(23.780475);
+        public static final double lvl3Height = Units.inchesToMeters(35.750983);
+        public static final double ciglvl3DistFromWall = Units.inchesToMeters(14.525355);
+        public static final double ciglvl2DistFromWall = Units.inchesToMeters(31.537500);
+        public static final double cigLvl2Height = Units.inchesToMeters(34.155500);
+        public static final double cigLvl3Height = Units.inchesToMeters(46.250500);
+
 
 
 
     }
+
+
 
 }
