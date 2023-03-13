@@ -304,7 +304,7 @@ public class Grabber extends SubsystemBase {
     double[] rawCoordinate = coordinate;
 
     //scale rawCoordinate back so the arm doesn't go crazy go stupid
-    if(isCoordinateOutOfBounds(rawCoordinate[0],rawCoordinate[1])){
+    if(rawCoordinate.length>=2&&isCoordinateOutOfBounds(rawCoordinate[0],rawCoordinate[1])){
       double angleToXY = Math.atan2(coordinate[1] - ArmConstants.stageOnePivotCoordinate[1],coordinate[0]- ArmConstants.stageOnePivotCoordinate[0]);
       double totalArmLength = ArmConstants.maxExtension;
       double x = ArmConstants.stageOnePivotCoordinate[0] + Math.cos(angleToXY) * totalArmLength;

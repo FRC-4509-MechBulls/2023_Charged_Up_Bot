@@ -88,11 +88,17 @@ Pose2d efPose = new Pose2d();
             return;
         boolean poseCloseToLast = MB_Math.poseDist(lastUsedPose,pointToPose2D(pivotPoint))<recalcThreshold;
 
-        if(getPathLengthFromArm(outNavPoses)> getPathLengthFromArm(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
-            //    SmartDashboard.putNumber("lastEngagedDrop",Timer.getFPGATimestamp());
+   //     if(getPathLengthFromArm(outNavPoses)> getPathLengthFromArm(navPoses) && ((engaged || poseCloseToLast ) && !poseChangedOld)){
+        SmartDashboard.putNumber("newNavPoses_len",getPathLengthFromArm(outNavPoses));
+        SmartDashboard.putNumber("navPoses_len",getPathLengthFromArm(navPoses));
+        SmartDashboard.putBoolean("replacing",getPathLengthFromArm(outNavPoses)> getPathLengthFromArm(navPoses));
+        if(getPathLengthFromArm(outNavPoses)> getPathLengthFromArm(navPoses)+Units.inchesToMeters(4) &&  !poseChangedOld){
+            SmartDashboard.putString("lastDropped","new: "+getPathLengthFromArm(outNavPoses)+" old: "+getPathLengthFromArm(navPoses));
             return;
         }
-
+            SmartDashboard.putString("lastNotDropped","new: "+getPathLengthFromArm(outNavPoses)+" old: "+getPathLengthFromArm(navPoses));
+        if(getPathLengthFromArm(outNavPoses) == Integer.MAX_VALUE)
+            SmartDashboard.putBoolean("itHappened",true);
 
         lastUsedPose = efPose;
         if(!dontTouchPoses){
@@ -111,10 +117,10 @@ Pose2d efPose = new Pose2d();
     }
 
     private double getPathLengthFromArm(Pose2d[] path){ //getPathLengthFromBot rename
-        if(path.length==0 || path[0] == null)
+        if(path.length<1 || path[0] == null)
             return Integer.MAX_VALUE;
-        double botX = efPose.getX();
-        double botY = efPose.getY();
+        double botX = pivotPoint.getX();
+        double botY = pivotPoint.getY();
         double length = Math.sqrt(Math.pow(botX - path[0].getX(),2)+Math.pow(botY-path[0].getY(),2));
         for(int i = 1; i<path.length; i++){
             if(path[i] == null || path[i-1] == null)
@@ -126,13 +132,14 @@ Pose2d efPose = new Pose2d();
     }
 
     private  double getPathLengthFromArm(ArrayList<Pose2d> path){
-        if(path.size()<=1 || path.get(0) == null|| path.get(1) == null)
-            return Integer.MAX_VALUE;
-        Pose2d[] newPath = new Pose2d[path.size()];
-        for(int i = 0; i<Math.min(path.size(),newPath.length); i++)
-            newPath[i] = path.get(i);
-        return getPathLengthFromArm(newPath);
+        dontTouchPoses = true;
+        Pose2d[] pathArray = new Pose2d[path.size()];
+        for(int i = 0; i<path.size(); i++)
+            pathArray[i] = path.get(i);
+        dontTouchPoses = false;
+        return getPathLengthFromArm(pathArray);
     }
+
 
     public void periodic(){
         //updatePivotPoint(new Point2D.Double(SmartDashboard.getNumber("EFPivotX",0),SmartDashboard.getNumber("EFPivotY",0)));
@@ -324,6 +331,8 @@ Pose2d efPose = new Pose2d();
         cornerPoints.clear();
 
         cornerPoints.add(new Pose2d(Units.inchesToMeters(24),Units.inchesToMeters(16),Rotation2d.fromDegrees(0))); //24,16
+        cornerPoints.add(new Pose2d(Units.inchesToMeters(16),Units.inchesToMeters(45),Rotation2d.fromDegrees(0)));
+        cornerPoints.add(new Pose2d(Units.inchesToMeters(10),Units.inchesToMeters(35),Rotation2d.fromDegrees(0)));
         //cornerPoints.add(new Pose2d(1.5,1.5,Rotation2d.fromDegrees(0)));
 
 
@@ -337,13 +346,25 @@ Pose2d efPose = new Pose2d();
         return out;
     }
     public Pose2d getNextNavPointUnprotected(){
-        if(navPoses.size()<1) return efPose;
+        if (navPoses == null || navPoses.size() < 1) {
+            return efPose;
+        }
         Pose2d armPose = efPose;
-        while((navPoses.size()>1) &&(navPoses.get(0)==null || (Math.sqrt(Math.pow(pivotPoint.getX() - navPoses.get(0).getX(),2)+Math.pow(pivotPoint.getY() - navPoses.get(0).getY(),2))<reachedInBetweenPointThreshold)))
-            if(navPoses.size()>1)
+        while (navPoses.size() > 1) {
+            Pose2d nextPose = navPoses.get(0);
+            if (nextPose == null) {
                 navPoses.remove(0);
-        if(navPoses.size()>0 && navPoses.get(0)!=null)
+                continue;
+            }
+            double distance = Math.sqrt(Math.pow(pivotPoint.getX() - nextPose.getX(), 2) + Math.pow(pivotPoint.getY() - nextPose.getY(), 2));
+            if (distance >= reachedInBetweenPointThreshold) {
+                return nextPose;
+            }
+            navPoses.remove(0);
+        }
+        if (navPoses.size() > 0 && navPoses.get(0) != null) {
             return navPoses.get(0);
+        }
         return efPose;
 
     }
