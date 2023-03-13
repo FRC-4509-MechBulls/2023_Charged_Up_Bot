@@ -158,7 +158,7 @@ public final class Constants {
         public static final double stageTwo_kP = 0.5;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
-        public static final double stageTwoEncoderOffset = 0.0;
+        public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//-43.6
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;

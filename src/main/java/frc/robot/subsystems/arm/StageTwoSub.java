@@ -92,7 +92,7 @@ public class StageTwoSub extends SubsystemBase {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
     encoder.setVelocityConversionFactor(((2 * Math.PI) / encoderRatio) / 60);
     encoder.setInverted(true);
-    encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset);
+    System.out.println(encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset));
   }
   private void configMotorControllers() {
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) softLimitForward);
@@ -103,8 +103,8 @@ public class StageTwoSub extends SubsystemBase {
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
+    System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
+    System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
     armMotorPrimary.setSecondaryCurrentLimit(secondaryCurrentLimit);
     armMotorPrimary.setSmartCurrentLimit(smartCurrentLimit);
     armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -200,6 +200,7 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    SmartDashboard.putNumber("stageTworelative", Units.radiansToDegrees(angle) - SmartDashboard.getNumber("stageOneAngle", 90));
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }
