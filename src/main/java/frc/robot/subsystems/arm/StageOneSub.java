@@ -189,6 +189,7 @@ public class StageOneSub extends SubsystemBase {
   private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
     double output = calculateOutputFromEncoder(encoder);
+    output = output + ArmConstants.stageOneEncoderOffset;
 
     return output;
   }
