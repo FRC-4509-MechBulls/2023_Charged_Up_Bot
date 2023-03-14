@@ -121,7 +121,7 @@ public final class Constants {
         public static final double stageOne_kP = 1;//4, 1 for testing
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
-        public static final double stageOneEncoderOffset = Units.degreesToRadians(220.078125 + .7);//220.078125
+        public static final double stageOneEncoderOffset = Units.degreesToRadians(220.778125 - 180.0);//220.778125
 
         public static final double revEncoderCountsPerRotation = 2048;
         public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
@@ -158,7 +158,7 @@ public final class Constants {
         public static final double stageTwo_kP = 0.5;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
-        public static final double stageTwoEncoderOffset = Units.degreesToRadians(180 - 43.6);//43.6 + 180
+        public static final double stageTwoEncoderOffset = Units.degreesToRadians(0);//180 - 43.6 //43.6 + 180
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;

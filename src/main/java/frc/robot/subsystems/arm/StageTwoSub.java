@@ -183,7 +183,7 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
-    return encoder.getPosition();
+    return encoder.getPosition() - Units.degreesToRadians(180);
   }
   private double getEncoderVelocity() {
     return encoder.getVelocity();
@@ -200,7 +200,7 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
-    SmartDashboard.putNumber("stageTworelative", Units.radiansToDegrees(angle) - SmartDashboard.getNumber("stageOneAngle", 90));
+    //SmartDashboard.putNumber("stageTworelative", Units.radiansToDegrees(angle) - SmartDashboard.getNumber("stageOneAngle", 90));
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }
