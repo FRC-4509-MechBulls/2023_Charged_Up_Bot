@@ -51,6 +51,7 @@ public class StageOneSub extends SubsystemBase {
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
+    SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kP);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -93,9 +94,11 @@ public class StageOneSub extends SubsystemBase {
     armMotorPrimary.configReverseSoftLimitEnable(true, 1000);
     //encoder
     armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0,1000);
+    armMotorPrimary.configFeedbackNotContinuous(true,1000);
     //PID
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
+    armMotorPrimary.config_IntegralZone(0, calculateEncoderFromOutput(Units.degreesToRadians(2)), 1000);
     armMotorPrimary.config_kD(0,ArmConstants.stageOne_kD,1000);
     armMotorPrimary.configClosedLoopPeriod(0, 1, 1000);
     //voltage compensation
@@ -192,7 +195,12 @@ public class StageOneSub extends SubsystemBase {
   private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
     double output = calculateOutputFromEncoder(encoder);
-    output = output + ArmConstants.stageOneEncoderOffset;
+    if (output < Math.PI - ArmConstants.stageOneEncoderOffset) {
+      output = output + ArmConstants.stageOneEncoderOffset;
+    }
+    else {
+      output = -Math.PI + ((output + ArmConstants.stageOneEncoderOffset) - Math.PI);
+    }
     return output;
   }
   private double getEncoderVelocity() {
@@ -214,6 +222,7 @@ public class StageOneSub extends SubsystemBase {
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
     armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
+    armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI), 1000);
     //SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
