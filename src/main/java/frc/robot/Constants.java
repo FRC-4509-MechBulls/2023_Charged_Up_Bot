@@ -119,7 +119,7 @@ public final class Constants {
         public static final double stageOnePeakCurrentLimit = 40;
         public static final double stageOnePeakCurrentTime = 250;
         public static final double stageOne_kP = 8;//1//4, 1 for testing
-        public static final double stageOne_kI = 0; //undecided
+        public static final double stageOne_kI = 0.02;//0.02//0
         public static final double stageOne_kD = 0; //undecided
         public static final double stageOneEncoderOffset = Units.degreesToRadians(220.778125 + 0.5 + 3.85);//220.778125 - 180.0 //220.778125
 

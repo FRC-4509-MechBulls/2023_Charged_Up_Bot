@@ -51,7 +51,7 @@ public class StageOneSub extends SubsystemBase {
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
-    SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kP);
+    SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();

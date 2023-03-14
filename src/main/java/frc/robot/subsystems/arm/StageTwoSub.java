@@ -50,6 +50,8 @@ public class StageTwoSub extends SubsystemBase {
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
+    //SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
+    SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -126,6 +128,7 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setFeedbackDevice(encoder);
     pidController.setP(ArmConstants.stageTwo_kP);
     pidController.setI(ArmConstants.stageTwo_kI);
+    pidController.setIZone(Units.degreesToRadians(2));
     pidController.setD(ArmConstants.stageTwo_kD);
     pidController.setOutputRange(-12,12);
     pidController.setPositionPIDWrappingEnabled(false);
@@ -204,6 +207,7 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    pidController.setI(SmartDashboard.getNumber("stageOneI", ArmConstants.stageTwo_kI), 0);
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }
