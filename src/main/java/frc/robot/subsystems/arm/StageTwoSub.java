@@ -127,15 +127,14 @@ public class StageTwoSub extends SubsystemBase {
     pidController = armMotorPrimary.getPIDController();
     pidController.setFeedbackDevice(encoder);
     pidController.setP(ArmConstants.stageTwo_kP, 0);
-    pidController.setI(ArmConstants.stageTwo_kI, 0);
     if (pidController.setI(ArmConstants.stageTwo_kI, 0) != REVLibError.kOk) {
       System.out.println(pidController.setI(ArmConstants.stageTwo_kI, 0));
     }
-    if (pidController.setIMaxAccum(100000, 0) != REVLibError.kOk) {
-      System.out.println(pidController.setIMaxAccum(100000, 0));
+    if (pidController.setIMaxAccum(100000.0, 0) != REVLibError.kOk) {
+      System.out.println(pidController.setIMaxAccum(100000.0, 0));
     }
     if (pidController.setIZone(Units.degreesToRadians(2), 0) != REVLibError.kOk) {
-      System.out.println(pidController.setIZone(Units.degreesToRadians(2), 0));
+      System.out.println(pidController.setIZone(Units.degreesToRadians(2.0), 0));
     }
     pidController.setD(ArmConstants.stageTwo_kD, 0);
     pidController.setOutputRange(-12,12, 0);
@@ -215,10 +214,12 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
-    if (pidController.getI() != SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI)) {
+    if (pidController.getI() < SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI) * 0.9 || pidController.getI() > SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI) * 1.1) {
       System.out.println(pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0));
     }
-    SmartDashboard.putNumber("stageTwoISpark", pidController.getI());
+    SmartDashboard.putNumber("stageTwoImaxaccumSpark", pidController.getIMaxAccum(0));
+    SmartDashboard.putNumber("stageTwoIaccumSpark", pidController.getIAccum());
+    SmartDashboard.putNumber("stageTwoIzoneSpark", pidController.getIZone(0));
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }
