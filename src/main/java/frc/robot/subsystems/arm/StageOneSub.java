@@ -115,8 +115,8 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1000, 1000);
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
     //motion magic
-    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/1))) * 10, 1000);
-    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/1))) * 10)/.5, 1000);
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10, 1000);
+    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)/.5, 1000);
     armMotorPrimary.configMotionSCurveStrength(1, 1000);
   }
   private void configEncoder() {
