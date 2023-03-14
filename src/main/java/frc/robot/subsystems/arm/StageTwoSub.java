@@ -207,7 +207,9 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
-    pidController.setI(SmartDashboard.getNumber("stageOneI", ArmConstants.stageTwo_kI), 0);
+    if (pidController.getI() != SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI)) {
+      pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
+    }
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }
