@@ -104,7 +104,9 @@ public class StageTwoSub extends SubsystemBase {
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
     System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
-    System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
+    if (armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20) != REVLibError.kOk) {
+      System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
+    }
     armMotorPrimary.setSecondaryCurrentLimit(secondaryCurrentLimit);
     armMotorPrimary.setSmartCurrentLimit(smartCurrentLimit);
     armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -200,7 +202,7 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
-    //SmartDashboard.putNumber("stageTworelative", Units.radiansToDegrees(angle) - SmartDashboard.getNumber("stageOneAngle", 90));
+    SmartDashboard.putNumber("stageTworelative", Units.radiansToDegrees(angle) + SmartDashboard.getNumber("stageOneAngle", 90));
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }

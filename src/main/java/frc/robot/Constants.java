@@ -113,7 +113,7 @@ public final class Constants {
         public static final double stageOneMass = 10.64;
         public static final double[] stageOneDefaultSpringStartCoordinateRelativeToPivot = {-8.125, 9};
         public static final double[] stageOneDefaultSpringEndCoordinateRelativeToPivot = {12.14, 1.723};
-        public static final double stageOneSoftLimitForward = Units.degreesToRadians(105.944319);
+        public static final double stageOneSoftLimitForward = Units.degreesToRadians(95-3);//105.944319
         public static final double stageOneSoftLimitReverse = Units.degreesToRadians(-15.212513);
         public static final double stageOneContinuousCurrentLimit = 20;
         public static final double stageOnePeakCurrentLimit = 40;
@@ -121,7 +121,7 @@ public final class Constants {
         public static final double stageOne_kP = 1;//4, 1 for testing
         public static final double stageOne_kI = 0; //undecided
         public static final double stageOne_kD = 0; //undecided
-        public static final double stageOneEncoderOffset = Units.degreesToRadians(220.778125 - 180.0);//220.778125
+        public static final double stageOneEncoderOffset = Units.degreesToRadians(220.778125 + 0.5);//220.778125 - 180.0 //220.778125
 
         public static final double revEncoderCountsPerRotation = 2048;
         public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
@@ -152,13 +152,13 @@ public final class Constants {
         public static final double[] stageTwoDefaultSpringStartCoordinateRelativeToPivot = {-16.61, 1.723};
         public static final double[] stageTwoDefaultSpringEndCoordinateRelativeToPivot = {-3.5, 0.3895};
         public static final double stageTwoSoftLimitForward = Units.degreesToRadians(20);
-        public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-180+7.990375);
+        public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-180+7.990375 + 3);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
         public static final double stageTwo_kP = 0.5;//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
         public static final double stageTwo_kI = 0; //undecided
         public static final double stageTwo_kD = 0; //undecided
-        public static final double stageTwoEncoderOffset = Units.degreesToRadians(0);//180 - 43.6 //43.6 + 180
+        public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7;
