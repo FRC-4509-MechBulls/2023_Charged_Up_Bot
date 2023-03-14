@@ -50,6 +50,7 @@ public class StageTwoSub extends SubsystemBase {
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
+    SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -95,8 +96,8 @@ public class StageTwoSub extends SubsystemBase {
     System.out.println(encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset));
   }
   private void configMotorControllers() {
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) softLimitForward);
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) softLimitReverse);
+    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180)));
+    armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) (softLimitReverse + Units.degreesToRadians(180)));
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true);
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
     armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
@@ -204,6 +205,7 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }

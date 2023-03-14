@@ -86,8 +86,8 @@ public class StageOneSub extends SubsystemBase {
     //current limit
     armMotorPrimary.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, continuousCurrentLimit, peakCurrentLimit, peakCurrentTime), 1000);
     //soft limit
-    armMotorPrimary.configForwardSoftLimitThreshold(calculateEncoderFromOutput(softLimitForward), 1000);
-    armMotorPrimary.configReverseSoftLimitThreshold(calculateEncoderFromOutput(softLimitReverse), 1000);
+    armMotorPrimary.configForwardSoftLimitThreshold(calculateEncoderFromOutput(softLimitForward - ArmConstants.stageOneEncoderOffset), 1000);
+    armMotorPrimary.configReverseSoftLimitThreshold(calculateEncoderFromOutput(softLimitReverse - ArmConstants.stageOneEncoderOffset), 1000);
     armMotorPrimary.configForwardSoftLimitEnable(true, 1000);
     armMotorPrimary.configReverseSoftLimitEnable(true, 1000);
     //encoder
