@@ -50,6 +50,7 @@ public class StageOneSub extends SubsystemBase {
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
+    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -210,8 +211,9 @@ public class StageOneSub extends SubsystemBase {
     }
 
     calculateStageData();
-    //setArmPosition();
+    setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
+    armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
     //SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
