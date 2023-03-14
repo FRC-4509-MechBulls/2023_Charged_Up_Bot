@@ -182,6 +182,8 @@ public class StageOneSub extends SubsystemBase {
   }
   private void setArmPosition(){
     double output = setpoint;
+    SmartDashboard.putNumber("stageOneSet", Units.radiansToDegrees(output));
+    output = output - ArmConstants.stageOneEncoderOffset;
     double encoder = calculateEncoderFromOutput(output);
 
     armMotorPrimary.set(TalonSRXControlMode.MotionMagic, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
@@ -190,17 +192,6 @@ public class StageOneSub extends SubsystemBase {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
     double output = calculateOutputFromEncoder(encoder);
     output = output + ArmConstants.stageOneEncoderOffset;
-    //output = output - Units.degreesToRadians(180);
-    /* 
-    if (output < Math.PI - Units.degreesToRadians(ArmConstants.stageOneEncoderOffset)) {
-      output = output + ArmConstants.stageOneEncoderOffset;
-      SmartDashboard.putBoolean("lowerBracket", false);
-    }
-    else {
-      output = -Math.PI + ((output + ArmConstants.stageOneEncoderOffset) - Math.PI);
-      SmartDashboard.putBoolean("lowerBracket", true);
-    }
-*/
     return output;
   }
   private double getEncoderVelocity() {

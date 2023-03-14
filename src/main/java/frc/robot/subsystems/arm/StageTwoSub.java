@@ -130,8 +130,8 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setOutputRange(-12,12);
     pidController.setPositionPIDWrappingEnabled(false);
     pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-    pidController.setSmartMotionMaxAccel((Units.degreesToRotations(110/2) * 60) / .5, 0);
-    pidController.setSmartMotionMaxVelocity(Units.degreesToRotations(110/2) * 60, 0);
+    pidController.setSmartMotionMaxAccel((Units.degreesToRotations(130/2) * 60) / .5, 0);
+    pidController.setSmartMotionMaxVelocity(Units.degreesToRotations(130/2) * 60, 0);
   }
   private void burnConfigs() {
     armMotorPrimary.burnFlash();
@@ -182,7 +182,9 @@ public class StageTwoSub extends SubsystemBase {
     velocity = getEncoderVelocity();
   }
   private void setArmPosition(){
-    pidController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, AFF, ArbFFUnits.kVoltage);
+    SmartDashboard.putNumber("stageTwoSet", Units.radiansToDegrees(setpoint));
+    double convertedSetpoint = setpoint + Units.degreesToRadians(180);
+    pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kSmartMotion, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
     return encoder.getPosition() - Units.degreesToRadians(180);
@@ -202,7 +204,6 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
-    SmartDashboard.putNumber("stageTworelative", Units.radiansToDegrees(angle) + SmartDashboard.getNumber("stageOneAngle", 90));
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }
