@@ -130,18 +130,13 @@ public class StageTwoSub extends SubsystemBase {
     if (pidController.setI(ArmConstants.stageTwo_kI, 0) != REVLibError.kOk) {
       System.out.println(pidController.setI(ArmConstants.stageTwo_kI, 0));
     }
-    if (pidController.setIMaxAccum(100000.0, 0) != REVLibError.kOk) {
-      System.out.println(pidController.setIMaxAccum(100000.0, 0));
-    }
-    if (pidController.setIZone(Units.degreesToRadians(2), 0) != REVLibError.kOk) {
-      System.out.println(pidController.setIZone(Units.degreesToRadians(2.0), 0));
-    }
     pidController.setD(ArmConstants.stageTwo_kD, 0);
     pidController.setOutputRange(-12,12, 0);
     pidController.setPositionPIDWrappingEnabled(false);
     pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
-    pidController.setSmartMotionMaxAccel((Units.degreesToRotations(130/2) * 60) / .5, 0);
-    pidController.setSmartMotionMaxVelocity(Units.degreesToRotations(130/2) * 60, 0);
+    pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/1) * 60) / .25, 0);
+    pidController.setSmartMotionMaxVelocity(Units.degreesToRadians(130/1) * 60, 0);
+    //pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRotations(0.2), 0);
   }
   private void burnConfigs() {
     armMotorPrimary.burnFlash();
@@ -194,6 +189,9 @@ public class StageTwoSub extends SubsystemBase {
   private void setArmPosition(){
     SmartDashboard.putNumber("stageTwoSet", Units.radiansToDegrees(setpoint));
     double convertedSetpoint = setpoint + Units.degreesToRadians(180);
+    if (angle > setpoint + Units.degreesToRadians(2) || angle < setpoint - Units.degreesToRadians(2)) {
+      pidController.setIAccum(0);
+    }
     pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kSmartMotion, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
@@ -217,6 +215,7 @@ public class StageTwoSub extends SubsystemBase {
     if (pidController.getI() < SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI) * 0.9 || pidController.getI() > SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI) * 1.1) {
       System.out.println(pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0));
     }
+    SmartDashboard.putNumber("stageTwoISpark", pidController.getI(0));
     SmartDashboard.putNumber("stageTwoImaxaccumSpark", pidController.getIMaxAccum(0));
     SmartDashboard.putNumber("stageTwoIaccumSpark", pidController.getIAccum());
     SmartDashboard.putNumber("stageTwoIzoneSpark", pidController.getIZone(0));
