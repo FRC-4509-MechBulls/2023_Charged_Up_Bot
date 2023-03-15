@@ -4,23 +4,24 @@
 
 package frc.robot.subsystems.arm;
 
-import com.revrobotics.*;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.RobotConstants;
-
-import static frc.robot.Constants.ArmConstants;
 
 public class StageTwoSub extends SubsystemBase {
   private CANSparkMax armMotorPrimary;
@@ -52,9 +53,9 @@ public class StageTwoSub extends SubsystemBase {
   public StageTwoSub() {
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
-    SmartDashboard.putNumber("stageTwoAllowedError", Units.degreesToRadians(0));//.005
-    SmartDashboard.putNumber("stageTwoAccel", (Units.degreesToRadians(130/1) * 60) / 1);
-    SmartDashboard.putNumber("stageTwoVelocity", Units.degreesToRadians(130/1) * 60);
+    SmartDashboard.putNumber("stageTwoAllowedError", 0);//
+    SmartDashboard.putNumber("stageTwoAccel", 1);
+    SmartDashboard.putNumber("stageTwoVelocity", 1);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -217,9 +218,9 @@ public class StageTwoSub extends SubsystemBase {
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
-    pidController.setSmartMotionAllowedClosedLoopError(SmartDashboard.getNumber("stageTwoAllowedError", 0), 0);
-    pidController.setSmartMotionMaxAccel(SmartDashboard.getNumber("stageTwoAccel", 0), 0);
-    pidController.setSmartMotionMaxVelocity(SmartDashboard.getNumber("stageTwoVelocity", 0), 0);
+    pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
+    pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/1) * 60) / SmartDashboard.getNumber("stageTwoAccel", 0), 0);
+    pidController.setSmartMotionMaxVelocity(Units.degreesToRadians(130/SmartDashboard.getNumber("stageTwoVelocity", 0)) * 60, 0);
     /*
     SmartDashboard.putNumber("stageTwoISpark", pidController.getI(0));
     SmartDashboard.putNumber("stageTwoImaxaccumSpark", pidController.getIMaxAccum(0));
