@@ -52,6 +52,9 @@ public class StageTwoSub extends SubsystemBase {
   public StageTwoSub() {
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
+    SmartDashboard.putNumber("stageTwoAllowedError", Units.degreesToRadians(0));
+    SmartDashboard.putNumber("stageTwoAccel", (Units.degreesToRadians(130/1) * 60) / 1);
+    SmartDashboard.putNumber("stageTwoVelocity", Units.degreesToRadians(130/1) * 60);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -213,13 +216,16 @@ public class StageTwoSub extends SubsystemBase {
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
-    if (pidController.getI() < SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI) * 0.9 || pidController.getI() > SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI) * 1.1) {
-      System.out.println(pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0));
-    }
+    pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
+    pidController.setSmartMotionAllowedClosedLoopError(SmartDashboard.getNumber("stageTwoAllowedError", 0), 0);
+    pidController.setSmartMotionMaxAccel(SmartDashboard.getNumber("stageTwoAccel", 0), 0);
+    pidController.setSmartMotionMaxVelocity(SmartDashboard.getNumber("stageTwoVelocity", 0), 0);
+    /*
     SmartDashboard.putNumber("stageTwoISpark", pidController.getI(0));
     SmartDashboard.putNumber("stageTwoImaxaccumSpark", pidController.getIMaxAccum(0));
     SmartDashboard.putNumber("stageTwoIaccumSpark", pidController.getIAccum());
     SmartDashboard.putNumber("stageTwoIzoneSpark", pidController.getIZone(0));
+    */
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
   }

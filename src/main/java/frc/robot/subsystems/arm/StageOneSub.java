@@ -14,14 +14,12 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.RobotConstants;
-
-import static frc.robot.Constants.ArmConstants;
 
 public class StageOneSub extends SubsystemBase {
   private TalonSRX armMotorPrimary;
@@ -50,8 +48,10 @@ public class StageOneSub extends SubsystemBase {
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
-    //SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
-    //SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
+    SmartDashboard.putNumber("stageOneVelocity", calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10);
+    SmartDashboard.putNumber("stageOneAccel", (calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)/.5);
+    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
+    SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -221,11 +221,11 @@ public class StageOneSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
-    /*
+
+    armMotorPrimary.configMotionCruiseVelocity(SmartDashboard.getNumber("stageOneVelocity", calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10), 1000);
+    armMotorPrimary.configMotionAcceleration(SmartDashboard.getNumber("stageOneAccel", (calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)/.5), 1000);
     armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
     armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI), 1000);
-    */
-    //SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
 }
