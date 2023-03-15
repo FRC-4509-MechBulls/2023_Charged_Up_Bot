@@ -361,7 +361,7 @@ public final class Constants {
     }
 
     public static final class FieldConstants{
-        public static final double width1 = 16.56; //total field width
+        public static final double width1 = 16.56 + Units.inchesToMeters(4); //total field width
         public static final double height1 = 8.05; // 8.176  //we might need to re-measure some things 😭
 
         public static final double leftWallPos = -width1/2;
@@ -369,7 +369,7 @@ public final class Constants {
         public static final double bottomWallPos = -height1/2;
         public static final double topWallPos = height1/2;
 
-        public static final double nodesWidth = 1.55; //distance from wall to edge of nodes
+        public static final double nodesWidth = 1.55 - Units.inchesToMeters(2); //distance from wall to edge of nodes
         public static final double nodesHeight = 5.497;
 
         public static final double barrierLength = 1.984; //transparent barrier thingy length

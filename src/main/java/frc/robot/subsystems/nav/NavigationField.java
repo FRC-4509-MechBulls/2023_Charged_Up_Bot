@@ -397,7 +397,7 @@ private void resetNodes(){
             for(int y = 0; y<9; y++){
                 double yPos = topNodeY - y*yDistBetweenNodes;
                 //double xPos = width1/2 - nodesWidth - Constants.PathingConstants.ROBOT_LENGTH /2 - Units.inchesToMeters(12); //3 inches from nodes barrier?
-                double xPos = width1/2 - nodesWidth - Units.inchesToMeters(35.0/2 - 7); //3 inches from nodes barrier?
+                double xPos = width1/2 - nodesWidth - Units.inchesToMeters(35.0/2); //3 inches from nodes barrier?
                 xPos*=revX;
                 Rotation2d myRotation = Rotation2d.fromDegrees(180); //red
                 if(revX>0)
