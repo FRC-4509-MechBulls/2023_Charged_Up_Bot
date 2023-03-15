@@ -148,6 +148,15 @@ StateControllerSubsystem stateControllerSubsystem;
     simHeading+=turningSpeed * (lastSimUpdateLength) * Constants.SimulationConstants.turningSpeedMultiplier;
     setModuleStates(moduleStates);
   }
+
+  public void drivebaseXPattern(){
+    SwerveModuleState[] moduleStates = new SwerveModuleState[4];
+    moduleStates[0] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(45));
+    moduleStates[1] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(135));
+    moduleStates[2] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(225+90));
+    moduleStates[3] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(315+90));
+    setModuleStates(moduleStates);
+  }
   public void toggleFieldOriented(){fieldOriented = !fieldOriented;}
   public boolean getFieldOriented(){return fieldOriented;}
   public void setFieldOriented(boolean set){fieldOriented = set;}
