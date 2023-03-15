@@ -199,7 +199,7 @@ public class Grabber extends SubsystemBase {
     double counterBalanceTorque = calculateCounterBalanceTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength);
     double gravityTorque = calculateGravityTorque(armMass, cGCoordinateRelativeToPivot);
 
-    return counterBalanceTorque - gravityTorque;
+    return (counterBalanceTorque - gravityTorque);
   }
   private double calculateCounterBalanceTorque(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength) {    
     double springEndDistanceFromPivot = calculateMagnitude(defaultSpringEndCoordinateRelativeToPivot[0], defaultSpringEndCoordinateRelativeToPivot[1]);
