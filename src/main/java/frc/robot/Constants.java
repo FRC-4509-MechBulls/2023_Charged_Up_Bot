@@ -37,11 +37,11 @@ public final class Constants {
         public static final double INTAKE_CONE_BOTTOM_OUTPUT = 1;
 
 
-        public static final double HOLD_CONE_TOP_OUTPUT = -0.3;
-        public static final double HOLD_CONE_BOTTOM_OUTPUT = 0.3;
+        public static final double HOLD_CONE_TOP_OUTPUT = -0.1;
+        public static final double HOLD_CONE_BOTTOM_OUTPUT = 0.1;
 
-        public static final double PLACE_CONE_TOP_OUTPUT = -1;
-        public static final double PLACE_CONE_BOTTOM_OUTPUT = -0.5;
+        public static final double PLACE_CONE_TOP_OUTPUT = 1;
+        public static final double PLACE_CONE_BOTTOM_OUTPUT = -0.1;
 
 
         public static final double INTAKE_CUBE_TOP_OUTPUT = 0.0;
@@ -163,18 +163,18 @@ public final class Constants {
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;
 
-        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(10 + 1.66 - .25)}; //undecided
-        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(25), Units.inchesToMeters(4.625)}; //22, 4.625
-        public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(3.66 + 8.5)}; //undecided
-        public static final double[] holdingArmPos = {Units.inchesToMeters(0), Units.inchesToMeters(17)};//(2, 17)//(.315m, .324m)(2, 17)//undecided //old: Units.inchesToMeters(-1.542738), Units.inchesToMeters(16.43625)
+        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(12.375 + .25)};//
+        public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(22), Units.inchesToMeters(4.125)};//
+        public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(12)};//
+        public static final double[] holdingArmPos = {Units.inchesToMeters(0), Units.inchesToMeters(17)};//
 
-        public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)}; //(8, 14)
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(23.5), Units.inchesToMeters(42 + 1.5)}; //()(23, 46)(24.5, 38.5)
-        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42), Units.inchesToMeters(55)}; //(40, 49.5)(41.5, 50)
+        public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)};//
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5), Units.inchesToMeters(36.5)};//
+        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42 + 1.5), Units.inchesToMeters(41.5 + 7)};//
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)}; //(2.5, 13)(15, 17)
-        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5), Units.inchesToMeters(39)}; //(15, 23.5)(34.5, 39)
-        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37 + 5)}; //(34, 37)
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)};//
+        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5 + 1), Units.inchesToMeters(35)};//
+        public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)};//
 
         public static final double angleToleranceToUpdateEF = 0.5;
         public static final double maxExtension = 55; //slightly lower than total length of arm = 57.5 inches

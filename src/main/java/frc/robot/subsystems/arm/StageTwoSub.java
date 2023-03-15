@@ -53,11 +53,13 @@ public class StageTwoSub extends SubsystemBase {
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
+    /*
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
     SmartDashboard.putNumber("stageTwoAllowedError", 0.2);
     SmartDashboard.putNumber("stageTwoAccel", .6);
     SmartDashboard.putNumber("stageTwoVelocity", .6);
+    */
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -222,11 +224,13 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    /*
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
     pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/.6) * 60) / SmartDashboard.getNumber("stageTwoAccel", 0), 0);
     pidController.setSmartMotionMaxVelocity(Units.degreesToRadians(130/SmartDashboard.getNumber("stageTwoVelocity", 0)) * 60, 0);
+    */
     /*
     SmartDashboard.putNumber("stageTwoISpark", pidController.getI(0));
     SmartDashboard.putNumber("stageTwoImaxaccumSpark", pidController.getIMaxAccum(0));

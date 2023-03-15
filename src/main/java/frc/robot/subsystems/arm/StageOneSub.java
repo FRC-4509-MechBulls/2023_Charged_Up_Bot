@@ -48,10 +48,12 @@ public class StageOneSub extends SubsystemBase {
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
+    /*
     SmartDashboard.putNumber("stageOneVelocity", 200);
     SmartDashboard.putNumber("stageOneAccel", 0.6);
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
+    */
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -221,11 +223,12 @@ public class StageOneSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
-
+/*
     armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/SmartDashboard.getNumber("stageOneVelocity", calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)))) * 10, 1000);
     armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/200))) * 10)/SmartDashboard.getNumber("stageOneAccel", (calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)/.5), 1000);
     armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
     armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI), 1000);
+    */
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
 }
