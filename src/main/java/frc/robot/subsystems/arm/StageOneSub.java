@@ -13,19 +13,17 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.RobotConstants;
-
-import static frc.robot.Constants.ArmConstants;
 
 public class StageOneSub extends SubsystemBase {
   private TalonSRX armMotorPrimary;
   private TalonSRX armMotorSecondary;
-  private DigitalInput limitSwitch;
   private double setpoint;
   private double angle;
   private double AFF;
@@ -45,19 +43,22 @@ public class StageOneSub extends SubsystemBase {
   private double peakCurrentLimit;
   private double peakCurrentTime;
   private double velocity;
-  private boolean limitSwitchValue;
-  private boolean lastInLimitZone = true;
 
   private double simulatedAngleRad = 0;
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
+    /*
+    SmartDashboard.putNumber("stageOneVelocity", 200);
+    SmartDashboard.putNumber("stageOneAccel", 0.6);
+    SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
+    SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
+    */
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
     configMotorControllers();
     configEncoder();
-    instantiateLimitSwitch();
   }
   //Config
   private void instantiateConstants() {
@@ -89,15 +90,17 @@ public class StageOneSub extends SubsystemBase {
     //current limit
     armMotorPrimary.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, continuousCurrentLimit, peakCurrentLimit, peakCurrentTime), 1000);
     //soft limit
-    armMotorPrimary.configForwardSoftLimitThreshold(calculateEncoderFromOutput(softLimitForward), 1000);
-    armMotorPrimary.configReverseSoftLimitThreshold(calculateEncoderFromOutput(softLimitReverse), 1000);
+    armMotorPrimary.configForwardSoftLimitThreshold(calculateEncoderFromOutput(softLimitForward - ArmConstants.stageOneEncoderOffset), 1000);
+    armMotorPrimary.configReverseSoftLimitThreshold(calculateEncoderFromOutput(softLimitReverse - ArmConstants.stageOneEncoderOffset), 1000);
     armMotorPrimary.configForwardSoftLimitEnable(true, 1000);
     armMotorPrimary.configReverseSoftLimitEnable(true, 1000);
     //encoder
-    armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0,1000);
+    armMotorPrimary.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0,1000);
+    armMotorPrimary.configFeedbackNotContinuous(true,1000);
     //PID
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
+    armMotorPrimary.config_IntegralZone(0, calculateEncoderFromOutput(Units.degreesToRadians(2)), 1000);
     armMotorPrimary.config_kD(0,ArmConstants.stageOne_kD,1000);
     armMotorPrimary.configClosedLoopPeriod(0, 1, 1000);
     //voltage compensation
@@ -106,7 +109,7 @@ public class StageOneSub extends SubsystemBase {
     //Neutral Mode
     armMotorPrimary.setNeutralMode(NeutralMode.Coast);
     //directionality
-    armMotorPrimary.setSensorPhase(true);
+    armMotorPrimary.setSensorPhase(false);
     armMotorPrimary.setInverted(true);
     //second motor
     armMotorSecondary.follow(armMotorPrimary);
@@ -117,12 +120,12 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 1000, 1000);
     armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1000, 1000);
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
+    //motion magic
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/200))) * 10, 1000);
+    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/200))) * 10)/.6, 1000);
+    armMotorPrimary.configMotionSCurveStrength(1, 1000);
   }
   private void configEncoder() {
-    setSensorPosition(ArmConstants.stageOneStartAngle);
-  }
-  private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(4);
   }
   //Getters
   public double getLength() {
@@ -159,9 +162,6 @@ public class StageOneSub extends SubsystemBase {
   public double getVelocity() {
     return velocity;
   }
-  public boolean getLimitSwitchValue() {
-    return limitSwitchValue;
-  }
   //Setters
   public void setAFF(double AFF){
     this.AFF = AFF;
@@ -169,17 +169,10 @@ public class StageOneSub extends SubsystemBase {
   public void setSetpoint(double setpoint) {
     this.setpoint = setpoint;
   }
-  public void setSensorPosition(double position){
-    double radians = position;
-    double encoder = calculateEncoderFromOutput(radians);
-
-    armMotorPrimary.setSelectedSensorPosition(encoder, 0, 1000);
-  }
   //Util
   public void calculateStageData() {
     angle = getEncoderPosition();
     velocity = getEncoderVelocity();
-    limitSwitchValue = getLimitSwitch();
   }
   public double calculateOutputFromEncoder(double encoder) {
     double radians = encoder * ArmConstants.stageOneEncoderTicksToRadians;
@@ -195,14 +188,21 @@ public class StageOneSub extends SubsystemBase {
   }
   private void setArmPosition(){
     double output = setpoint;
+    SmartDashboard.putNumber("stageOneSet", Units.radiansToDegrees(output));
+    output = output - ArmConstants.stageOneEncoderOffset;
     double encoder = calculateEncoderFromOutput(output);
 
-    armMotorPrimary.set(TalonSRXControlMode.Position, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
+    armMotorPrimary.set(TalonSRXControlMode.MotionMagic, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
   }
   private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
     double output = calculateOutputFromEncoder(encoder);
-
+    if (output < Math.PI - ArmConstants.stageOneEncoderOffset) {
+      output = output + ArmConstants.stageOneEncoderOffset;
+    }
+    else {
+      output = -Math.PI + ((output + ArmConstants.stageOneEncoderOffset) - Math.PI);
+    }
     return output;
   }
   private double getEncoderVelocity() {
@@ -211,13 +211,10 @@ public class StageOneSub extends SubsystemBase {
 
     return output;
   }
-  private boolean getLimitSwitch() {
-    return !limitSwitch.get();
-  }
   double timeSinceLastSimUpdate = Timer.getFPGATimestamp();
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("stageOne_setpoint",setpoint);
+    //SmartDashboard.putNumber("stageOne_setpoint",setpoint);
     if(Constants.SimulationConstants.simulationEnabled){
       simulatedAngleRad += ((Timer.getFPGATimestamp() - timeSinceLastSimUpdate) * (setpoint - simulatedAngleRad) * Constants.SimulationConstants.armStageOneSpeedMultiplier);
       timeSinceLastSimUpdate = Timer.getFPGATimestamp();
@@ -225,20 +222,13 @@ public class StageOneSub extends SubsystemBase {
 
     calculateStageData();
     setArmPosition();
-    //SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
-    //SmartDashboard.putBoolean("stageOneLimitSwitch", limitSwitchValue);
+    SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
+/*
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/SmartDashboard.getNumber("stageOneVelocity", calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)))) * 10, 1000);
+    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/200))) * 10)/SmartDashboard.getNumber("stageOneAccel", (calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)/.5), 1000);
+    armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
+    armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI), 1000);
+    */
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
-    if (!getLimitSwitch()) {
-      lastInLimitZone = false;
-    }/* 
-    if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageOneLimitSwitchLeadingAngle);
-      lastInLimitZone = true;
-    }*/
-    if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageOneLimitSwitchTrailingAngle);
-      //SmartDashboard.putNumber("stageOneLSAngle", Units.radiansToDegrees(angle));
-      lastInLimitZone = true;
-    }
   }
 }

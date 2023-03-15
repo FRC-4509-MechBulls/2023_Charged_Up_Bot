@@ -4,30 +4,31 @@
 
 package frc.robot.subsystems.arm;
 
-import com.revrobotics.*;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.REVLibError;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.RobotConstants;
-
-import static frc.robot.Constants.ArmConstants;
 
 public class StageTwoSub extends SubsystemBase {
   private CANSparkMax armMotorPrimary;
   private CANSparkMax armMotorSecondary;
 
   private SparkMaxPIDController pidController;
-  private RelativeEncoder encoder;
-
-  private DigitalInput limitSwitch;
+  private AbsoluteEncoder encoder;
 
   private double setpoint;
   private double AFF;
@@ -46,12 +47,19 @@ public class StageTwoSub extends SubsystemBase {
   private int smartCurrentLimit;
   private double secondaryCurrentLimit;
   private double velocity;
-  private boolean limitSwitchValue;
-  private boolean lastInLimitZone = true;
   private double simulatedAngleRad = 0;
+  private boolean changedSides = false;
+  private double lastAngle = 0;
 
   /** Creates a new ArmStageTwo. */
   public StageTwoSub() {
+    /*
+    SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
+    SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
+    SmartDashboard.putNumber("stageTwoAllowedError", 0.2);
+    SmartDashboard.putNumber("stageTwoAccel", .6);
+    SmartDashboard.putNumber("stageTwoVelocity", .6);
+    */
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -60,7 +68,6 @@ public class StageTwoSub extends SubsystemBase {
     configMotorControllers();
     configPIDController();
     burnConfigs();
-    instantiateLimitSwitch();
   }
   //config
   private void instantiateConstants() {
@@ -89,21 +96,27 @@ public class StageTwoSub extends SubsystemBase {
     armMotorSecondary.setCANTimeout(1000);
   }
   private void instantiateEncoder() {
-    encoder = armMotorPrimary.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature,8192);
+    encoder = armMotorPrimary.getAbsoluteEncoder(Type.kDutyCycle);
   }
   private void configEncoder() {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
     encoder.setVelocityConversionFactor(((2 * Math.PI) / encoderRatio) / 60);
-    encoder.setInverted(false);
-    setSensorPosition(ArmConstants.stageTwoStartAngle);
+    encoder.setInverted(true);
+    System.out.println(encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset));
   }
   private void configMotorControllers() {
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) softLimitForward);
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) softLimitReverse);
+    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180)));
+    armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) (softLimitReverse + Units.degreesToRadians(180)));
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true);
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
     armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
+    System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
+    if (armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20) != REVLibError.kOk) {
+      System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
+    }
     armMotorPrimary.setSecondaryCurrentLimit(secondaryCurrentLimit);
     armMotorPrimary.setSmartCurrentLimit(smartCurrentLimit);
     armMotorPrimary.setIdleMode(CANSparkMax.IdleMode.kCoast);
@@ -121,18 +134,21 @@ public class StageTwoSub extends SubsystemBase {
   private void configPIDController() {
     pidController = armMotorPrimary.getPIDController();
     pidController.setFeedbackDevice(encoder);
-    pidController.setP(ArmConstants.stageTwo_kP);
-    pidController.setI(ArmConstants.stageTwo_kI);
-    pidController.setD(ArmConstants.stageTwo_kD);
-    pidController.setOutputRange(-12,12);
+    pidController.setP(ArmConstants.stageTwo_kP, 0);
+    if (pidController.setI(ArmConstants.stageTwo_kI, 0) != REVLibError.kOk) {
+      System.out.println(pidController.setI(ArmConstants.stageTwo_kI, 0));
+    }
+    pidController.setD(ArmConstants.stageTwo_kD, 0);
+    pidController.setOutputRange(-12,12, 0);
     pidController.setPositionPIDWrappingEnabled(false);
+    pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
+    pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/.6) * 60) / .6, 0);
+    pidController.setSmartMotionMaxVelocity(Units.degreesToRadians(130/.6) * 60, 0);
+    pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRotations(0.2), 0);
   }
   private void burnConfigs() {
     armMotorPrimary.burnFlash();
     armMotorSecondary.burnFlash();
-  }
-  private void instantiateLimitSwitch() {
-    limitSwitch = new DigitalInput(5);
   }
   //getters
   public double getLength() {
@@ -163,18 +179,12 @@ public class StageTwoSub extends SubsystemBase {
   public double getVoltsPerTorque() {
     return voltsPerTorque;
   }
-  public boolean getLimitSwitchValue() {
-    return limitSwitchValue;
-  }
   //setters
   public void setAFF(double AFF) {
     this.AFF = AFF;
   }
   public void setSetpoint(double setpoint) {
     this.setpoint = setpoint;
-  }
-  public void setSensorPosition(double position) {
-    encoder.setPosition(position);
   }
   public double getVelocity() {
     return velocity;
@@ -183,19 +193,24 @@ public class StageTwoSub extends SubsystemBase {
   private void calculateStageData() {
     angle = getEncoderPosition();
     velocity = getEncoderVelocity();
-    limitSwitchValue = getLimitSwitch();
   }
   private void setArmPosition(){
-    pidController.setReference(setpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+    SmartDashboard.putNumber("stageTwoSet", Units.radiansToDegrees(setpoint));
+    double convertedSetpoint = setpoint + Units.degreesToRadians(180);
+    if (angle > setpoint && lastAngle < setpoint || angle < setpoint && lastAngle > setpoint) {
+      changedSides = true;
+    }
+    else changedSides = false;
+    if (angle > setpoint + Units.degreesToRadians(2) || angle < setpoint - Units.degreesToRadians(2) || changedSides == true) {
+      pidController.setIAccum(0);
+    }
+    pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kSmartMotion, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
-    return encoder.getPosition();
+    return encoder.getPosition() - Units.degreesToRadians(180);
   }
   private double getEncoderVelocity() {
     return encoder.getVelocity();
-  }
-  private boolean getLimitSwitch() {
-    return !limitSwitch.get();
   }
   double timeSinceLastSimUpdate = Timer.getFPGATimestamp();
 
@@ -208,20 +223,21 @@ public class StageTwoSub extends SubsystemBase {
 
     calculateStageData();
     setArmPosition();
-    //SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    /*
+    pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
+    pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
+    pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
+    pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/.6) * 60) / SmartDashboard.getNumber("stageTwoAccel", 0), 0);
+    pidController.setSmartMotionMaxVelocity(Units.degreesToRadians(130/SmartDashboard.getNumber("stageTwoVelocity", 0)) * 60, 0);
+    */
+    /*
+    SmartDashboard.putNumber("stageTwoISpark", pidController.getI(0));
+    SmartDashboard.putNumber("stageTwoImaxaccumSpark", pidController.getIMaxAccum(0));
+    SmartDashboard.putNumber("stageTwoIaccumSpark", pidController.getIAccum());
+    SmartDashboard.putNumber("stageTwoIzoneSpark", pidController.getIZone(0));
+    */
     //SmartDashboard.putBoolean("stageTwoLimitSwitch", limitSwitchValue);
     //SmartDashboard.putNumber("stageTwoVelocity", velocity);
-    if (!getLimitSwitch()) {
-      lastInLimitZone = false;
-    }
-    if(getLimitSwitch() && velocity > 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageTwoLimitSwitchLeadingAngle);
-      //SmartDashboard.putNumber("stageTwoLSAngle", Units.radiansToDegrees(angle));
-      lastInLimitZone = true;
-    }/*
-    if(getLimitSwitch() && velocity < 0 && !lastInLimitZone) {
-      setSensorPosition(ArmConstants.stageTwoLimitSwitchTrailingAngle);
-      lastInLimitZone = true;
-    }*/
   }
 }
