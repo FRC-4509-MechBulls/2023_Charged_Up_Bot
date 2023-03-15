@@ -6,11 +6,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldLine;
 import frc.robot.lib.LineIntersection;
 import frc.robot.lib.MB_Math;
-import org.opencv.core.Scalar;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -38,11 +36,15 @@ Pose2d efPose = new Pose2d();
         createCornerPoints();
         telemetrySub.updateBarriers(fieldLines);
         createAndStartPathingThread();
+        SmartDashboard.putBoolean("pathingDied",false);
        // SmartDashboard.putNumber("EFPivotX",0);
        // SmartDashboard.putNumber("EFPivotY",0.3);
        // SmartDashboard.putNumber("EFDesiredX",0.6);
        // SmartDashboard.putNumber("EFDesiredY",0.075);
     }
+
+
+    double pathingDeathTime = Timer.getFPGATimestamp();
     private void createAndStartPathingThread(){
         pathingThread =
                 new Thread(
@@ -61,7 +63,8 @@ Pose2d efPose = new Pose2d();
 
                                     Thread.sleep(minPathingDelay);
                                 }
-                            } catch (InterruptedException e) {throw new RuntimeException(e);}
+                            } catch (InterruptedException e) {pathingDeathTime = Timer.getFPGATimestamp(); throw new RuntimeException(e);}
+
                         });
         pathingThread.setDaemon(true);
         pathingThread.setName("MB_EF_Pathing");
@@ -130,6 +133,13 @@ Pose2d efPose = new Pose2d();
     }
 
     public void periodic(){
+        if(!pathingThread.isAlive() && Timer.getFPGATimestamp()-pathingDeathTime>5){
+            SmartDashboard.putBoolean("pathingDied",true);
+            createAndStartPathingThread();
+        }
+        SmartDashboard.putBoolean("pathingThreadAlive",pathingThread.isAlive());
+
+
         //updatePivotPoint(new Point2D.Double(SmartDashboard.getNumber("EFPivotX",0),SmartDashboard.getNumber("EFPivotY",0)));
       //  SmartDashboard.putBoolean("clearPathToSetpoint",barrierOnLine(new Line2D.Double(pivotPoint.getX(),pivotPoint.getY(),desiredPose.getX(),desiredPose.getY())));
    //     SmartDashboard.putNumber("nextNavX",getNextNavPoint().getX());
