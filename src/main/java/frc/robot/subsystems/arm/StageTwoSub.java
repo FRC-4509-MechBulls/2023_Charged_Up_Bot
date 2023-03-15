@@ -56,6 +56,7 @@ public class StageTwoSub extends SubsystemBase {
     
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
+    SmartDashboard.putNumber("stageTwoD", ArmConstants.stageTwo_kD);
     /*
     SmartDashboard.putNumber("stageTwoAllowedError", 0.2);
     SmartDashboard.putNumber("stageTwoAccel", .6);
@@ -140,7 +141,7 @@ public class StageTwoSub extends SubsystemBase {
       System.out.println(pidController.setI(ArmConstants.stageTwo_kI, 0));
     }
     pidController.setD(ArmConstants.stageTwo_kD, 0);
-    pidController.setOutputRange(-12,12, 0);
+    pidController.setOutputRange(-.4,.4, 0);
     pidController.setPositionPIDWrappingEnabled(false);
     /*
     pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
@@ -200,14 +201,15 @@ public class StageTwoSub extends SubsystemBase {
   private void setArmPosition(){
     SmartDashboard.putNumber("stageTwoSet", Units.radiansToDegrees(setpoint));
     double convertedSetpoint = setpoint + Units.degreesToRadians(180);
-    /*
+    
     if (angle > setpoint && lastAngle < setpoint || angle < setpoint && lastAngle > setpoint) {
       changedSides = true;
     }
     else changedSides = false;
-    if (angle > setpoint + Units.degreesToRadians(2) || angle < setpoint - Units.degreesToRadians(2) || changedSides == true) {
+    if (angle > setpoint + Units.degreesToRadians(3) || angle < setpoint - Units.degreesToRadians(3) || changedSides == true) {
       pidController.setIAccum(0);
-    */
+    }
+    lastAngle = angle;
     pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
@@ -230,6 +232,7 @@ public class StageTwoSub extends SubsystemBase {
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
+    pidController.setD(SmartDashboard.getNumber("stageTwoD", ArmConstants.stageTwo_kD), 0);
     /*
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
     pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/.6) * 60) / SmartDashboard.getNumber("stageTwoAccel", 0), 0);

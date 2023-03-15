@@ -48,12 +48,13 @@ public class StageOneSub extends SubsystemBase {
 
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
-    /*
-    SmartDashboard.putNumber("stageOneVelocity", 200);
-    SmartDashboard.putNumber("stageOneAccel", 0.6);
+    
+    SmartDashboard.putNumber("stageOneVelocity", 4);
+    SmartDashboard.putNumber("stageOneAccel", 0.15);
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
-    */
+    SmartDashboard.putNumber("stageOneD", ArmConstants.stageOne_kD);
+    
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
@@ -100,7 +101,7 @@ public class StageOneSub extends SubsystemBase {
     //PID
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
-    armMotorPrimary.config_IntegralZone(0, calculateEncoderFromOutput(Units.degreesToRadians(2)), 1000);
+    armMotorPrimary.config_IntegralZone(0, calculateEncoderFromOutput(Units.degreesToRadians(3)), 1000);
     armMotorPrimary.config_kD(0,ArmConstants.stageOne_kD,1000);
     armMotorPrimary.configClosedLoopPeriod(0, 1, 1000);
     //voltage compensation
@@ -121,8 +122,8 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1000, 1000);
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
     //motion magic
-    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/200))) * 10, 1000);
-    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/200))) * 10)/.6, 1000);
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/4))) * 10, 1000);
+    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/15))) * 10)/.15, 1000);
     armMotorPrimary.configMotionSCurveStrength(1, 1000);
   }
   private void configEncoder() {
@@ -223,12 +224,13 @@ public class StageOneSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
-/*
-    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/SmartDashboard.getNumber("stageOneVelocity", calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)))) * 10, 1000);
-    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/200))) * 10)/SmartDashboard.getNumber("stageOneAccel", (calculateEncoderFromOutput(Units.degreesToRadians((40.0/2))) * 10)/.5), 1000);
+
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians(40.0/SmartDashboard.getNumber("stageOneVelocity", 0))), 1000);
+    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/15))) * 10)/SmartDashboard.getNumber("stageOneAccel", 0), 1000);
     armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
     armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI), 1000);
-    */
+    armMotorPrimary.config_kD(0, SmartDashboard.getNumber("stageOneD", ArmConstants.stageOne_kD), 1000);
+
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
 }
