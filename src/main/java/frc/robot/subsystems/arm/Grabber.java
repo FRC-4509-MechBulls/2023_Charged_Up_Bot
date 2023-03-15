@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -334,6 +335,7 @@ public class Grabber extends SubsystemBase {
   public void overrideDesiredEFWait(){
     setEndEffectorMode(desiredEFMode);
   }
+  double placeBeforePostTimestamp = -1;
 
   @Override
   public void periodic() {
@@ -368,7 +370,14 @@ public class Grabber extends SubsystemBase {
 
     //when the arm is in place cone L2 or L3 and the EF matches the desired EF, move the arm to the appropriate post-placing position
     if(getEFMode()==getDesiredEFMode() && (stateController.getArmMode()==ArmModes.PLACING_CONE_LVL2 || stateController.getArmMode()==ArmModes.PLACING_CONE_LVL3)){
-        stateController.setAgArmToPostPlacing();
+        if(placeBeforePostTimestamp==-1)
+          placeBeforePostTimestamp = Timer.getFPGATimestamp();
+
+        if(Timer.getFPGATimestamp() - placeBeforePostTimestamp > ArmConstants.timeBeforePostPlacing){
+          stateController.setAgArmToPostPlacing();
+          placeBeforePostTimestamp = -1;
+        }
+
     }
 
     

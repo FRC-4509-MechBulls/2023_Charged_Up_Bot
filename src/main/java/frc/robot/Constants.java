@@ -184,6 +184,8 @@ public final class Constants {
         public static final double[] postPlacingCubeArmPosTwo = {placingCubeArmPosTwo[0], placingCubeArmPosTwo[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingCubeArmPosThree = {placingCubeArmPosThree[0], placingCubeArmPosThree[1] + Units.inchesToMeters(0)};
 
+        public static final double timeBeforePostPlacing = 0.5;
+
 
 
 
