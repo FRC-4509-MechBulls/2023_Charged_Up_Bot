@@ -186,7 +186,7 @@ public class StageOneSub extends SubsystemBase {
   }
   private void setArmPosition(){
     double output = setpoint;
-    //SmartDashboard.putNumber("stageOneSet", Units.radiansToDegrees(output));
+    SmartDashboard.putNumber("stageOneSet", Units.radiansToDegrees(output));
     output = output - ArmConstants.stageOneEncoderOffset;
     double encoder = calculateEncoderFromOutput(output);
 

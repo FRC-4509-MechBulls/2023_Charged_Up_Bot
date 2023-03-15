@@ -52,7 +52,7 @@ public class StageTwoSub extends SubsystemBase {
   public StageTwoSub() {
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
-    SmartDashboard.putNumber("stageTwoAllowedError", Units.degreesToRadians(0));
+    SmartDashboard.putNumber("stageTwoAllowedError", Units.degreesToRadians(0));//.005
     SmartDashboard.putNumber("stageTwoAccel", (Units.degreesToRadians(130/1) * 60) / 1);
     SmartDashboard.putNumber("stageTwoVelocity", Units.degreesToRadians(130/1) * 60);
     instantiateConstants();
