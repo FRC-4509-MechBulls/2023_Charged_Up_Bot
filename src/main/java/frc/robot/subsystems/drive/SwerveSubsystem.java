@@ -151,10 +151,10 @@ StateControllerSubsystem stateControllerSubsystem;
 
   public void drivebaseXPattern(){
     SwerveModuleState[] moduleStates = new SwerveModuleState[4];
-    moduleStates[0] = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
-    moduleStates[1] = new SwerveModuleState(0, Rotation2d.fromDegrees(135));
-    moduleStates[2] = new SwerveModuleState(0, Rotation2d.fromDegrees(225));
-    moduleStates[3] = new SwerveModuleState(0, Rotation2d.fromDegrees(315));
+    moduleStates[0] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(45));
+    moduleStates[1] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(135));
+    moduleStates[2] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(225+90));
+    moduleStates[3] = new SwerveModuleState(0.02, Rotation2d.fromDegrees(315+90));
     setModuleStates(moduleStates);
   }
   public void toggleFieldOriented(){fieldOriented = !fieldOriented;}
