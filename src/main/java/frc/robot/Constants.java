@@ -366,30 +366,30 @@ public final class Constants {
     }
 
     public static final class FieldConstants{
-        public static final double width1 = 16.56 + Units.inchesToMeters(4);//16.525//total field width
-        public static final double height1 = 8.05;//8.016// 8.176  //we might need to re-measure some things 😭
+        public static final double width1 = 16.525;//16.56 + Units.inchesToMeters(4);//16.525//total field width
+        public static final double height1 = 8.016;//8.05;//8.016// 8.176  //we might need to re-measure some things 😭
 
-        public static final double leftWallPos = -width1/2;//?
-        public static final double rightWallPos = width1/2;//?
-        public static final double bottomWallPos = -height1/2;//?
-        public static final double topWallPos = height1/2;//?
+        public static final double leftWallPos = -width1/2;
+        public static final double rightWallPos = width1/2;
+        public static final double bottomWallPos = -height1/2;
+        public static final double topWallPos = height1/2;
 
-        public static final double nodesWidth = 1.55 - Units.inchesToMeters(2);//1.37 //distance from wall to edge of nodes
-        public static final double nodesHeight = 5.497;//5.494
+        public static final double nodesWidth = 1.37;//1.55 - Units.inchesToMeters(2);//1.37 //distance from wall to edge of nodes
+        public static final double nodesHeight = 5.494;//5.497;//5.494
 
-        public static final double barrierLength = 1.984;//1.981 //transparent barrier thingy length
+        public static final double barrierLength = 1.981;//1.984;//1.981 //transparent barrier thingy length
 
-        public static final double chargeStationX = 4.417;//4.3875 //charge station center x
+        public static final double chargeStationX = 4.3875;//4.417;//4.3875 //charge station center x
         public static final double chargeStationY = 1.267;//1.25//2.744 //charge station center y
-        public static final double chargeStationWidth = 1.931;//1.885 //charge station total width
-        public static final double chargeStationHeight = 2.471;//2.47 //charge station total height
+        public static final double chargeStationWidth = 1.885;//1.931;//1.885 //charge station total width
+        public static final double chargeStationHeight = 2.47;//2.471;//2.47 //charge station total height
 
         public static final double chargeStationFarX = chargeStationX + chargeStationWidth/2; //roughly 5.374
         public static final double chargeStationCloseX = chargeStationX - chargeStationWidth/2;
         public static final double chargeStationTopY = chargeStationY + chargeStationHeight/2;
         public static final double chargeStationBottomY = chargeStationY - chargeStationHeight/2;
 
-        public static final double doubleSubstationDepth = 0.404;//.348 //distance from far wall to double substation wall
+        public static final double doubleSubstationDepth = .348;//0.404;//.348 //distance from far wall to double substation wall
 
     //    public static final double distFromFarEdgesToTags = 1.013143;
 
@@ -410,12 +410,12 @@ public final class Constants {
         public static final double[] preplacedItemXDiffsFromCenterInches = {-47.36, -47.36, -47.36, -47.36, 47.36, 47.36, 47.36, 47.36};
         public static final double[] preplacedItemYDiffsFromCenterInches = {22.39, -25.61, -73.61, -121.61, 22.39, -25.61, -73.61, -121.61};
 
-        public static final double nodeX1 = 7.071332;
-        public static final double nodeX2 = 7.426611 + Units.inchesToMeters(1);
+        public static final double nodeX2 = 7.4695;//7.426611 + Units.inchesToMeters(1);
+        public static final double nodeX1 = nodeX2-0.373;//7.071332;//
         public static final double nodeX3 = nodeX2+0.432133;
 
-        public static final double topNodeY = 3.495389 + Units.inchesToMeters(2);
-        public static final double yDistBetweenNodes = 0.558800;
+        public static final double topNodeY = 3.495;//3.495389 + Units.inchesToMeters(2);
+        public static final double yDistBetweenNodes = .559;//0.558800;
 
      //   public static final double chargeStationEdgeLength = Units.inchesToMeters(6);
 
