@@ -74,32 +74,60 @@ lastPlacingPOV = placingPOV;
 
   public enum ItemType{CUBE,CONE,NONE}
   public enum ItemFallen{FALLEN_CONE,NOT_FALLEN}
-  public enum AgnosticGrabberMode{INTAKING, HOLDING, PLACING} //ignores item held and depth
+  public enum AgnosticGrabberMode{INTAKING, HOLDING, PLACING, POST_PLACING} //ignores item held and depth
   public enum Level{POS1, POS2, POS3} //placing mode - pos1 is ground, pos3 is highest
 
-  public Grabber.ArmModes getArmMode(){
-    if(agnosticGrabberMode == AgnosticGrabberMode.INTAKING){
-      if(itemType == ItemType.CONE){
-        if(itemFallen == ItemFallen.FALLEN_CONE)
+  public Grabber.ArmModes getArmMode() {
+    if (agnosticGrabberMode == AgnosticGrabberMode.INTAKING) {
+      if (itemType == ItemType.CONE) {
+        if (itemFallen == ItemFallen.FALLEN_CONE)
           return Grabber.ArmModes.INTAKING_CONE_FALLEN;
         return Grabber.ArmModes.INTAKING_CONE_UPRIGHT;
       }
-      if(itemType == ItemType.CUBE)
+      if (itemType == ItemType.CUBE)
         return Grabber.ArmModes.INTAKING_CUBE;
     }
-    if(agnosticGrabberMode == AgnosticGrabberMode.PLACING){
-      if(itemType == ItemType.CONE){
-        switch (placingLevel){
-          case POS1: return Grabber.ArmModes.PLACING_CONE_LVL1;
-          case POS2: return Grabber.ArmModes.PLACING_CONE_LVL2;
-          case POS3: return Grabber.ArmModes.PLACING_CONE_LVL3;
+    if (agnosticGrabberMode == AgnosticGrabberMode.PLACING) {
+      if (itemType == ItemType.CONE) {
+        switch (placingLevel) {
+          case POS1:
+            return Grabber.ArmModes.PLACING_CONE_LVL1;
+          case POS2:
+            return Grabber.ArmModes.PLACING_CONE_LVL2;
+          case POS3:
+            return Grabber.ArmModes.PLACING_CONE_LVL3;
         }
       }
-      if(itemType == ItemType.CUBE){
-        switch(placingLevel){
-          case POS1: return Grabber.ArmModes.PLACING_CUBE_LVL1;
-          case POS2: return Grabber.ArmModes.PLACING_CUBE_LVL2;
-          case POS3: return Grabber.ArmModes.PLACING_CUBE_LVL3;
+      if (itemType == ItemType.CUBE) {
+        switch (placingLevel) {
+          case POS1:
+            return Grabber.ArmModes.PLACING_CUBE_LVL1;
+          case POS2:
+            return Grabber.ArmModes.PLACING_CUBE_LVL2;
+          case POS3:
+            return Grabber.ArmModes.PLACING_CUBE_LVL3;
+        }
+      }
+    }
+    if (agnosticGrabberMode == AgnosticGrabberMode.POST_PLACING) {
+      if (itemType == ItemType.CONE) {
+        switch (placingLevel) {
+          case POS1:
+            return Grabber.ArmModes.POST_PLACING_CONE_LVL1;
+          case POS2:
+            return Grabber.ArmModes.POST_PLACING_CONE_LVL2;
+          case POS3:
+            return Grabber.ArmModes.POST_PLACING_CONE_LVL3;
+        }
+      }
+      if (itemType == ItemType.CUBE) {
+        switch (placingLevel) {
+          case POS1:
+            return Grabber.ArmModes.POST_PLACING_CUBE_LVL1;
+          case POS2:
+            return Grabber.ArmModes.POST_PLACING_CUBE_LVL2;
+          case POS3:
+            return Grabber.ArmModes.POST_PLACING_CUBE_LVL3;
         }
       }
     }
@@ -122,7 +150,7 @@ lastPlacingPOV = placingPOV;
         case CUBE: return Grabber.EFModes.HOLDING_CUBE;
       }
     }
-    if(agnosticGrabberMode == AgnosticGrabberMode.PLACING){
+    if(agnosticGrabberMode == AgnosticGrabberMode.PLACING || agnosticGrabberMode == AgnosticGrabberMode.POST_PLACING){
       switch (itemType){
         case CONE: return Grabber.EFModes.PLACING_CONE;
         //place cube bottom for l1 and l2, top for l3
@@ -141,6 +169,7 @@ lastPlacingPOV = placingPOV;
   public void setAgArmToHolding(){agnosticGrabberMode = AgnosticGrabberMode.HOLDING;}
 
   public void setAgArmToPlacing(){agnosticGrabberMode = AgnosticGrabberMode.PLACING;}
+    public void setAgArmToPostPlacing(){agnosticGrabberMode = AgnosticGrabberMode.POST_PLACING;}
 
 
   public Rotation2d allianceForwardAngle(){

@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -36,7 +37,7 @@ public class Grabber extends SubsystemBase {
   private double[] setpointThetaPhi;
   private double[] eFPosition;
 
-  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3}
+  public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3, POST_PLACING_CONE_LVL1, POST_PLACING_CONE_LVL2, POST_PLACING_CONE_LVL3, POST_PLACING_CUBE_LVL1, POST_PLACING_CUBE_LVL2, POST_PLACING_CUBE_LVL3}
   public enum EFModes {INTAKING_CONE, INTAKING_CUBE, HOLDING_CUBE, HOLDING_CONE, PLACING_CUBE_BOTTOM,PLACING_CUBE_TOP, PLACING_CONE, STOPPED}
 
   private EFModes efMode = EFModes.STOPPED;
@@ -90,6 +91,14 @@ public class Grabber extends SubsystemBase {
       case PLACING_CUBE_LVL1: return ArmConstants.placingCubeArmPosOne;
       case PLACING_CUBE_LVL2: return ArmConstants.placingCubeArmPosTwo;
       case PLACING_CUBE_LVL3: return ArmConstants.placingCubeArmPosThree;
+
+        case POST_PLACING_CONE_LVL1: return ArmConstants.postPlacingConeArmPosOne;
+        case POST_PLACING_CONE_LVL2: return ArmConstants.postPlacingConeArmPosTwo;
+        case POST_PLACING_CONE_LVL3: return ArmConstants.postPlacingConeArmPosThree;
+
+        case POST_PLACING_CUBE_LVL1: return ArmConstants.postPlacingCubeArmPosOne;
+        case POST_PLACING_CUBE_LVL2: return ArmConstants.postPlacingCubeArmPosTwo;
+        case POST_PLACING_CUBE_LVL3: return ArmConstants.postPlacingCubeArmPosThree;
     }
     return new double[]{};
   }
@@ -199,7 +208,7 @@ public class Grabber extends SubsystemBase {
     double counterBalanceTorque = calculateCounterBalanceTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength);
     double gravityTorque = calculateGravityTorque(armMass, cGCoordinateRelativeToPivot);
 
-    return counterBalanceTorque - gravityTorque;
+    return (counterBalanceTorque - gravityTorque);
   }
   private double calculateCounterBalanceTorque(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength) {    
     double springEndDistanceFromPivot = calculateMagnitude(defaultSpringEndCoordinateRelativeToPivot[0], defaultSpringEndCoordinateRelativeToPivot[1]);
@@ -213,6 +222,9 @@ public class Grabber extends SubsystemBase {
 
     double currentSpringLength = calculateMagnitude(currentSpringVector[0], currentSpringVector[1]);
     double displacement = currentSpringLength - restingSpringLength;
+    if (displacement < 0) {
+      return 0;
+    }
     double grossForce = displacement * springConstant;
     double realForce = grossForce * Math.sin(approachAngle);
     double cBTorque = realForce * springEndDistanceFromPivot;
@@ -326,6 +338,7 @@ public class Grabber extends SubsystemBase {
   public void overrideDesiredEFWait(){
     setEndEffectorMode(desiredEFMode);
   }
+  double placeBeforePostTimestamp = -1;
 
   @Override
   public void periodic() {
@@ -357,6 +370,18 @@ public class Grabber extends SubsystemBase {
     }
     SmartDashboard.putBoolean("EFMatches", getEFMode()==getDesiredEFMode());
     SmartDashboard.putString("EFMode",getEFMode().toString());
+
+    //when the arm is in place cone L2 or L3 and the EF matches the desired EF, move the arm to the appropriate post-placing position
+    if(getEFMode()==getDesiredEFMode() && (stateController.getArmMode()==ArmModes.PLACING_CONE_LVL2 || stateController.getArmMode()==ArmModes.PLACING_CONE_LVL3)){
+        if(placeBeforePostTimestamp==-1)
+          placeBeforePostTimestamp = Timer.getFPGATimestamp();
+
+        if(Timer.getFPGATimestamp() - placeBeforePostTimestamp > ArmConstants.timeBeforePostPlacing){
+          stateController.setAgArmToPostPlacing();
+          placeBeforePostTimestamp = -1;
+        }
+
+    }
 
     
    // double inX = SmartDashboard.getNumber("test_inX",1);
