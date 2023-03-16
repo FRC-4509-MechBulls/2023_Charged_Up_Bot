@@ -442,22 +442,27 @@ newY-=camYOffset;
     return out;
   }
 
-  public void   driveToPose(Pose2d pose, double posP, double rotP, double maxPowerOut, double maxTurningOut){
+  public void   driveToPose(Pose2d pose, double posP, double rotP, double maxPowerOut, double maxTurningPowerOut){
     if(pose == null) return;
     double[] speeds = getDesiredSpeeds(pose, posP, rotP);
 
     double ang = Math.atan2(speeds[1],speeds[0]);
     double mag = Math.sqrt(Math.pow(speeds[0],2)+Math.pow(speeds[1],2));
-    if(mag>DriveConstants.maxPowerOut){
-      speeds[0] = Math.cos(ang)*DriveConstants.maxPowerOut;
-      speeds[1] = Math.sin(ang)*DriveConstants.maxPowerOut;
+    if(mag>maxPowerOut){
+      speeds[0] = Math.cos(ang)*maxPowerOut;
+      speeds[1] = Math.sin(ang)*maxPowerOut;
     }
 
     //speeds[0] = MathThings.absMax(speeds[0],0.2);
     //speeds[1] = MathThings.absMax(speeds[1],0.2);
-    speeds[2] = MB_Math.maxValueCutoff(speeds[2],DriveConstants.maxTurningPowerOut);
+    speeds[2] = MB_Math.maxValueCutoff(speeds[2],maxTurningPowerOut);
 
     drive(speeds[0],speeds[1],speeds[2],true,false);
+  }
+
+
+  public void driveToPose(Pose2d pose, double posPa, double rotP){
+    driveToPose(pose,posPa,rotP, DriveConstants.maxPowerOut, DriveConstants.maxTurningPowerOut);
   }
 
   double getAutoBalanceOut(double setpoint, double measurement, double p, double max){
