@@ -180,13 +180,13 @@ public final class Constants {
 
         public static final double[] postPlacingConeArmPosOne = {placingConeArmPosOne[0], placingConeArmPosOne[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingConeArmPosTwo = {placingConeArmPosTwo[0], placingConeArmPosTwo[1] + Units.inchesToMeters(4)};
-        public static final double[] postPlacingConeArmPosThree = {placingConeArmPosThree[0], placingConeArmPosThree[1] + Units.inchesToMeters(4)};
+        public static final double[] postPlacingConeArmPosThree = {placingConeArmPosThree[0], placingConeArmPosThree[1] + Units.inchesToMeters(6)};
 
         public static final double[] postPlacingCubeArmPosOne = {placingCubeArmPosOne[0], placingCubeArmPosOne[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingCubeArmPosTwo = {placingCubeArmPosTwo[0], placingCubeArmPosTwo[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingCubeArmPosThree = {placingCubeArmPosThree[0], placingCubeArmPosThree[1] + Units.inchesToMeters(0)};
 
-        public static final double timeBeforePostPlacing = 0.5;
+        public static final double timeBeforePostPlacing = 0.1;
 
 
 
