@@ -206,7 +206,7 @@ public class StageTwoSub extends SubsystemBase {
       changedSides = true;
     }
     else changedSides = false;
-    if (angle > setpoint + Units.degreesToRadians(3) || angle < setpoint - Units.degreesToRadians(3) || changedSides == true) {
+    if (angle > setpoint + Units.degreesToRadians(ArmConstants.stageTwo_kIZone) || angle < setpoint - Units.degreesToRadians(ArmConstants.stageTwo_kIZone) || changedSides == true) {
       pidController.setIAccum(0);
     }
     lastAngle = angle;
@@ -230,9 +230,11 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    /*
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
     pidController.setD(SmartDashboard.getNumber("stageTwoD", ArmConstants.stageTwo_kD), 0);
+    */
     /*
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
     pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/.6) * 60) / SmartDashboard.getNumber("stageTwoAccel", 0), 0);
