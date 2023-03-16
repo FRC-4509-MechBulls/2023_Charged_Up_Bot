@@ -312,6 +312,9 @@ public final class Constants {
         public static final double maxPowerOut = 0.3;
         public static final double maxTurningPowerOut = 0.2;
 
+        public static final double maxPowerOutForAssist = 0.1;
+        public static final double maxTurningPowerOutForAssist = 0.1;
+
     }
 
     public static final class OIConstants {
@@ -411,7 +414,7 @@ public final class Constants {
         public static final double nodeX2 = 7.426611 + Units.inchesToMeters(1);
         public static final double nodeX3 = nodeX2+0.432133;
 
-        public static final double topNodeY = 3.495389;
+        public static final double topNodeY = 3.495389 + Units.inchesToMeters(2);
         public static final double yDistBetweenNodes = 0.558800;
 
         public static final double chargeStationEdgeLength = Units.inchesToMeters(6);

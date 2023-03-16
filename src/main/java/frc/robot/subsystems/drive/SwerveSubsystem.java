@@ -222,7 +222,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose, VecBuilder.fill(Units.inchesToMeters(1),Units.inchesToMeters(1), Units.degreesToRadians(1)), VecBuilder.fill(0.9, 0.9, 0.9));
+    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(0.5, 0.5, 0.5));
   }
   
   // Getters
@@ -442,7 +442,7 @@ newY-=camYOffset;
     return out;
   }
 
-  public void   driveToPose(Pose2d pose, double posP, double rotP){
+  public void   driveToPose(Pose2d pose, double posP, double rotP, double maxPowerOut, double maxTurningOut){
     if(pose == null) return;
     double[] speeds = getDesiredSpeeds(pose, posP, rotP);
 
