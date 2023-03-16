@@ -180,13 +180,13 @@ public final class Constants {
 
         public static final double[] postPlacingConeArmPosOne = {placingConeArmPosOne[0], placingConeArmPosOne[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingConeArmPosTwo = {placingConeArmPosTwo[0], placingConeArmPosTwo[1] + Units.inchesToMeters(4)};
-        public static final double[] postPlacingConeArmPosThree = {placingConeArmPosThree[0], placingConeArmPosThree[1] + Units.inchesToMeters(4)};
+        public static final double[] postPlacingConeArmPosThree = {placingConeArmPosThree[0], placingConeArmPosThree[1] + Units.inchesToMeters(6)};
 
         public static final double[] postPlacingCubeArmPosOne = {placingCubeArmPosOne[0], placingCubeArmPosOne[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingCubeArmPosTwo = {placingCubeArmPosTwo[0], placingCubeArmPosTwo[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingCubeArmPosThree = {placingCubeArmPosThree[0], placingCubeArmPosThree[1] + Units.inchesToMeters(0)};
 
-        public static final double timeBeforePostPlacing = 0.5;
+        public static final double timeBeforePostPlacing = 0.1;
 
 
 
@@ -312,6 +312,9 @@ public final class Constants {
         public static final double maxPowerOut = 0.3;
         public static final double maxTurningPowerOut = 0.2;
 
+        public static final double maxPowerOutForAssist = 0.1;
+        public static final double maxTurningPowerOutForAssist = 0.1;
+
     }
 
     public static final class OIConstants {
@@ -388,15 +391,15 @@ public final class Constants {
 
         public static final double doubleSubstationDepth = 0.404; //distance from far wall to double substation wall
 
-        public static final double distFromFarEdgesToTags = 1.013143;
+    //    public static final double distFromFarEdgesToTags = 1.013143;
 
-        public static final double distBetweenTags = 1.676400;
+    //    public static final double distBetweenTags = 1.676400;
 
-        public static final double centerTagY = 1.234789;
+    //    public static final double centerTagY = 1.234789;
 
-        public static final double aprilTagX = width1/2 - nodesWidth;
-        public static final double lonesomeAprilTagY = -2.741613;
-        public static final double lonesomeAprilTagX = width1/2 - doubleSubstationDepth;
+    //    public static final double aprilTagX = width1/2 - nodesWidth;
+    //    public static final double lonesomeAprilTagY = -2.741613;
+    //    public static final double lonesomeAprilTagX = width1/2 - doubleSubstationDepth;
 
         public static final double aprilTagOriginX = rightWallPos;
         public static final double aprilTagOriginY = topWallPos;
@@ -411,10 +414,10 @@ public final class Constants {
         public static final double nodeX2 = 7.426611 + Units.inchesToMeters(1);
         public static final double nodeX3 = nodeX2+0.432133;
 
-        public static final double topNodeY = 3.495389;
+        public static final double topNodeY = 3.495389 + Units.inchesToMeters(2);
         public static final double yDistBetweenNodes = 0.558800;
 
-        public static final double chargeStationEdgeLength = Units.inchesToMeters(6);
+     //   public static final double chargeStationEdgeLength = Units.inchesToMeters(6);
 
 
 
