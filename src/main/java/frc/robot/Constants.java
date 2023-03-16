@@ -121,6 +121,8 @@ public final class Constants {
         public static final double stageOne_kP = 4;//1//4, 1 for testing
         public static final double stageOne_kI = 0.01;//0.02//0
         public static final double stageOne_kD = 0; //undecided
+        public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians((40.0/4));//
+        public static final double stageOneMotionMaxAcceleration = stageOneMotionCruiseVelocity / 0.04;//
         public static final double stageOneEncoderOffset = Units.degreesToRadians(220.778125 + 0.5 + 3.85 - 6.23);//220.778125 - 180.0 //220.778125
 
         public static final double revEncoderCountsPerRotation = 2048;
@@ -160,7 +162,7 @@ public final class Constants {
         public static final double stageTwo_kIZone = 3;//3
         public static final double stageTwo_kD = 4; //undecided
         public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
-        
+        public static final double stageTwoOutputRange = .4;//
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;

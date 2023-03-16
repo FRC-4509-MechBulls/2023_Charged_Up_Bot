@@ -104,7 +104,7 @@ public class StageTwoSub extends SubsystemBase {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
     encoder.setVelocityConversionFactor(((2 * Math.PI) / encoderRatio) / 60);
     encoder.setInverted(true);
-    System.out.println(encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset));
+    encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset);
   }
   private void configMotorControllers() {
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180)));
@@ -137,11 +137,9 @@ public class StageTwoSub extends SubsystemBase {
     pidController = armMotorPrimary.getPIDController();
     pidController.setFeedbackDevice(encoder);
     pidController.setP(ArmConstants.stageTwo_kP, 0);
-    if (pidController.setI(ArmConstants.stageTwo_kI, 0) != REVLibError.kOk) {
-      System.out.println(pidController.setI(ArmConstants.stageTwo_kI, 0));
-    }
+    pidController.setI(ArmConstants.stageTwo_kI, 0);
     pidController.setD(ArmConstants.stageTwo_kD, 0);
-    pidController.setOutputRange(-.4,.4, 0);
+    pidController.setOutputRange(-ArmConstants.stageTwoOutputRange, ArmConstants.stageTwoOutputRange, 0);
     pidController.setPositionPIDWrappingEnabled(false);
     /*
     pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
