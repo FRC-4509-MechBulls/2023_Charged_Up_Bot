@@ -363,6 +363,13 @@ public final class Constants {
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
 
+        public static final double fieldCentricStdDev_X = 0.1;
+        public static final double fieldCentricStdDev_Y = 0.5;
+        public static final double fieldCentricStdDev_theta = 0.3;
+
+        public static final double fieldCentricStdDev_vec_theta = Math.atan2(fieldCentricStdDev_Y, fieldCentricStdDev_X);
+        public static final double fieldCentricStdDev_vec_mag = Math.sqrt(Math.pow(fieldCentricStdDev_X,2)+Math.pow(fieldCentricStdDev_Y,2));
+
     }
 
     public static final class FieldConstants{

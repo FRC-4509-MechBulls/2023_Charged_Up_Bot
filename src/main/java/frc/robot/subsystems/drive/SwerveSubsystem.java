@@ -77,6 +77,11 @@ public class SwerveSubsystem extends SubsystemBase {
   private double translationMagnitudeScaled;
   private double rotationMagnitude = 0;
   private double scaledMagnitudeRotation = 0;
+
+    private double robotCentricVisionXVar;
+    private double robotCentricVisionYVar;
+    private double robotCentricVisionThetaVar;
+
   Rotation2d translationDirection;
   Rotation2d rotationDirection;
 
@@ -378,6 +383,8 @@ SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new Swerv
       
     updateOdometry();
 
+    calculateRobotCentricStdDevs();
+
    // double[] desiredSpeeds = getDesiredSpeeds(new Pose2d(0,0,Rotation2d.fromDegrees(0)),Consta);
    // SmartDashboard.putNumber("desXto00", desiredSpeeds[0]);
   //  SmartDashboard.putNumber("desYto00", desiredSpeeds[1]);
@@ -390,12 +397,18 @@ SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new Swerv
     //dashboard outputs
       debugOutputs();
       if(Constants.SimulationConstants.simulationEnabled && SmartDashboard.getBoolean("simVision",false)){
-        odometry.addVisionMeasurement(new Pose2d(0,0,Rotation2d.fromDegrees(0)),Timer.getFPGATimestamp() - 15*(1.0/1000),VecBuilder.fill(SmartDashboard.getNumber("visionXVar",0.5),SmartDashboard.getNumber("visionYVar",0.5),SmartDashboard.getNumber("visionRVar",0.5)));
+        odometry.addVisionMeasurement(new Pose2d(0,0,Rotation2d.fromDegrees(0)),Timer.getFPGATimestamp() - 15*(1.0/1000),VecBuilder.fill(robotCentricVisionXVar, robotCentricVisionYVar, robotCentricVisionThetaVar));
       }
     }
 
 public Pose2d getEstimatedPosition(){
     return odometry.getEstimatedPosition();
+}
+
+public void calculateRobotCentricStdDevs(){
+    robotCentricVisionXVar = Constants.VisionConstants.fieldCentricStdDev_vec_mag * Math.cos(odometry.getEstimatedPosition().getRotation().getRadians() + Constants.VisionConstants.fieldCentricStdDev_vec_theta);
+    robotCentricVisionYVar = Constants.VisionConstants.fieldCentricStdDev_vec_mag * Math.sin(odometry.getEstimatedPosition().getRotation().getRadians() + Constants.VisionConstants.fieldCentricStdDev_vec_theta);
+    robotCentricVisionThetaVar = Constants.VisionConstants.fieldCentricStdDev_theta;
 }
 
     // Vision stuff
@@ -421,7 +434,7 @@ newY-=camYOffset;
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
   //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
 
-  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000),VecBuilder.fill(SmartDashboard.getNumber("visionXVar",0.5),SmartDashboard.getNumber("visionYVar",0.5),SmartDashboard.getNumber("visionRVar",0.5)));
+  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000),VecBuilder.fill(robotCentricVisionXVar, robotCentricVisionYVar, robotCentricVisionThetaVar));
   //  zeroHeading(newRotation.getDegrees());
 
   }
