@@ -100,6 +100,12 @@ StateControllerSubsystem stateControllerSubsystem;
     zeroHeading();
     constructOdometry(); //constructs odometry with newly correct gyro values
 
+    SmartDashboard.putNumber("visionXVar",0.5);
+    SmartDashboard.putNumber("visionYVar",0.5);
+    SmartDashboard.putNumber("visionRVar",0.5);
+
+    SmartDashboard.putBoolean("simVision",false);
+
    // SmartDashboard.putNumber("drivePValue",0.1);
   //  SmartDashboard.putNumber("turningPValue",0.1);
 
@@ -383,6 +389,9 @@ SwerveModulePosition[] simModulePositions = new SwerveModulePosition[]{new Swerv
 
     //dashboard outputs
       debugOutputs();
+      if(Constants.SimulationConstants.simulationEnabled && SmartDashboard.getBoolean("simVision",false)){
+        odometry.addVisionMeasurement(new Pose2d(0,0,Rotation2d.fromDegrees(0)),Timer.getFPGATimestamp() - 15*(1.0/1000),VecBuilder.fill(SmartDashboard.getNumber("visionXVar",0.5),SmartDashboard.getNumber("visionYVar",0.5),SmartDashboard.getNumber("visionRVar",0.5)));
+      }
     }
 
 public Pose2d getEstimatedPosition(){
@@ -411,7 +420,8 @@ newY-=camYOffset;
     //2. Pass vision measurement to odometry
   //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
   //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
+
+  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000),VecBuilder.fill(SmartDashboard.getNumber("visionXVar",0.5),SmartDashboard.getNumber("visionYVar",0.5),SmartDashboard.getNumber("visionRVar",0.5)));
   //  zeroHeading(newRotation.getDegrees());
 
   }
