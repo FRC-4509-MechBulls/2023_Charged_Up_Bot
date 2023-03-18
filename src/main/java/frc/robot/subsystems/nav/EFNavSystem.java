@@ -6,6 +6,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldLine;
 import frc.robot.lib.LineIntersection;
 import frc.robot.lib.MB_Math;
@@ -37,6 +38,7 @@ Pose2d efPose = new Pose2d();
         telemetrySub.updateBarriers(fieldLines);
         createAndStartPathingThread();
         SmartDashboard.putBoolean("pathingDied",false);
+        SmartDashboard.putBoolean("outOfBounds in main",false);
        // SmartDashboard.putNumber("EFPivotX",0);
        // SmartDashboard.putNumber("EFPivotY",0.3);
        // SmartDashboard.putNumber("EFDesiredX",0.6);
@@ -293,7 +295,13 @@ Pose2d efPose = new Pose2d();
 
     public Pose2d getNextNavPoint(){
         dontTouchPoses = true;
-        Pose2d out = getNextNavPointUnprotected();
+        Pose2d out = new Pose2d(Constants.ArmConstants.holdingArmPos[0],Constants.ArmConstants.holdingArmPos[1],Rotation2d.fromDegrees(0));
+        try{
+            out = getNextNavPointUnprotected();
+        }catch (Exception e){
+            SmartDashboard.putBoolean("outOfBounds in main",true);
+        }
+
         dontTouchPoses = false;
         return out;
     }
