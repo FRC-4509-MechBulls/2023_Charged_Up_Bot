@@ -363,7 +363,7 @@ public final class Constants {
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
 
-        public static final double camHeading = Units.degreesToRadians(-90);
+        public static final double camHeading = Units.degreesToRadians(0);
 
     }
 

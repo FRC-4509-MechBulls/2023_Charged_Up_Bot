@@ -79,21 +79,14 @@ public class VisionSubsystem extends SubsystemBase {
         double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getX();
         Pose2d newPose = new Pose2d(newX,newY, newRotation);
 
-        double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
-        double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
+        double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter + Constants.VisionConstants.camHeading) * Constants.VisionConstants.camDistFromCenter;
+        double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter + Constants.VisionConstants.camHeading)* Constants.VisionConstants.camDistFromCenter;
         newX-=camXOffset;
         newY-=camYOffset;
+        newRotation = Rotation2d.fromRadians(newRotation.getRadians() + Constants.VisionConstants.camHeading);
 
         //  SmartDashboard.putNumber("new_x", newX);
         // SmartDashboard.putNumber("new_y", newY);
-
-        //rotate the robot about the camera's position to account for the camera's angle (needs testing)
-        //might be broken
-    //    double camHeading = newRotation.getDegrees() + Constants.VisionConstants.camHeading;
-    //    double[] rotated = MB_Math.rotatePoint(newX,newY,newX - camXOffset,newY - camYOffset,Constants.VisionConstants.camHeading); //should we add the bot's xy to the camXOffset and camYOffset? also the other coords?
-    //    newX = rotated[0];
-    //    newY = rotated[1];
-     //   newRotation.rotateBy(Rotation2d.fromRadians(Constants.VisionConstants.camHeading));
 
         return new Pose2d(newX,newY, newRotation);
 
