@@ -70,6 +70,10 @@ public class VisionSubsystem extends SubsystemBase {
             int id = target.getFiducialId();
             Pose2d botPose = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transform);
             Pose2d botPoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transformAlternative);
+            if(!(id>0 && id<=8)){
+                SmartDashboard.putString("visionError","Invalid ID: "+id);
+                return;
+            }
 
             if(result.getTargets().get(0).getPoseAmbiguity() < Constants.VisionConstants.MAX_AMBIGUITY){
                 //choose better option
@@ -101,6 +105,10 @@ public class VisionSubsystem extends SubsystemBase {
                 }
             }
 
+            if(!(targetsSorted.get(0).getFiducialId() > 0 && targetsSorted.get(0).getFiducialId() <= 8 && targetsSorted.get(1).getFiducialId() > 0 && targetsSorted.get(1).getFiducialId() <= 8)){
+                SmartDashboard.putString("visionError","Invalid ID: "+targetsSorted.get(0).getFiducialId()+", "+targetsSorted.get(1).getFiducialId());
+                return;
+            }
             Pose2d target1Pose = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(0).getFiducialId() - 1), targetsSorted.get(0).getBestCameraToTarget());
             Pose2d target1PoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(0).getFiducialId() - 1), targetsSorted.get(0).getAlternateCameraToTarget());
             Pose2d target2Pose = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(1).getFiducialId() - 1), targetsSorted.get(1).getBestCameraToTarget());
