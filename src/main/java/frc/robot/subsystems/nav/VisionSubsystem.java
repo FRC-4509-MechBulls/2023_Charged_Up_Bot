@@ -62,15 +62,70 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void processCamResult(PhotonPipelineResult result){
-        if(result.getTargets().size() == 1 && result.getTargets().get(0).getPoseAmbiguity() < Constants.VisionConstants.MAX_AMBIGUITY){
-            SmartDashboard.putNumber("visionAmbiguity",result.getTargets().get(0).getPoseAmbiguity());
+        if(result.getTargets().size() == 1){
+            SmartDashboard.putString("visionAmbiguity",""+result.getTargets().get(0).getPoseAmbiguity());
             PhotonTrackedTarget target = result.getTargets().get(0);
-            int id = target.getFiducialId();
             Transform3d transform = target.getBestCameraToTarget();
-            Pose2d botPose = tagPoseFromCameraToBotPose(fieldTags.get(id-1), transform); //just trusting the id-1
-            swerveSubsystem.getOdometry().addVisionMeasurement(botPose, result.getTimestampSeconds());
+            Transform3d transformAlternative = target.getBestCameraToTarget();
+            int id = target.getFiducialId();
+            Pose2d botPose = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transform);
+            Pose2d botPoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transformAlternative);
+
+            if(result.getTargets().get(0).getPoseAmbiguity() < Constants.VisionConstants.MAX_AMBIGUITY){
+                //choose better option
+                swerveSubsystem.getOdometry().addVisionMeasurement(botPose, result.getTimestampSeconds());
+            }
+            else {
+                //choose option closest to current estimation
+                Pose2d currentPose = swerveSubsystem.getOdometry().getEstimatedPosition();
+                if (botPose.getTranslation().getDistance(currentPose.getTranslation()) < botPoseAlternative.getTranslation().getDistance(currentPose.getTranslation()))
+                    swerveSubsystem.getOdometry().addVisionMeasurement(botPose, result.getTimestampSeconds());
+                else
+                    swerveSubsystem.getOdometry().addVisionMeasurement(botPoseAlternative, result.getTimestampSeconds());
+            }
         }
-    }
+
+        if(result.getTargets().size()>=2){
+            double minDistance = Double.MAX_VALUE;
+            ArrayList<PhotonTrackedTarget> targetsSorted = new ArrayList<PhotonTrackedTarget>();
+            for(PhotonTrackedTarget target : result.getTargets())
+                    targetsSorted.add(target);
+            //sort targets by distance
+            for(int i = 0; i<targetsSorted.size(); i++){
+                for(int j = i+1; j<targetsSorted.size(); j++){
+                    if(targetsSorted.get(i).getBestCameraToTarget().getTranslation().getDistance(new Translation3d()) > targetsSorted.get(j).getBestCameraToTarget().getTranslation().getDistance(new Translation3d())){
+                        PhotonTrackedTarget temp = targetsSorted.get(i);
+                        targetsSorted.set(i, targetsSorted.get(j));
+                        targetsSorted.set(j, temp);
+                    }
+                }
+            }
+
+            Pose2d target1Pose = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(0).getFiducialId() - 1), targetsSorted.get(0).getBestCameraToTarget());
+            Pose2d target1PoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(0).getFiducialId() - 1), targetsSorted.get(0).getAlternateCameraToTarget());
+            Pose2d target2Pose = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(1).getFiducialId() - 1), targetsSorted.get(1).getBestCameraToTarget());
+            Pose2d target2PoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(1).getFiducialId() - 1), targetsSorted.get(1).getAlternateCameraToTarget());
+            Pose2d[] target1Poses = {target1Pose,target1PoseAlternative};
+            Pose2d[] target2Poses = {target2Pose,target2PoseAlternative};
+
+            double minSolvedBotDist = Double.MAX_VALUE;
+            Pose2d solvedBotPose = new Pose2d(1000,1000,Rotation2d.fromDegrees(0)); //something outlandish
+            for(int i = 0; i<target1Poses.length; i++){
+                for(int j = 0; j<target2Poses.length; j++){
+                    double dist = target1Poses[i].getTranslation().getDistance(target2Poses[j].getTranslation());
+                        if(dist<minSolvedBotDist){
+                            minSolvedBotDist = dist;
+                            solvedBotPose = new Pose2d((target1Poses[i].getX()+target2Poses[j].getX())/2, (target1Poses[i].getY()+target2Poses[j].getY())/2, Rotation2d.fromRadians((target1Poses[i].getRotation().getRadians()+target2Poses[j].getRotation().getRadians())/2));
+                        }
+                    }
+                }
+            swerveSubsystem.getOdometry().addVisionMeasurement(solvedBotPose, result.getTimestampSeconds());
+            SmartDashboard.putString("visionAmbiguity","N/A");
+            }
+
+        }
+
+
 
     public Pose2d tagPoseFromCameraToBotPose(FieldTag fieldTag, Transform3d transform){
         //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
