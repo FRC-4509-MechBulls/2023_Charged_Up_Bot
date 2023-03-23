@@ -6,11 +6,14 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldTag;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.nav.PathingTelemetrySub;
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -53,36 +56,48 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
 
         // This method will be called once per scheduler run
-        for(PhotonTrackedTarget target :camera.getLatestResult().getTargets()){
-            int id = target.getFiducialId();
-            Transform3d transform = target.getBestCameraToTarget();
-            Transform3d alternateTransform = target.getAlternateCameraToTarget();
-            Rotation3d rotation = transform.getRotation();
+        processCamResult(camera.getLatestResult());
 
-            for(int i = 0; i<fieldTags.size(); i++){
-                if(fieldTags.get(i).getID() != id) continue;
-                Transform3d sentTransform = new Transform3d(new Translation3d(transform.getX()*-1,transform.getY()*-1,transform.getZ()),transform.getRotation());
-                swerveSubsystem.fieldTagSpotted(fieldTags.get(i), transform, camera.getLatestResult().getLatencyMillis(), target.getPoseAmbiguity());
-      //          SmartDashboard.putNumber("lastPoseAmbiguity",camera.getLatestResult().getBestTarget().getPoseAmbiguity());
-
-
-            }
-
-
-
-            double rotationFromCamera = Math.IEEEremainder(lastTransform.getRotation().getZ() + Math.PI, 2*Math.PI);
-
-
-            if(id==0){
-                lastSeenOnRight = transform.getY()>0;
-                lastTransform = transform;
-                lastSeenTime = Timer.getFPGATimestamp();
-            }
-
-        }
 
     }
 
+    public void processCamResult(PhotonPipelineResult result){
+        if(result.getTargets().size() == 1 && result.getTargets().get(0).getPoseAmbiguity() < Constants.VisionConstants.MAX_AMBIGUITY){
+            SmartDashboard.putNumber("visionAmbiguity",result.getTargets().get(0).getPoseAmbiguity());
+            PhotonTrackedTarget target = result.getTargets().get(0);
+            int id = target.getFiducialId();
+            Transform3d transform = target.getBestCameraToTarget();
+            Pose2d botPose = tagPoseFromCameraToBotPose(fieldTags.get(id-1), transform); //just trusting the id-1
+            swerveSubsystem.getOdometry().addVisionMeasurement(botPose, result.getTimestampSeconds());
+        }
+    }
+
+    public Pose2d tagPoseFromCameraToBotPose(FieldTag fieldTag, Transform3d transform){
+        //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
+        Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
+        double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getY();
+        double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getX();
+        Pose2d newPose = new Pose2d(newX,newY, newRotation);
+
+        double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
+        double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
+        newX-=camXOffset;
+        newY-=camYOffset;
+
+        //  SmartDashboard.putNumber("new_x", newX);
+        // SmartDashboard.putNumber("new_y", newY);
+
+        //rotate the robot about the camera's position to account for the camera's angle (needs testing)
+        //might be broken
+    //    double camHeading = newRotation.getDegrees() + Constants.VisionConstants.camHeading;
+    //    double[] rotated = MB_Math.rotatePoint(newX,newY,newX - camXOffset,newY - camYOffset,Constants.VisionConstants.camHeading); //should we add the bot's xy to the camXOffset and camYOffset? also the other coords?
+    //    newX = rotated[0];
+    //    newY = rotated[1];
+     //   newRotation.rotateBy(Rotation2d.fromRadians(Constants.VisionConstants.camHeading));
+
+        return new Pose2d(newX,newY, newRotation);
+
+    }
 
 
     boolean lastSeenOnRight;
