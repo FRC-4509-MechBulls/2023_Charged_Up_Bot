@@ -196,7 +196,13 @@ public final class Constants {
         public static final double stageOneInBetweenPlacingAngleRad = Units.degreesToRadians(95);
         public static final double stageTwoInBetweenPlacingAngleRad = Units.degreesToRadians(-70); //-90
 
-        public static final double stageOneInBetweenPlacingThresholdRad = Units.degreesToRadians(5);
+
+        public static final double angleToleranceToUpdateEF = 0.5;
+        public static final double maxExtension = 56.5; //slightly lower than total length of arm = 57.5 inches
+
+        public static final double stageOneInBetweenPlacingAngleRad = Units.degreesToRadians(93);
+
+        public static final double stageOneInBetweenPlacingThresholdRad = Units.degreesToRadians(2);
     }
 
 

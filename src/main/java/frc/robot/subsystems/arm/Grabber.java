@@ -199,40 +199,23 @@ public class Grabber extends SubsystemBase {
   }
 
   private void updateSetpointThetaPhiButMisleading(double[] setpointXY){
-
-    if(lastArmMode !=stateController.getArmMode()) {firstStageHit93 = false; secondStageHit93 = false;}
-
-    if(stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING || (stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.HOLDING && (stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING || stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.POST_PLACING))){
-      //at this point you know that you are placing
-      if(!firstStageHit93){
-        if(stageTwoSub.getAngle() > Units.degreesToRadians(-85))
-          setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,Units.degreesToRadians(-90)};
-        else
-          setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,stageTwoSub.getAngle()};
-        if(Math.abs(stageOneSub.getAngle() - stageOneInBetweenPlacingAngleRad)< stageOneInBetweenPlacingThresholdRad)
-          firstStageHit93 = true;
-      }else{
-        if(Math.abs(stageTwoSub.getAngle() - stageTwoInBetweenPlacingAngleRad) < stageOneInBetweenPlacingThresholdRad) secondStageHit93 = true;
-        if(secondStageHit93)
-          setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
-        else
-          setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,stageTwoInBetweenPlacingAngleRad};
-      }
-      lastArmMode = stateController.getArmMode();
+    if(stateController.getAgnosticGrabberMode() != StateControllerSubsystem.AgnosticGrabberMode.PLACING){
+      firstStageHit93 = false;
+      setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
       return;
     }
-      //not placing
-   //     firstStageHit93 = false;
-   //     secondStageHit93 = false;
-
-
-
-    setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
-
+    //at this point you know that you are placing
+    if(!firstStageHit93 || lastArmMode !=stateController.getArmMode()){
+      setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,convertGrabberXYToThetaPhi(setpointXY)[1]};
+      if(Math.abs(stageOneSub.getAngle() - stageOneInBetweenPlacingAngleRad)< stageOneInBetweenPlacingThresholdRad)
+        firstStageHit93 = true;
+    }else{
+      setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+    }
+    lastArmMode = stateController.getArmMode();
   }
 
   private boolean firstStageHit93 = false;
-  private boolean secondStageHit93 = false;
   private ArmModes lastArmMode = ArmModes.HOLDING;
 
 
