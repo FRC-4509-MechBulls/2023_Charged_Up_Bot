@@ -222,7 +222,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(0.3, 0.3, 0.3));
+    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(Units.inchesToMeters(8),Units.inchesToMeters(8),Units.degreesToRadians(2)));
   }
   
   // Getters
@@ -391,29 +391,9 @@ public Pose2d getEstimatedPosition(){
 
     // Vision stuff
 
-public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
-  if(ambiguity>Constants.VisionConstants.MAX_AMBIGUITY) return;
 
-  //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
-    Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
-    double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getY();
-    double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getX();
-    Pose2d newPose = new Pose2d(newX,newY, newRotation);
-
-  double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
-  double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
-newX-=camXOffset;
-newY-=camYOffset;
-
-  //  SmartDashboard.putNumber("new_x", newX);
-   // SmartDashboard.putNumber("new_y", newY);
-
-    //2. Pass vision measurement to odometry
-  //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
-  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  //  zeroHeading(newRotation.getDegrees());
-
+  public SwerveDrivePoseEstimator getOdometry() {
+    return odometry;
   }
 
   public double[] getDesiredSpeeds(Pose2d pose, double posP, double rotP){

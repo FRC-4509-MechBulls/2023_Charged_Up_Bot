@@ -6,11 +6,14 @@ package frc.robot.subsystems.nav;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.lib.FieldObjects.FieldTag;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.nav.PathingTelemetrySub;
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -29,40 +32,12 @@ public class VisionSubsystem extends SubsystemBase {
     private SwerveSubsystem swerveSubsystem;
     public VisionSubsystem(SwerveSubsystem swerveSubsystem, PathingTelemetrySub pathingTelemetrySub) {
         this.swerveSubsystem = swerveSubsystem;
-        //fieldTags.add(new FieldTag(0, new Pose2d(-1, 0, new Rotation2d(Math.PI))));
-        //fieldTags.add(new FieldTag(1, new Pose2d(1.7, 0.8, new Rotation2d(-Math.PI/2))));
-
-//        Pose2d tag1Pose = new Pose2d(-aprilTagX,centerTagY+distBetweenTags,new Rotation2d(Math.PI));
-//        Pose2d tag2Pose = new Pose2d(-aprilTagX,centerTagY,new Rotation2d(Math.PI));
-//        Pose2d tag3Pose = new Pose2d(-aprilTagX,centerTagY-distBetweenTags,new Rotation2d(Math.PI));
-//
-//        Pose2d tag6Pose = new Pose2d(aprilTagX,centerTagY-distBetweenTags,new Rotation2d());
-//        Pose2d tag7Pose = new Pose2d(aprilTagX,centerTagY,new Rotation2d());
-//        Pose2d tag8Pose = new Pose2d(aprilTagX,centerTagY+distBetweenTags,new Rotation2d());
-//
-//        Pose2d tag4Pose = new Pose2d(-lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d(Math.PI));
-//        Pose2d tag5Pose = new Pose2d(lonesomeAprilTagX, lonesomeAprilTagY, new Rotation2d());
-//
-//        fieldTags.add(new FieldTag(1,tag1Pose));
-//        fieldTags.add(new FieldTag(2,tag2Pose));
-//        fieldTags.add(new FieldTag(3,tag3Pose));
-//        fieldTags.add(new FieldTag(4,tag4Pose));
-//        fieldTags.add(new FieldTag(5,tag5Pose));
-//        fieldTags.add(new FieldTag(6,tag6Pose));
-//        fieldTags.add(new FieldTag(7,tag7Pose));
-//        fieldTags.add(new FieldTag(8,tag8Pose));
 
 
         for(int i = 0; i<8; i++){
             int id = i+1;
             double x = aprilTagOriginX  -  Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]);
             double y = aprilTagOriginY - Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]);
-//            SmartDashboard.putNumber("tagOriginX",aprilTagOriginX);
-//            SmartDashboard.putNumber("tagOriginY",aprilTagOriginY);
-//            SmartDashboard.putNumber("tagDiffX",Units.inchesToMeters(aprilTagXDiffsFromOriginInches[i]));
-//            SmartDashboard.putNumber("tagDiffY",Units.inchesToMeters(aprilTagYDiffsFromOriginInches[i]));
-
-
 
             Rotation2d rotation2d = Rotation2d.fromDegrees(0);
             if(i>=4)
@@ -71,9 +46,6 @@ public class VisionSubsystem extends SubsystemBase {
             fieldTags.add(new FieldTag(id, new Pose2d(x,y,rotation2d)));
         }
 
-//        fieldTags.add(new FieldTag(1,new Pose2d()));
-//        fieldTags.add(new FieldTag(2,new Pose2d(5,0, new Rotation2d())));
-//        fieldTags.add(new FieldTag(3,new Pose2d(0,5, new Rotation2d())));
     pathingTelemetrySub.updateFieldTags(fieldTags);
     }
 
@@ -84,47 +56,111 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
 
         // This method will be called once per scheduler run
-        for(PhotonTrackedTarget target :camera.getLatestResult().getTargets()){
-            int id = target.getFiducialId();
+        processCamResult(camera.getLatestResult());
+
+
+    }
+
+    public void processCamResult(PhotonPipelineResult result){
+        if(result.getTargets().size() == 1){
+            SmartDashboard.putString("visionAmbiguity",""+result.getTargets().get(0).getPoseAmbiguity());
+            PhotonTrackedTarget target = result.getTargets().get(0);
             Transform3d transform = target.getBestCameraToTarget();
-            Rotation3d rotation = transform.getRotation();
+            Transform3d transformAlternative = target.getBestCameraToTarget();
+            int id = target.getFiducialId();
+            if(!(id>0 && id<=8)){
+                SmartDashboard.putString("visionError","Invalid ID: "+id);
+                return;
+            }
+            Pose2d botPose = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transform);
+            Pose2d botPoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transformAlternative);
 
-            for(int i = 0; i<fieldTags.size(); i++){
-                if(fieldTags.get(i).getID() != id) continue;
-                Transform3d sentTransform = new Transform3d(new Translation3d(transform.getX()*-1,transform.getY()*-1,transform.getZ()),transform.getRotation());
-                swerveSubsystem.fieldTagSpotted(fieldTags.get(i), transform, camera.getLatestResult().getLatencyMillis(), target.getPoseAmbiguity());
-      //          SmartDashboard.putNumber("lastPoseAmbiguity",camera.getLatestResult().getBestTarget().getPoseAmbiguity());
 
+            if(result.getTargets().get(0).getPoseAmbiguity() <= Constants.VisionConstants.MAX_AMBIGUITY){
+                //choose better option
+                swerveSubsystem.getOdometry().addVisionMeasurement(botPose, result.getTimestampSeconds());
+            }
+            else {
+                //choose option closest to current estimation
+                Pose2d currentPose = swerveSubsystem.getOdometry().getEstimatedPosition();
+                if (botPose.getTranslation().getDistance(currentPose.getTranslation()) < botPoseAlternative.getTranslation().getDistance(currentPose.getTranslation()))
+                    swerveSubsystem.getOdometry().addVisionMeasurement(botPose, result.getTimestampSeconds());
+                else
+                    swerveSubsystem.getOdometry().addVisionMeasurement(botPoseAlternative, result.getTimestampSeconds());
+            }
+        }
+
+        if(result.getTargets().size()>=2){
+            double minDistance = Double.MAX_VALUE;
+            ArrayList<PhotonTrackedTarget> targetsSorted = new ArrayList<PhotonTrackedTarget>();
+            for(PhotonTrackedTarget target : result.getTargets())
+                    targetsSorted.add(target);
+            //sort targets by distance
+            for(int i = 0; i<targetsSorted.size(); i++){
+                for(int j = i+1; j<targetsSorted.size(); j++){
+                    if(targetsSorted.get(i).getBestCameraToTarget().getTranslation().getDistance(new Translation3d()) > targetsSorted.get(j).getBestCameraToTarget().getTranslation().getDistance(new Translation3d())){
+                        PhotonTrackedTarget temp = targetsSorted.get(i);
+                        targetsSorted.set(i, targetsSorted.get(j));
+                        targetsSorted.set(j, temp);
+                    }
+                }
             }
 
-//      SmartDashboard.putNumber("tag"+id+".X", transform.getX());
-//      SmartDashboard.putNumber("tag"+id+".Y", transform.getY());
-//      SmartDashboard.putNumber("tag"+id+".Z", transform.getZ());
-//
-//      SmartDashboard.putNumber("tag"+id+".rX", rotation.getX());
-//      SmartDashboard.putNumber("tag"+id+".rY", rotation.getY());
-//      SmartDashboard.putNumber("tag"+id+".rZ", rotation.getZ());
+            if(!(targetsSorted.get(0).getFiducialId() > 0 && targetsSorted.get(0).getFiducialId() <= 8 && targetsSorted.get(1).getFiducialId() > 0 && targetsSorted.get(1).getFiducialId() <= 8)){
+                SmartDashboard.putString("visionError","Invalid ID: "+targetsSorted.get(0).getFiducialId()+", "+targetsSorted.get(1).getFiducialId());
+                return;
+            }
+            Pose2d target1Pose = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(0).getFiducialId() - 1), targetsSorted.get(0).getBestCameraToTarget());
+            Pose2d target1PoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(0).getFiducialId() - 1), targetsSorted.get(0).getAlternateCameraToTarget());
+            Pose2d target2Pose = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(1).getFiducialId() - 1), targetsSorted.get(1).getBestCameraToTarget());
+            Pose2d target2PoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(targetsSorted.get(1).getFiducialId() - 1), targetsSorted.get(1).getAlternateCameraToTarget());
+            Pose2d[] target1Poses = {target1Pose,target1PoseAlternative};
+            Pose2d[] target2Poses = {target2Pose,target2PoseAlternative};
 
-
-            double rotationFromCamera = Math.IEEEremainder(lastTransform.getRotation().getZ() + Math.PI, 2*Math.PI);
-            // SmartDashboard.putNumber("rotationFromCamera", rotationFromCamera);
-
-
-            if(id==0){
-                lastSeenOnRight = transform.getY()>0;
-                lastTransform = transform;
-                lastSeenTime = Timer.getFPGATimestamp();
+            double minSolvedBotDist = Double.MAX_VALUE;
+            Pose2d solvedBotPose = new Pose2d(1000,1000,Rotation2d.fromDegrees(0)); //something outlandish
+            for(int i = 0; i<target1Poses.length; i++){
+                for(int j = 0; j<target2Poses.length; j++){
+                    double dist = target1Poses[i].getTranslation().getDistance(target2Poses[j].getTranslation());
+                        if(dist<minSolvedBotDist){
+                            minSolvedBotDist = dist;
+                            solvedBotPose = new Pose2d((target1Poses[i].getX()+target2Poses[j].getX())/2, (target1Poses[i].getY()+target2Poses[j].getY())/2, Rotation2d.fromRadians((target1Poses[i].getRotation().getRadians()+target2Poses[j].getRotation().getRadians())/2));
+                        }
+                    }
+                }
+            swerveSubsystem.getOdometry().addVisionMeasurement(solvedBotPose, result.getTimestampSeconds());
+            SmartDashboard.putString("visionAmbiguity","N/A");
             }
 
         }
 
-    }
 
+
+    public Pose2d tagPoseFromCameraToBotPose(FieldTag fieldTag, Transform3d transform){
+        //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
+        Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
+        double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getY();
+        double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getX();
+        Pose2d newPose = new Pose2d(newX,newY, newRotation);
+
+        double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter + Constants.VisionConstants.camHeading) * Constants.VisionConstants.camDistFromCenter;
+        double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter + Constants.VisionConstants.camHeading)* Constants.VisionConstants.camDistFromCenter;
+        newX-=camXOffset;
+        newY-=camYOffset;
+        newRotation = Rotation2d.fromRadians(newRotation.getRadians() + Constants.VisionConstants.camHeading);
+
+        //  SmartDashboard.putNumber("new_x", newX);
+        // SmartDashboard.putNumber("new_y", newY);
+
+        return new Pose2d(newX,newY, newRotation);
+
+    }
 
 
     boolean lastSeenOnRight;
     Transform3d lastTransform = new Transform3d();
     double lastSeenTime;
+    @Deprecated
     public double[] getDesiredSpeeds(){
         double[] out = new double[3];
         double timeSinceSeen = Timer.getFPGATimestamp() - lastSeenTime;
@@ -138,6 +174,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         out[0] = (lastTransform.getX()-1) *0.5; // get one meter from target
         out[1] = lastTransform.getY() * 0.5;
+
+
         // SmartDashboard.putNumber("out0",out[0]);
 
         double rotationFromCamera = Math.IEEEremainder(lastTransform.getRotation().getZ() + Math.PI, 2*Math.PI);
