@@ -11,13 +11,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.nav.EFNavSystem;
 import frc.robot.subsystems.nav.EFPathingTelemetrySub;
 import frc.robot.subsystems.state.StateControllerSubsystem;
 
 import static frc.robot.Constants.ArmConstants;
+import static frc.robot.Constants.ArmConstants.stageOneInBetweenPlacingAngleRad;
+import static frc.robot.Constants.ArmConstants.stageOneInBetweenPlacingThresholdRad;
 
 import java.awt.geom.Point2D;
 
@@ -189,7 +190,7 @@ public class Grabber extends SubsystemBase {
                               stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
                               stageOneVoltsPerTorque);
 
-    setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+    updateSetpointThetaPhiButMisleading(setpointXY);
 
     double[] stageOnePivotCoordinateRelativeToOrigin = ArmConstants.stageOnePivotCoordinate;
     double[] stageTwoPivotCoordinateRelativeToOrigin = calculateCoordinateSum(stageOnePivotCoordinateRelativeToOrigin, stageTwoPivotCoordinateRelativeToStageOnePivot);
@@ -197,6 +198,28 @@ public class Grabber extends SubsystemBase {
 
     eFPosition = eFPivotCoordinateRelativeToOrigin;
   }
+
+  private void updateSetpointThetaPhiButMisleading(double[] setpointXY){
+    if(stateController.getAgnosticGrabberMode() != StateControllerSubsystem.AgnosticGrabberMode.PLACING){
+      firstStageHit93 = false;
+      setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+      return;
+    }
+    //at this point you know that you are placing
+    if(!firstStageHit93 || lastArmMode !=stateController.getArmMode()){
+      setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,convertGrabberXYToThetaPhi(setpointXY)[1]};
+      if(Math.abs(stageOneSub.getAngle() - stageOneInBetweenPlacingAngleRad)< stageOneInBetweenPlacingThresholdRad)
+        firstStageHit93 = true;
+    }else{
+      setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+    }
+    lastArmMode = stateController.getArmMode();
+  }
+
+  private boolean firstStageHit93 = false;
+  private ArmModes lastArmMode = ArmModes.HOLDING;
+
+
   private double calculateAFF(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength, double armMass, double[] cGCoordinateRelativeToPivot, double voltsPerTorque) {
     double passiveTorque = calculateArmTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength, armMass, cGCoordinateRelativeToPivot);
     double demandedTorque = -passiveTorque;
