@@ -25,7 +25,9 @@ public class StateControllerSubsystem extends SubsystemBase {
   private Level placingLevel = Level.POS1;
   private Level[] placingLevels = {Level.POS1,Level.POS2,Level.POS3};
 
-  public void setAgnosticGrabberMode(AgnosticGrabberMode agnosticGrabberMode){this.agnosticGrabberMode = agnosticGrabberMode;}
+  public void setAgnosticGrabberMode(AgnosticGrabberMode agnosticGrabberMode){previousAgGrabberMode = this.agnosticGrabberMode; this.agnosticGrabberMode = agnosticGrabberMode;}
+  private AgnosticGrabberMode previousAgGrabberMode = AgnosticGrabberMode.HOLDING;
+  public AgnosticGrabberMode getPreviousAgnosticGrabberMode(){return previousAgGrabberMode;}
   public void setItemType(ItemType itemType){this.itemType = itemType;}
   public void setItemFallen(ItemFallen itemFallen){this.itemFallen = itemFallen;}
   public void setPlacingLevel(Level placingLevel){this.placingLevel = placingLevel;}
@@ -165,11 +167,11 @@ lastPlacingPOV = placingPOV;
   public void itemConeFallenButton(){itemType = ItemType.CONE; itemFallen = ItemFallen.FALLEN_CONE;}
   public void itemConeUprightButton(){itemType = ItemType.CONE; itemFallen = ItemFallen.NOT_FALLEN;}
 
-  public void setAgArmToIntake(){agnosticGrabberMode = AgnosticGrabberMode.INTAKING;}
-  public void setAgArmToHolding(){agnosticGrabberMode = AgnosticGrabberMode.HOLDING;}
+  public void setAgArmToIntake(){setAgnosticGrabberMode(AgnosticGrabberMode.INTAKING);}
+  public void setAgArmToHolding(){setAgnosticGrabberMode(AgnosticGrabberMode.HOLDING);}
 
-  public void setAgArmToPlacing(){agnosticGrabberMode = AgnosticGrabberMode.PLACING;}
-    public void setAgArmToPostPlacing(){agnosticGrabberMode = AgnosticGrabberMode.POST_PLACING;}
+  public void setAgArmToPlacing(){setAgnosticGrabberMode(AgnosticGrabberMode.PLACING);}
+    public void setAgArmToPostPlacing(){setAgnosticGrabberMode(AgnosticGrabberMode.POST_PLACING);}
 
 
   public Rotation2d allianceForwardAngle(){
@@ -180,5 +182,6 @@ lastPlacingPOV = placingPOV;
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putString("previousAgGrabberMode",getPreviousAgnosticGrabberMode().toString());
   }
 }
