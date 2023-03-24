@@ -206,8 +206,9 @@ public class Grabber extends SubsystemBase {
       return;
     }
     //at this point you know that you are placing
-    if(!firstStageHit93 || lastArmMode !=stateController.getArmMode()){
-      setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,convertGrabberXYToThetaPhi(setpointXY)[1]};
+    if(lastArmMode !=stateController.getArmMode()) firstStageHit93 = false;
+    if(!firstStageHit93){
+      setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,stageTwoSub.getAngle()};
       if(Math.abs(stageOneSub.getAngle() - stageOneInBetweenPlacingAngleRad)< stageOneInBetweenPlacingThresholdRad)
         firstStageHit93 = true;
     }else{
