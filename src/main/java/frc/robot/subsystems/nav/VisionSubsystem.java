@@ -91,7 +91,6 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         if(result.getTargets().size()>=2){
-            double minDistance = Double.MAX_VALUE;
             ArrayList<PhotonTrackedTarget> targetsSorted = new ArrayList<PhotonTrackedTarget>();
             for(PhotonTrackedTarget target : result.getTargets())
                     targetsSorted.add(target);
@@ -124,7 +123,10 @@ public class VisionSubsystem extends SubsystemBase {
                     double dist = target1Poses[i].getTranslation().getDistance(target2Poses[j].getTranslation());
                         if(dist<minSolvedBotDist){
                             minSolvedBotDist = dist;
-                            solvedBotPose = new Pose2d((target1Poses[i].getX()+target2Poses[j].getX())/2, (target1Poses[i].getY()+target2Poses[j].getY())/2, Rotation2d.fromRadians((target1Poses[i].getRotation().getRadians()+target2Poses[j].getRotation().getRadians())/2));
+                            solvedBotPose = new Pose2d((target1Poses[i].getX()+target2Poses[j].getX())/2, (target1Poses[i].getY()+target2Poses[j].getY())/2, Rotation2d.fromRadians((((target1Poses[i].getRotation().getRadians() + (2*Math.PI))%(2*Math.PI))+((target2Poses[j].getRotation().getRadians()+ (2*Math.PI))%(2*Math.PI)))/2));
+                         //   SmartDashboard.putNumber("tag1Rotation",(target1Poses[i].getRotation().getRadians()));
+                         //   SmartDashboard.putNumber("tag2Rotation",target2Poses[j].getRotation().getRadians());
+                         //   SmartDashboard.putNumber("tagAvgRotation",(target1Poses[i].getRotation().getRadians()+target2Poses[j].getRotation().getRadians())/2);
                         }
                     }
                 }
