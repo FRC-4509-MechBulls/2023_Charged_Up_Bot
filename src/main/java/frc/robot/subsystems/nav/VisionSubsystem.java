@@ -68,14 +68,15 @@ public class VisionSubsystem extends SubsystemBase {
             Transform3d transform = target.getBestCameraToTarget();
             Transform3d transformAlternative = target.getBestCameraToTarget();
             int id = target.getFiducialId();
-            Pose2d botPose = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transform);
-            Pose2d botPoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transformAlternative);
             if(!(id>0 && id<=8)){
                 SmartDashboard.putString("visionError","Invalid ID: "+id);
                 return;
             }
+            Pose2d botPose = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transform);
+            Pose2d botPoseAlternative = tagPoseFromCameraToBotPose(fieldTags.get(id - 1), transformAlternative);
 
-            if(result.getTargets().get(0).getPoseAmbiguity() < Constants.VisionConstants.MAX_AMBIGUITY){
+
+            if(result.getTargets().get(0).getPoseAmbiguity() <= Constants.VisionConstants.MAX_AMBIGUITY){
                 //choose better option
                 swerveSubsystem.getOdometry().addVisionMeasurement(botPose, result.getTimestampSeconds());
             }
