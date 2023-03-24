@@ -169,7 +169,7 @@ public final class Constants {
         public static final double[] holdingArmPos = {Units.inchesToMeters(0), Units.inchesToMeters(17)};//
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)};//
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5), Units.inchesToMeters(36.5)};//
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5 + 2), Units.inchesToMeters(36.5  + 0.5)};//
         public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42 + 1.5), Units.inchesToMeters(41.5 + 7)};//
 
         public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)};//
@@ -298,7 +298,7 @@ public final class Constants {
 
 
         public static final double posTolerance = Units.inchesToMeters(0.25);
-        public static final double rotationTolerance = 0.5; //adds half an inch with arm fully extended
+        public static final double rotationTolerance = 0.2; //adds half an inch with arm fully extended
 
         
         public static final double GYRO_Z_ERROR = 0.674; //.674
