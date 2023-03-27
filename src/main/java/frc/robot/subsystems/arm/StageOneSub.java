@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems.arm;
 
+import java.lang.reflect.Method;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -84,6 +88,7 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary = new TalonSRX(ArmConstants.stageOneTalonLeftID);
   }
   private void resetMotorControllers() {
+    config((()->armMotorPrimary.configFactoryDefault(1000)));
     armMotorPrimary.configFactoryDefault(1000);
     armMotorSecondary.configFactoryDefault(1000);
   }
@@ -127,6 +132,9 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
   }
   private void configEncoder() {
+  }
+  private void config(Function call) {
+    call;
   }
   //Getters
   public double getLength() {
