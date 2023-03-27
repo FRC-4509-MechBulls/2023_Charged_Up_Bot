@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 //meaga cool super epic coding time I love code so much UwU -Isaac
 public class VisionSubsystem extends SubsystemBase {
-    PhotonCamera camera = new PhotonCamera("gloworm");
+    PhotonCamera camera = new PhotonCamera("gloworm2");
 
 
     private ArrayList<FieldTag> fieldTags = new ArrayList<FieldTag>();
