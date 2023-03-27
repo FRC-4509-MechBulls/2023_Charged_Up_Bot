@@ -49,8 +49,8 @@ public class StageOneSub extends SubsystemBase {
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
     
-    SmartDashboard.putNumber("stageOneVelocity", ArmConstants.stageOneMotionCruiseVelocity);
-    SmartDashboard.putNumber("stageOneAccel", ArmConstants.stageOneMotionMaxAcceleration);
+    SmartDashboard.putNumber("stageOneVelocity", Units.radiansToDegrees(ArmConstants.stageOneMotionCruiseVelocity));
+    SmartDashboard.putNumber("stageOneAccel", Units.radiansToDegrees(ArmConstants.stageOneMotionMaxAcceleration));
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
     SmartDashboard.putNumber("stageOneD", ArmConstants.stageOne_kD);
@@ -224,9 +224,9 @@ public class StageOneSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
-    
-    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/SmartDashboard.getNumber("stageOneVel", ArmConstants.stageOneMotionCruiseVelocity)))) * 10, 1000);
-    armMotorPrimary.configMotionAcceleration(calculateEncoderFromOutput(ArmConstants.stageOneMotionCruiseVelocity / 0.04) * 10, 1000);
+
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians(SmartDashboard.getNumber("stageOneVelocity", Units.radiansToDegrees(ArmConstants.stageOneMotionCruiseVelocity)))) * 10, 1000);
+    armMotorPrimary.configMotionAcceleration(calculateEncoderFromOutput(Units.degreesToRadians(SmartDashboard.getNumber("stageOneAccel", Units.radiansToDegrees(ArmConstants.stageOneMotionMaxAcceleration)))) * 10, 1000);
     armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
     armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI), 1000);
     armMotorPrimary.config_kD(0, SmartDashboard.getNumber("stageOneD", ArmConstants.stageOne_kD), 1000);
