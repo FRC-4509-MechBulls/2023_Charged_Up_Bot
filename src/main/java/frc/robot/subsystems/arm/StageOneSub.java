@@ -63,7 +63,6 @@ public class StageOneSub extends SubsystemBase {
     instantiateMotorControllers();
     resetMotorControllers();
     configMotorControllers();
-    configEncoder();
   }
   //Config
   private void instantiateConstants() {
@@ -88,11 +87,11 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary = new TalonSRX(ArmConstants.stageOneTalonLeftID);
   }
   private void resetMotorControllers() {
-    config((()->armMotorPrimary.configFactoryDefault(1000)));
     armMotorPrimary.configFactoryDefault(1000);
     armMotorSecondary.configFactoryDefault(1000);
   }
   private void configMotorControllers() {
+    configMotorStatusFrames();
     //current limit
     armMotorPrimary.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, continuousCurrentLimit, peakCurrentLimit, peakCurrentTime), 1000);
     //soft limit
@@ -131,10 +130,11 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1000, 1000);
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
   }
-  private void configEncoder() {
-  }
-  private void config(Function call) {
-    call;
+  public void configMotorStatusFrames() {
+    //primary
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 15, 1000);
+    //secondary
   }
   //Getters
   public double getLength() {
