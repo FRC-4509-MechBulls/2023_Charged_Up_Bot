@@ -28,9 +28,12 @@ public class StateControllerSubsystem extends SubsystemBase {
   public void setAgnosticGrabberMode(AgnosticGrabberMode agnosticGrabberMode){previousAgGrabberMode = this.agnosticGrabberMode; this.agnosticGrabberMode = agnosticGrabberMode;}
   private AgnosticGrabberMode previousAgGrabberMode = AgnosticGrabberMode.HOLDING;
   public AgnosticGrabberMode getPreviousAgnosticGrabberMode(){return previousAgGrabberMode;}
+  private Level previousLevel = Level.POS1;
+
+  public Level getPreviousLevel(){return previousLevel;}
   public void setItemType(ItemType itemType){this.itemType = itemType;}
   public void setItemFallen(ItemFallen itemFallen){this.itemFallen = itemFallen;}
-  public void setPlacingLevel(Level placingLevel){this.placingLevel = placingLevel;}
+  public void setPlacingLevel(Level placingLevel){this.previousLevel = this.placingLevel; this.placingLevel = placingLevel;}
 
   public AgnosticGrabberMode getAgnosticGrabberMode(){return agnosticGrabberMode;}
   public ItemType getItemType(){return itemType;}
@@ -71,7 +74,7 @@ lastPlacingPOV = placingPOV;
   public void updatePlacingLevelFromIndex(){
     if(placingLevelIndex<0) placingLevelIndex = 0;
     if(placingLevelIndex>placingLevels.length-1) placingLevelIndex = placingLevels.length-1;
-    placingLevel = placingLevels[placingLevelIndex];
+    setPlacingLevel(placingLevels[placingLevelIndex]);
   }
 
   public enum ItemType{CUBE,CONE,NONE}

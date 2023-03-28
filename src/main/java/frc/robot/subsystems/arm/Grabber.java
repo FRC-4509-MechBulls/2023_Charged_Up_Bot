@@ -202,8 +202,9 @@ public class Grabber extends SubsystemBase {
 
     if(lastArmMode !=stateController.getArmMode()) {firstStageHit93 = false; secondStageHit93 = false;}
 
-    if(stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING || (stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.HOLDING && (stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING || stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.POST_PLACING))){
-      //at this point you know that you are placing
+    boolean placingNonL1 = stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING && stateController.getPlacingLevel() != StateControllerSubsystem.Level.POS1;
+    if(placingNonL1){
+      //at this point you know that you are placing L2 or L3
       if(!firstStageHit93){
         if(stageTwoSub.getAngle() > Units.degreesToRadians(-85))
           setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,Units.degreesToRadians(-90)};
@@ -220,6 +221,14 @@ public class Grabber extends SubsystemBase {
       }
       lastArmMode = stateController.getArmMode();
       return;
+    }
+
+    boolean currentlyHolding = stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.HOLDING;
+    boolean comingFromPlacing = (stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING || stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.POST_PLACING);
+    boolean comingFromL1 = stateController.getPreviousLevel()== StateControllerSubsystem.Level.POS1;
+    if(currentlyHolding && (comingFromPlacing && !comingFromL1)){
+      //going to holding
+      
     }
       //not placing
    //     firstStageHit93 = false;
