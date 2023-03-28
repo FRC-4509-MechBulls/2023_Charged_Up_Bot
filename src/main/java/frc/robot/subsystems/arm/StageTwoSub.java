@@ -142,7 +142,6 @@ public class StageTwoSub extends SubsystemBase {
   }
   private void configMotorStatusFrames() {
     //primary
-    
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 15);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 15);
@@ -151,7 +150,6 @@ public class StageTwoSub extends SubsystemBase {
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 15);
     armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 15);
     //secondary
-    
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 65521);
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 65519);
     armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65497);
