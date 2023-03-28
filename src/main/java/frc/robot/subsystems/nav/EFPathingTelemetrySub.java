@@ -123,6 +123,11 @@ public void drawDebugText(Mat mat){
     Imgproc.putText(mat,"real:("+pivotPoint.getX()+", "+pivotPoint.getY()+")",new Point(0,20),5,1,new Scalar(255,255,255));
     Imgproc.putText(mat,"desired:("+destinationPose.getX()+", "+destinationPose.getY()+")",new Point(0,40),5,1,new Scalar(255,255,255));
 
+    //do stage one and two again but in degrees and cut it off at 2 decimal places
+    Imgproc.putText(mat, "stageOneAngle: "+Math.round(Math.toDegrees(stageOneAngle)*100)/100.0, new Point(0,100-40),5,1,new Scalar(255,255,255));
+    Imgproc.putText(mat, "stageTwoAngle: "+Math.round(Math.toDegrees(stageTwoAngle)*100)/100.0, new Point(0,120-40),5,1,new Scalar(255,255,255));
+
+
 }
 
 void updateNavPoses(ArrayList<Pose2d> navPoses){
