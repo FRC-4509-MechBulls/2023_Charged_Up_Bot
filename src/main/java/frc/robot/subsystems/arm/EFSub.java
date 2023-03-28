@@ -5,6 +5,7 @@
 package frc.robot.subsystems.arm;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -27,6 +28,7 @@ public class EFSub extends SubsystemBase {
   public EFSub() {
     efMotorTop = new TalonSRX(EndEffectorConstants.EF_MOTOR_TOP_ID);
     efMotorBottom = new TalonSRX(EndEffectorConstants.EF_MOTOR_BOTTOM_ID);
+    configMotorStatusFrames();
 
     // setting motors to brake mode so they immediately stop moving when voltage stops being sent
     efMotorTop.setNeutralMode(NeutralMode.Coast);
@@ -53,6 +55,32 @@ public class EFSub extends SubsystemBase {
     
       cGCoordinateRelativeToPivot = ArmConstants.eFCGCoordinateRelativeToPivot;
       mass = ArmConstants.eFMass;
+  }
+  public void configMotorStatusFrames() {
+    //top
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 197, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 199, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 211, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 223, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 227, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 229, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 233, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 239, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 241, 1000);
+    efMotorTop.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 251, 1000);
+    //bottom
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 197, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 199, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 211, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 223, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 227, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 229, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 233, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 239, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 241, 1000);
+    efMotorBottom.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 251, 1000);
   }
 
   public void calculateStageData() {
