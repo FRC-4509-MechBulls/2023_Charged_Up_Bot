@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.sensors.PigeonIMU_ControlFrame;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
@@ -91,7 +95,16 @@ StateControllerSubsystem stateControllerSubsystem;
     this.stateControllerSubsystem = stateControllerSubsystem;
     initialPose = new Pose2d();
     constructOdometry();
-
+ 
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 199, 1000);
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 223, 1000);
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 227, 1000);
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 229, 1000);
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 233, 1000);
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 239, 1000);
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 241, 1000);
+    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 251, 1000);
+    
     gyro.configFactoryDefault();
     gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
     gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);
