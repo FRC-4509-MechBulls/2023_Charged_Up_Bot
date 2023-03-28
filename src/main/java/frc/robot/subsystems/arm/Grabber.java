@@ -172,21 +172,21 @@ public class Grabber extends SubsystemBase {
     double[] stageTwoAndEFCGCoordinateRelativeToStageOnePivot = calculateCoordinateSum(stageTwoAndEFCGCoordinateRelativeToStageTwoPivot, stageTwoPivotCoordinateRelativeToStageOnePivot);
     double[] stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot = calculateCoordinateWeightedAverage(stageTwoAndEFCGCoordinateRelativeToStageOnePivot, stageTwoAndEFMass, stageOneCGCoordinateRelativeToStageOnePivot, stageOneMass);
 
-    stageTwoAFF = calculateAFF(stageTwoArmAngle, 
-                              stageTwoDefaultSpringStartCoordinateRelativeToPivot, 
-                              stageTwoDefaultSpringEndCoordinateRelativeToPivot, 
-                              stageTwoSpringConstant, 
-                              stageTwoRestingSpringLength, 
-                              stageTwoAndEFMass, 
-                              stageTwoAndEFCGCoordinateRelativeToStageTwoPivot, 
+    stageTwoAFF = calculateAFF(stageTwoArmAngle,
+                              stageTwoDefaultSpringStartCoordinateRelativeToPivot,
+                              stageTwoDefaultSpringEndCoordinateRelativeToPivot,
+                              stageTwoSpringConstant,
+                              stageTwoRestingSpringLength,
+                              stageTwoAndEFMass,
+                              stageTwoAndEFCGCoordinateRelativeToStageTwoPivot,
                               stageTwoVoltsPerTorque);
-    stageOneAFF = calculateAFF(stageOneArmAngle, 
-                              stageOneDefaultSpringStartCoordinateRelativeToPivot, 
-                              stageOneDefaultSpringEndCoordinateRelativeToPivot, 
-                              stageOneSpringConstant, 
-                              stageOneRestingSpringLength, 
-                              stageOneAndStageTwoAndEFMass, 
-                              stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot, 
+    stageOneAFF = calculateAFF(stageOneArmAngle,
+                              stageOneDefaultSpringStartCoordinateRelativeToPivot,
+                              stageOneDefaultSpringEndCoordinateRelativeToPivot,
+                              stageOneSpringConstant,
+                              stageOneRestingSpringLength,
+                              stageOneAndStageTwoAndEFMass,
+                              stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot,
                               stageOneVoltsPerTorque);
 
     updateSetpointThetaPhiButMisleading(setpointXY);
@@ -227,14 +227,25 @@ public class Grabber extends SubsystemBase {
 
     boolean currentlyHolding = stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.HOLDING;
     boolean comingFromPlacing = (stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING || stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.POST_PLACING);
-    boolean comingFromL1 = stateController.getPreviousLevel()== StateControllerSubsystem.Level.POS1;
-    if(currentlyHolding && (comingFromPlacing && !comingFromL1)){
+    boolean comingFromL1 = stateController.getPlacingLevel()== StateControllerSubsystem.Level.POS1;
+    boolean comingFromL2 = stateController.getPlacingLevel()== StateControllerSubsystem.Level.POS2;
+    boolean comingFromL3 = stateController.getPlacingLevel()== StateControllerSubsystem.Level.POS3;
+
+    SmartDashboard.putBoolean("currentlyHolding", currentlyHolding);
+    SmartDashboard.putBoolean("secondStageHitBtPt", secondStageHitBtPt);
+    SmartDashboard.putBoolean("firstStageHitBtPt", firstStageHitBtPt);
+    if(currentlyHolding && comingFromPlacing && !comingFromL1){
       //coming to holding from placing
+
       if(!secondStageHitBtPt){
-        setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRadStepZero, stageTwoInBetweenRetractingAngleRadStepZero};
+        if(comingFromL3) //finish implementing this
+          setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRadStepZero, stageTwoInBetweenRetractingAngleRadStepZero};
+        else
+          setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRadStepZero, stageTwoInBetweenRetractingAngleRadStepZero};
         boolean stageTwoReached = Math.abs(stageTwoSub.getAngle() - stageTwoInBetweenRetractingAngleRadStepZero) < bothArmsInBetweenPlacingThreshold;
         boolean stageOneReached = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRadStepZero) < bothArmsInBetweenPlacingThreshold;
-        if(stageOneReached && stageTwoReached) secondStageHitBtPt = true;
+        if(stageOneReached && stageTwoReached)
+          secondStageHitBtPt = true;
       }else{
         if(!firstStageHitBtPt){
             setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRad, stageTwoInBetweenRetractingAngleRad};
@@ -242,7 +253,9 @@ public class Grabber extends SubsystemBase {
             setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
         }
         if(Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThreshold) firstStageHitBtPt = true;
+
       }
+      lastArmMode = stateController.getArmMode();
     return;
     }
 
@@ -269,7 +282,7 @@ public class Grabber extends SubsystemBase {
 
     return (counterBalanceTorque - gravityTorque);
   }
-  private double calculateCounterBalanceTorque(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength) {    
+  private double calculateCounterBalanceTorque(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength) {
     double springEndDistanceFromPivot = calculateMagnitude(defaultSpringEndCoordinateRelativeToPivot[0], defaultSpringEndCoordinateRelativeToPivot[1]);
     double[] springStartCoordinate = defaultSpringStartCoordinateRelativeToPivot;
     double[] springEndCoordinate = calculateRotateCoordinate(defaultSpringEndCoordinateRelativeToPivot, armAngle);
@@ -442,7 +455,7 @@ public class Grabber extends SubsystemBase {
 
     }
 
-    
+
    // double inX = SmartDashboard.getNumber("test_inX",1);
    // double inY = SmartDashboard.getNumber("test_inY",1);
 
