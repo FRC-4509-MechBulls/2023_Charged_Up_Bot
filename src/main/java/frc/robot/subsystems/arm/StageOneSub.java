@@ -126,15 +126,33 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, continuousCurrentLimit, peakCurrentLimit, peakCurrentTime), 1000);
     armMotorSecondary.configVoltageCompSaturation(RobotConstants.ROBOT_NOMINAL_VOLTAGE, 1000);
     armMotorSecondary.enableVoltageCompensation(true);
-    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 1000, 1000);
-    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1000, 1000);
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
   }
   public void configMotorStatusFrames() {
     //primary
-    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 5, 1000);
     armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 15, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 199, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 211, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 223, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 227, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 229, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 233, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 239, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 241, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 251, 1000);
     //secondary
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 197, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 199, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 211, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 223, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 227, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 229, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 233, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 239, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 241, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 251, 1000);
   }
   //Getters
   public double getLength() {

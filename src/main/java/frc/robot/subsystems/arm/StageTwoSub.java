@@ -12,7 +12,6 @@ import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.util.Units;
@@ -107,14 +106,12 @@ public class StageTwoSub extends SubsystemBase {
     encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset);
   }
   private void configMotorControllers() {
+    configMotorStatusFrames();
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180)));
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) (softLimitReverse + Units.degreesToRadians(180)));
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true);
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
     armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
     System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
     if (armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20) != REVLibError.kOk) {
       System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
@@ -125,11 +122,6 @@ public class StageTwoSub extends SubsystemBase {
     armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kCoast);
     armMotorSecondary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
     armMotorSecondary.follow(armMotorPrimary, true);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
     armMotorSecondary.setSecondaryCurrentLimit(secondaryCurrentLimit);
     armMotorSecondary.setSmartCurrentLimit(smartCurrentLimit);
   }
@@ -147,6 +139,24 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setSmartMotionMaxVelocity(Units.degreesToRadians(130/.6) * 60, 0);
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRotations(0.2), 0);
     */
+  }
+  private void configMotorStatusFrames() {
+    //primary
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 15);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 15);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65521);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65519);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 15);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 15);
+    //secondary
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 65521);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 65519);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65497);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65479);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65449);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65447);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65437);
   }
   private void burnConfigs() {
     armMotorPrimary.burnFlash();
