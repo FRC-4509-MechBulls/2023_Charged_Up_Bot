@@ -96,14 +96,15 @@ StateControllerSubsystem stateControllerSubsystem;
     initialPose = new Pose2d();
     constructOdometry();
  
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 199, 1000);
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 223, 1000);
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 227, 1000);
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 229, 1000);
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 233, 1000);
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 239, 1000);
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 241, 1000);
-    gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 251, 1000);
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 199, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 15, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 211, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 223, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 227, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 229, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 233, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 15, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 241, 1000));
     
     gyro.configFactoryDefault();
     gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
