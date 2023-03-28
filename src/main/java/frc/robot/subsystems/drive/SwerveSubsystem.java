@@ -236,7 +236,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(Units.inchesToMeters(14),Units.inchesToMeters(14),Units.degreesToRadians(5)));
+    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(Units.inchesToMeters(14),Units.inchesToMeters(14),Units.degreesToRadians(15)));
   }
   
   // Getters
