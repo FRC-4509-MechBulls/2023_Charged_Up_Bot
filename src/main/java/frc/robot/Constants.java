@@ -123,7 +123,7 @@ public final class Constants {
         public static final double stageOne_kD = 0; //undecided
         public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians(10);//
         public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(250);//
-        public static final double stageOneEncoderOffset = Units.degreesToRadians(220.778125 + 0.5 + 3.85 - 6.23);//220.778125 - 180.0 //220.778125
+        public static final double stageOneEncoderOffset = Units.degreesToRadians(291.9 + 90 - .145);//
 
         public static final double revEncoderCountsPerRotation = 2048;
         //public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
@@ -140,7 +140,7 @@ public final class Constants {
         public static final double stageTwoMotorVoltsPerTorque = (12.0/stageTwo12VStallTorque);
         public static final double stageTwoRatio = 145.45;
         public static final double stageTwoNumberOfMotors = 2;
-        public static final double stageTwoEfficiency = 2.2;
+        public static final double stageTwoEfficiency = 0.8;
         public static final double stageTwoOutputVoltsPerTorque = stageTwoMotorVoltsPerTorque * (1/stageTwoRatio) * (1/stageTwoNumberOfMotors) * (1/stageTwoEfficiency);
         public static final double stageTwoGrossSpringLength = 56;
         public static final double stageTwoExcessSpringLength = 9;

@@ -224,12 +224,14 @@ public class StageOneSub extends SubsystemBase {
   private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
     double output = calculateOutputFromEncoder(encoder);
+    
     if (output < Math.PI - ArmConstants.stageOneEncoderOffset) {
       output = output + ArmConstants.stageOneEncoderOffset;
     }
     else {
       output = -Math.PI + ((output + ArmConstants.stageOneEncoderOffset) - Math.PI);
     }
+    
     return output;
   }
   private double getEncoderVelocity() {

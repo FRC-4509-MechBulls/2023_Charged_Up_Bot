@@ -221,7 +221,7 @@ public class StageTwoSub extends SubsystemBase {
     if (angle > setpoint + Units.degreesToRadians(ArmConstants.stageTwo_kIZone) || angle < setpoint - Units.degreesToRadians(ArmConstants.stageTwo_kIZone)) {
       pidController.setIAccum(0);
     }
-    lastAngle = angle;
+    //lastAngle = angle;
     pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
