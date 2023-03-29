@@ -58,6 +58,7 @@ public class StageOneSub extends SubsystemBase {
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
     SmartDashboard.putNumber("stageOneD", ArmConstants.stageOne_kD);
+    SmartDashboard.putNumber("stageOneEfficiencyMultiplier", 1);
     
     instantiateConstants();
     instantiateMotorControllers();
@@ -219,7 +220,7 @@ public class StageOneSub extends SubsystemBase {
     output = output - ArmConstants.stageOneEncoderOffset;
     double encoder = calculateEncoderFromOutput(output);
 
-    armMotorPrimary.set(TalonSRXControlMode.MotionMagic, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
+    armMotorPrimary.set(TalonSRXControlMode.MotionMagic, encoder, DemandType.ArbitraryFeedForward, (AFF/12) * (1/SmartDashboard.getNumber("stageOneEfficiencyMultiplier", 1)));
   }
   private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();

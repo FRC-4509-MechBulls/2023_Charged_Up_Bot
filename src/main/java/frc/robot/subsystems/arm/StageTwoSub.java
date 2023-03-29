@@ -57,6 +57,7 @@ public class StageTwoSub extends SubsystemBase {
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
     SmartDashboard.putNumber("stageTwoD", ArmConstants.stageTwo_kD);
     SmartDashboard.putNumber("stageTwoRange", ArmConstants.stageTwoOutputRange);
+    SmartDashboard.putNumber("stageTwoEfficiencyMultiplier", 1);
 
     /*
     SmartDashboard.putNumber("stageTwoAllowedError", 0.2);
@@ -222,7 +223,7 @@ public class StageTwoSub extends SubsystemBase {
       pidController.setIAccum(0);
     }
     //lastAngle = angle;
-    pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+    pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kPosition, 0, AFF * (1/SmartDashboard.getNumber("stageTwoEfficiencyMultiplier", 1)), ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
     return encoder.getPosition() - Units.degreesToRadians(180);
