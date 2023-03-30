@@ -202,10 +202,16 @@ public final class Constants {
 
         public static final double stageOneInBetweenPlacingAngleRad = Units.degreesToRadians(95);
         public static final double stageTwoInBetweenPlacingAngleRad = Units.degreesToRadians(-70); //-90
-        public static final double stageTwoInBetweenRetractingAngleRadStepZero = Units.degreesToRadians(-20);
-        public static final double stageOneInBetweenRetractingAngleRadStepZero = Units.degreesToRadians(50);
+        public static final double stageTwoInBetweenRetractingAngleRadStepZeroL3 = Units.degreesToRadians(-20);
+        public static final double stageOneInBetweenRetractingAngleRadStepZeroL3 = Units.degreesToRadians(50);
+
+        public static final double stageOneInBetweenRetractingAngleRadStepZeroL2 = Units.degreesToRadians(95);
+        public static final double stageTwoInBetweenRetractingAngleRadStepZeroL2 = Units.degreesToRadians(-93);
+
         public static final double stageOneInBetweenRetractingAngleRad = Units.degreesToRadians(95);
         public static final double stageTwoInBetweenRetractingAngleRad = Units.degreesToRadians(-70); //-90
+
+        public static final double dontDoAvoidanceThreshold = 4; // inches?
 
 
         public static final double bothArmsInBetweenPlacingThreshold = Units.degreesToRadians(5);
