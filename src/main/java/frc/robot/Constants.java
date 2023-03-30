@@ -157,12 +157,12 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-180+7.990375);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
-        public static final double stageTwo_kP = .9;//.005//0.5//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
+        public static final double stageTwo_kP = .9;//0.4
         public static final double stageTwo_kI = 0.002;//0.001
         public static final double stageTwo_kIZone = 3;//3
-        public static final double stageTwo_kD = 3;//4
+        public static final double stageTwo_kD = 20;//4
         public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
-        public static final double stageTwoOutputRange = .6;//
+        public static final double stageTwoOutputRange = 1.0;//
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;
