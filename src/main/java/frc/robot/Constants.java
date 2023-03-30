@@ -120,9 +120,9 @@ public final class Constants {
         public static final double stageOnePeakCurrentTime = 250;
         public static final double stageOne_kP = 4;//1//4, 1 for testing
         public static final double stageOne_kI = 0.01;//0.02//0
-        public static final double stageOne_kD = 0; //undecided
+        public static final double stageOne_kD = 128; //undecided
         public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians(10);//
-        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(500);//
+        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(250);//250
         public static final double stageOneEncoderOffset = Units.degreesToRadians(291.9 + 90 - .145);//
 
         public static final double revEncoderCountsPerRotation = 2048;
