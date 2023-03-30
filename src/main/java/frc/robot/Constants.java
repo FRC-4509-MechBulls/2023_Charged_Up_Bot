@@ -163,7 +163,7 @@ public final class Constants {
         public static final double stageTwo_kD = 20;//20
         public static final double stageTwo_kP_Alternate = 0.4;//0.4
         public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
-        public static final double stageTwoOutputRange = 1.0;//1.0
+        public static final double stageTwoOutputRange = 0.7;//1.0
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;
