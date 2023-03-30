@@ -242,7 +242,7 @@ public class Grabber extends SubsystemBase {
     SmartDashboard.putBoolean("secondStageHitBtPt", secondStageHitBtPt);
     SmartDashboard.putBoolean("firstStageHitBtPt", firstStageHitBtPt);
     if(currentlyHolding && comingFromPlacing && !comingFromL1){
-      //coming to holding from placing
+      //coming to placing to holding
 
       if(!secondStageHitBtPt){
         boolean stageTwoReached,stageOneReached;
@@ -264,11 +264,13 @@ public class Grabber extends SubsystemBase {
 
       }else{
         if(!firstStageHitBtPt){
-            setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRad, stageTwoInBetweenRetractingAngleRad};
+            setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRad, convertGrabberXYToThetaPhi(setpointXY)[1]};
         }else{
             setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
         }
-        if(Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThreshold) firstStageHitBtPt = true;
+        boolean stageOneHit = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThreshold;
+        boolean stageTwoHit = Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThreshold;
+        if(stageOneHit && stageTwoHit) firstStageHitBtPt = true;
 
       }
       lastArmMode = stateController.getArmMode();
