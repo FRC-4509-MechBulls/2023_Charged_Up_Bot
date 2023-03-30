@@ -100,7 +100,7 @@ public final class Constants {
         public static final double stageOneMotorVoltsPerTorque = (12.0/stageOne12VStallTorque);
         public static final double stageOneRatio = 421.88;
         public static final double stageOneNumberOfMotors = 2;
-        public static final double stageOneEfficiency = 1.9;
+        public static final double stageOneEfficiency = 1.9 * .165;
         public static final double stageOneOutputVoltsPerTorque = stageOneMotorVoltsPerTorque * (1/stageOneRatio) * (1/stageOneNumberOfMotors) * (1/stageOneEfficiency);
         public static final double stageOneGrossSpringLength = 31;
         public static final double stageOneExcessSpringLength = 8.5;
@@ -122,7 +122,7 @@ public final class Constants {
         public static final double stageOne_kI = 0.01;//0.02//0
         public static final double stageOne_kD = 0; //undecided
         public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians(10);//
-        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(250);//
+        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(500);//
         public static final double stageOneEncoderOffset = Units.degreesToRadians(291.9 + 90 - .145);//
 
         public static final double revEncoderCountsPerRotation = 2048;
@@ -140,7 +140,7 @@ public final class Constants {
         public static final double stageTwoMotorVoltsPerTorque = (12.0/stageTwo12VStallTorque);
         public static final double stageTwoRatio = 145.45;
         public static final double stageTwoNumberOfMotors = 2;
-        public static final double stageTwoEfficiency = 0.8;
+        public static final double stageTwoEfficiency = 0.8 * 1.05;
         public static final double stageTwoOutputVoltsPerTorque = stageTwoMotorVoltsPerTorque * (1/stageTwoRatio) * (1/stageTwoNumberOfMotors) * (1/stageTwoEfficiency);
         public static final double stageTwoGrossSpringLength = 56;
         public static final double stageTwoExcessSpringLength = 9;
@@ -157,12 +157,12 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-180+7.990375);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
-        public static final double stageTwo_kP = .6;//.005//0.5//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
-        public static final double stageTwo_kI = 0.001;//0.000001
+        public static final double stageTwo_kP = .9;//.005//0.5//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
+        public static final double stageTwo_kI = 0.002;//0.001
         public static final double stageTwo_kIZone = 3;//3
-        public static final double stageTwo_kD = 4;//4
+        public static final double stageTwo_kD = 3;//4
         public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
-        public static final double stageTwoOutputRange = .4;//
+        public static final double stageTwoOutputRange = .6;//
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;
