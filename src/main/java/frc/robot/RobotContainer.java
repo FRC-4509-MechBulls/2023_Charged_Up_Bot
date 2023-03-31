@@ -21,6 +21,7 @@ import frc.robot.subsystems.arm.StageOneSub;
 import frc.robot.subsystems.arm.StageTwoSub;
 import frc.robot.subsystems.nav.*;
 import frc.robot.subsystems.state.FMSGetter;
+import frc.robot.subsystems.state.NavigationStateController;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.arm.EFSub;
 import frc.robot.subsystems.state.StateControllerSubsystem;
@@ -46,6 +47,9 @@ public class RobotContainer {
   private final StageTwoSub stageTwoSub = new StageTwoSub();
   private final EFSub efSub = new EFSub();
   private final Grabber grabberSubsystem = new Grabber(stageOneSub, stageTwoSub, efSub, stateControllerSubsystem, efNavSystem,efTelemSub);
+
+  private final NavigationStateController navigationStateController = new NavigationStateController(stateControllerSubsystem);
+
 
     private final MB_AutoCommandChooser autoChooser = new MB_AutoCommandChooser(navigationField,swerveSubsystem,stateControllerSubsystem,grabberSubsystem);
 

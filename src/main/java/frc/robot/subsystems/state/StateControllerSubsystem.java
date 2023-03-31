@@ -25,6 +25,8 @@ public class StateControllerSubsystem extends SubsystemBase {
   private Level placingLevel = Level.POS1;
   private Level[] placingLevels = {Level.POS1,Level.POS2,Level.POS3};
 
+  //Josh's Playground
+  
   public void setAgnosticGrabberMode(AgnosticGrabberMode agnosticGrabberMode){previousAgGrabberMode = this.agnosticGrabberMode; this.agnosticGrabberMode = agnosticGrabberMode;}
   private AgnosticGrabberMode previousAgGrabberMode = AgnosticGrabberMode.HOLDING;
   public AgnosticGrabberMode getPreviousAgnosticGrabberMode(){return previousAgGrabberMode;}
