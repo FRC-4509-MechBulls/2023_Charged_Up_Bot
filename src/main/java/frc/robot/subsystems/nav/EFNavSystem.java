@@ -182,11 +182,17 @@ Pose2d efPose = new Pose2d();
         double lineDir = Math.atan2(line.getY2() - line.getY1() , line.getX2() - line.getX1());
         double lineDist = Math.sqrt(Math.pow(line.getX1() - line.getX2(),2) + Math.pow(line.getY1() - line.getY2(),2));
 
-        double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * EF_RADIUS; //why do I need to multiply by 2??
-        double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * EF_RADIUS; //because your visualization was not to scale 😉
+//josh shit
+        double EFRadius = EF_RADIUS;
+        if (desiredPose.getY() > Units.inchesToMeters(7) && efPose.getY() > Units.inchesToMeters(7)) {
+            EFRadius = EF_RADIUS - Units.inchesToMeters(3);
+        }
 
-        double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * EF_RADIUS;
-        double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * EF_RADIUS;
+        double edgePtX1 = line.getX1() + Math.cos(lineDir - Math.PI/2) * EFRadius; //why do I need to multiply by 2??
+        double edgePtY1 = line.getY1() + Math.sin(lineDir - Math.PI/2) * EFRadius; //because your visualization was not to scale 😉
+
+        double edgePtX2 = line.getX1() + Math.cos(lineDir + Math.PI/2) * EFRadius;
+        double edgePtY2 = line.getY1() + Math.sin(lineDir + Math.PI/2) * EFRadius;
 
         double destEdgePtX1 = edgePtX1 + (line.getX2() - line.getX1());
         double destEdgePtY1 = edgePtY1 + (line.getY2() - line.getY1());

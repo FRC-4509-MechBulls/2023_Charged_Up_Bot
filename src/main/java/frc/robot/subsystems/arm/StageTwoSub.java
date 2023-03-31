@@ -118,11 +118,11 @@ public class StageTwoSub extends SubsystemBase {
   }
   private void configMotorControllers() {
     configMotorStatusFrames();
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180)));
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) (softLimitReverse + Units.degreesToRadians(180)));
-    armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true);
-    armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
+    System.out.println(armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180))));
+    System.out.println(armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) (softLimitReverse + Units.degreesToRadians(180))));
+    System.out.println(armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true));
+    System.out.println(armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true));
+    System.out.println(armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE));
     System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
     if (armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20) != REVLibError.kOk) {
       System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
@@ -215,15 +215,36 @@ public class StageTwoSub extends SubsystemBase {
   }
   //util
   private void checkState() {
+    //highP
     if (!lowP) {
-      if (stateController.getAgnosticGrabberMode().equals(AgnosticGrabberMode.INTAKING)) {
-        if (!(stateController.getItemType().equals(ItemType.CONE) && stateController.getItemFallen().equals(ItemFallen.NOT_FALLEN))) {setLowP();return;}
+      //intaking
+      if (stateController.getAgnosticGrabberMode() == AgnosticGrabberMode.INTAKING) {
+        //standing/cube
+        if (!(stateController.getItemType() == ItemType.CONE && stateController.getItemFallen() == ItemFallen.NOT_FALLEN)) {setLowP();return;}
       }
-      if (stateController.getAgnosticGrabberMode().equals(AgnosticGrabberMode.PLACING)) {
-        if (stateController.getPlacingLevel().equals(Level.POS1)) {setLowP();return;}
+      //placing
+      if (stateController.getAgnosticGrabberMode() == AgnosticGrabberMode.PLACING) {
+        //L1
+        if (stateController.getPlacingLevel() == Level.POS1) {setLowP();return;}
       }
     }
-    if (lowP) {setHighP();}
+    //lowP
+    if (lowP) {
+      //intaking
+      if (stateController.getAgnosticGrabberMode() == AgnosticGrabberMode.INTAKING) {
+        //not standing/cube
+        if (stateController.getItemType() == ItemType.CONE && stateController.getItemFallen() == ItemFallen.NOT_FALLEN) {setHighP();return;}
+        return;
+      }
+      //placing
+      if (stateController.getAgnosticGrabberMode() == (AgnosticGrabberMode.PLACING)) {
+        //not L1
+        if (!(stateController.getPlacingLevel() == Level.POS1)) {setHighP();return;}
+        return;
+      }
+      //not intaking or placing      
+      setHighP();
+    }
   }
   
   private void setLowP() {
@@ -270,6 +291,7 @@ public class StageTwoSub extends SubsystemBase {
       timeSinceLastSimUpdate = Timer.getFPGATimestamp();
     }
     checkState();
+    SmartDashboard.putBoolean("lowP", lowP);
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
