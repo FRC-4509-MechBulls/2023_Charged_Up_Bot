@@ -39,12 +39,16 @@ public class MB_AutoCommandChooser {
       //  autoChooser.addOption("r_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(false));
         autoChooser.addOption("r_r_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(false));
 
+        autoChooser.addOption("r_L_doubleScore",redLeft_doubleScore(false));
+
 
 
         //autoChooser.addOption("b_c_justBalance",redBalancerCenter(true));
         autoChooser.addOption("b_c_placeAndBalance",redCenter_scoreLeaveAndBalance(true));
         //autoChooser.addOption("b_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(true));
-        autoChooser.addOption("b_r_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(true));
+        autoChooser.addOption("b_L_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(true));
+
+        autoChooser.addOption("b_R_doubleScore",redLeft_doubleScore(true));
 
 
 
@@ -199,9 +203,58 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         DirectToPointCommand navToPlace2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.454*finalReverseX,-0.975,Rotation2d.fromDegrees(180+finalZeroAngle)),3, Units.inchesToMeters(0.5),2,1,Constants.DriveConstants.turnPValue);
         InstantCommand place2 = new InstantCommand(()->grabber.overrideDesiredEFWait()); //6.454, -.975 ^
 
-     //   return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(intermediate2.andThen(setToPlacingCone.andThen(sleepCommand3.andThen(navToPlace2.andThen(place2))))))))))))))))));
+        //   return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(intermediate2.andThen(setToPlacingCone.andThen(sleepCommand3.andThen(navToPlace2.andThen(place2))))))))))))))))));
         return setInitialPose.andThen(setToPlacingCube.andThen(sleepCommand.andThen(navToPlace.andThen(place.andThen(sleepCommand2.andThen(intermediate1.andThen(retractArm.andThen(waitAfterRetract).andThen(alignToPickup.andThen(setToIntakingCone.andThen(pauseForIntake.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone.andThen(waitAfterHold.andThen(intermediate2)))))))))))))));
 //
+    }
+
+    public Command redLeft_doubleScore(boolean reverseForBlue){
+        int reverseX = 1;
+        double zeroAngle = 0;
+        double pickupAngle = 15;
+        if(reverseForBlue){
+            reverseX = -1;
+            zeroAngle = 180;
+            pickupAngle = 180-pickupAngle;
+        }
+        int finalReverseX = reverseX;
+        double finalZeroAngle = zeroAngle;
+        double finalPickupAngle = pickupAngle;
+        double standardPosTolerance = Units.inchesToMeters(2);
+        double posP = 3;
+
+        double fasterMaxSpeed = 0.5;
+        double fasterMaxTurn = 0.25;
+
+        double slowerMaxSpeed = 0.15;
+        double slowerMaxTurn = 0.1;
+
+        //initial pose
+        Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.337*finalReverseX,2.428), Rotation2d.fromDegrees(180+finalZeroAngle))));
+        //set type to cone, then level to L3, then set to placing
+        Command setToPlacingCone = new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3))).andThen(new InstantCommand(()->stateController.setAgArmToPlacing()));
+        //wait 4 seconds
+        SleepCommand sleepCommand = new SleepCommand(4); //replace with the arm angle being crossed >:P
+        //eject cone
+        Command place = new InstantCommand(()->grabber.overrideDesiredEFWait());
+        SleepCommand sleepCommand2 = new SleepCommand(0.5);
+        //retract arm
+        Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
+        //go to intermediate position
+        DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.044*finalReverseX,3.227,Rotation2d.fromDegrees(180+finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue);
+        //intermediate two
+        DirectToPointCommand intermediate2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-2.260*finalReverseX,3.227,Rotation2d.fromDegrees(180+finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,fasterMaxTurn);
+        //align to pickup
+        DirectToPointCommand navToAlignPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36) - 1.449 )*finalReverseX,Units.inchesToMeters(121.61) - 0.388,Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,3,Constants.DriveConstants.turnPValue, fasterMaxSpeed, fasterMaxTurn);
+        //drive to pickup
+        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d(Units.inchesToMeters(-47.36)*finalReverseX,Units.inchesToMeters(121.61),Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,2,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn);
+        //wait 1 second
+        SleepCommand waitAfterPickup = new SleepCommand(1);
+        //set to holding
+        Command setToHoldCone = new InstantCommand(()->stateController.setAgArmToHolding());
+
+
+        return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(intermediate2.andThen(navToAlignPickup.andThen(navToPickup.andThen(waitAfterPickup.andThen(setToHoldCone)))))))))));
     }
 
     public Command redRight_Debug_goToStartPos(boolean reverseForBlue){
