@@ -43,7 +43,7 @@ public class RobotContainer {
   private final EFSub endEffectorSubsystem = new EFSub();
 
   private final StageOneSub stageOneSub = new StageOneSub();
-  private final StageTwoSub stageTwoSub = new StageTwoSub();
+  private final StageTwoSub stageTwoSub = new StageTwoSub(stateControllerSubsystem);
   private final EFSub efSub = new EFSub();
   private final Grabber grabberSubsystem = new Grabber(stageOneSub, stageTwoSub, efSub, stateControllerSubsystem, efNavSystem,efTelemSub);
 

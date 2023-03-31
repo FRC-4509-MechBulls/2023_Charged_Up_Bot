@@ -253,13 +253,13 @@ public class StageOneSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
-
+    /*
     armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians(SmartDashboard.getNumber("stageOneVelocity", Units.radiansToDegrees(ArmConstants.stageOneMotionCruiseVelocity)))) * 10);
     armMotorPrimary.configMotionAcceleration(calculateEncoderFromOutput(Units.degreesToRadians(SmartDashboard.getNumber("stageOneAccel", Units.radiansToDegrees(ArmConstants.stageOneMotionMaxAcceleration)))) * 10);
     armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP));
     armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI));
     armMotorPrimary.config_kD(0, SmartDashboard.getNumber("stageOneD", ArmConstants.stageOne_kD));
-  
+    */
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
 }

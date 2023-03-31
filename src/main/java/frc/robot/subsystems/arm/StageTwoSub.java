@@ -21,6 +21,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.RobotConstants;
+import frc.robot.subsystems.state.StateControllerSubsystem;
+import frc.robot.subsystems.state.StateControllerSubsystem.AgnosticGrabberMode;
+import frc.robot.subsystems.state.StateControllerSubsystem.ItemFallen;
+import frc.robot.subsystems.state.StateControllerSubsystem.ItemType;
+import frc.robot.subsystems.state.StateControllerSubsystem.Level;
 
 public class StageTwoSub extends SubsystemBase {
   private CANSparkMax armMotorPrimary;
@@ -49,10 +54,13 @@ public class StageTwoSub extends SubsystemBase {
   private double simulatedAngleRad = 0;
   private boolean changedSides = false;
   private double lastAngle = 0;
+  private boolean lowP = false;
+
+  StateControllerSubsystem stateController;
 
   /** Creates a new ArmStageTwo. */
-  public StageTwoSub() {
-    
+  public StageTwoSub(StateControllerSubsystem rc_stateController) {
+    stateController = rc_stateController;
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
     SmartDashboard.putNumber("stageTwoD", ArmConstants.stageTwo_kD);
@@ -206,6 +214,28 @@ public class StageTwoSub extends SubsystemBase {
     return velocity;
   }
   //util
+  private void checkState() {
+    if (!lowP) {
+      if (stateController.getAgnosticGrabberMode().equals(AgnosticGrabberMode.INTAKING)) {
+        if (!(stateController.getItemType().equals(ItemType.CONE) && stateController.getItemFallen().equals(ItemFallen.NOT_FALLEN))) {setLowP();return;}
+      }
+      if (stateController.getAgnosticGrabberMode().equals(AgnosticGrabberMode.PLACING)) {
+        if (stateController.getPlacingLevel().equals(Level.POS1)) {setLowP();return;}
+      }
+    }
+    if (lowP) {setHighP();}
+  }
+  
+  private void setLowP() {
+    if (pidController.setP(ArmConstants.stageTwo_kP_Alternate, 0).equals(REVLibError.kOk)) {
+      lowP = true;
+    }
+  }
+  private void setHighP() {
+    if (pidController.setP(ArmConstants.stageTwo_kP, 0).equals(REVLibError.kOk)) {
+      lowP = false;
+    }
+  }
   private void calculateStageData() {
     angle = getEncoderPosition();
     velocity = getEncoderVelocity();
@@ -239,16 +269,17 @@ public class StageTwoSub extends SubsystemBase {
       simulatedAngleRad += ((Timer.getFPGATimestamp() - timeSinceLastSimUpdate) * (setpoint - simulatedAngleRad) * Constants.SimulationConstants.armStageTwoSpeedMultiplier);
       timeSinceLastSimUpdate = Timer.getFPGATimestamp();
     }
-
+    checkState();
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
-    
+    /*
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
     pidController.setD(SmartDashboard.getNumber("stageTwoD", ArmConstants.stageTwo_kD), 0);
     double outputRange = SmartDashboard.getNumber("stageTwoRange", ArmConstants.stageTwoOutputRange);
     pidController.setOutputRange(-outputRange, outputRange, 0);
+    */
 
     /*
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
