@@ -289,7 +289,7 @@ public class Grabber extends SubsystemBase {
         }else{
           setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
         }
-        if(Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThreshold) secondStageHitBtPt = true;
+        if(Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < stageTwoIntakingAngleThreshold) secondStageHitBtPt = true;
         lastArmMode = stateController.getArmMode();
         return;
       }
