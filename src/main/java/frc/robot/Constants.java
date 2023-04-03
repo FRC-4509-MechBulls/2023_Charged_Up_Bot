@@ -208,6 +208,8 @@ public final class Constants {
         public static final double stageOneInBetweenRetractingAngleRad = Units.degreesToRadians(95);
         public static final double stageTwoInBetweenRetractingAngleRad = Units.degreesToRadians(-70); //-90
 
+        public static final double bothArmsInBetweenPlacingThresholdRetractStg2 = Units.degreesToRadians(2); //previously 5*
+
         public static final double dontDoAvoidanceThreshold = 4; // inches?
 
 

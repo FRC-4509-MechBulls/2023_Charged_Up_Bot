@@ -269,8 +269,8 @@ public class Grabber extends SubsystemBase {
         }else{
             setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
         }
-        boolean stageOneHit = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThreshold;
-        boolean stageTwoHit = Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThreshold;
+        boolean stageOneHit = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThresholdRetractStg2;
+        boolean stageTwoHit = Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThresholdRetractStg2;
         if(stageOneHit && stageTwoHit) firstStageHitBtPt = true;
 
       }
