@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.nav.EFNavSystem;
 import frc.robot.subsystems.nav.EFPathingTelemetrySub;
@@ -34,7 +35,7 @@ public class Grabber extends SubsystemBase {
   private double stageOneAFF;
   private double stageTwoAFF;
   private double[] setpointXY = {1, 1};
-  private double[] setpointThetaPhi;
+  private double[] setpointThetaPhi = {0,0};
   private double[] eFPosition = {0,0};
 
   public enum ArmModes {INTAKING_CUBE, INTAKING_CONE_UPRIGHT, INTAKING_CONE_FALLEN, HOLDING, PLACING_CONE_LVL1, PLACING_CONE_LVL2, PLACING_CONE_LVL3,PLACING_CUBE_LVL1,PLACING_CUBE_LVL2,PLACING_CUBE_LVL3, POST_PLACING_CONE_LVL1, POST_PLACING_CONE_LVL2, POST_PLACING_CONE_LVL3, POST_PLACING_CUBE_LVL1, POST_PLACING_CUBE_LVL2, POST_PLACING_CUBE_LVL3}
@@ -276,6 +277,36 @@ public class Grabber extends SubsystemBase {
       lastArmMode = stateController.getArmMode();
     return;
     }
+
+    boolean currentlyIntaking = stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.INTAKING;
+    boolean comingFromIntaking = stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.INTAKING;
+    boolean itemIsFallen = stateController.getItemFallen() == StateControllerSubsystem.ItemFallen.FALLEN_CONE;
+
+
+      if(currentlyIntaking && itemIsFallen){
+        if(!secondStageHitBtPt){
+          setpointThetaPhi = new double[]{stageOneSub.getAngle(),convertGrabberXYToThetaPhi(setpointXY)[1]};
+        }else{
+          setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+        }
+        if(Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThreshold) secondStageHitBtPt = true;
+        lastArmMode = stateController.getArmMode();
+        return;
+      }
+
+      if(comingFromIntaking && itemIsFallen){
+        //do the same as above but have second stage fire first
+        if(!firstStageHitBtPt){
+          setpointThetaPhi = new double[]{convertGrabberXYToThetaPhi(setpointXY)[0],stageTwoSub.getAngle()};}
+        else{
+          setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+        }
+        if(Math.abs(stageOneSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[0]) < bothArmsInBetweenPlacingThreshold) firstStageHitBtPt = true;
+        lastArmMode = stateController.getArmMode();
+        return;
+      }
+
+
 
 
     setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
