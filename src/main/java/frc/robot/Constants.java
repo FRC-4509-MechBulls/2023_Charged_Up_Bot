@@ -214,6 +214,8 @@ public final class Constants {
 
         public static final double stageTwoIntakingAngleThreshold = Units.degreesToRadians(30); //lower if it hits on the way to fallen cone
 
+        public static final double stageOneRetractingFromIntakingFallenThreshold = Units.degreesToRadians(30);
+
     }
 
 
