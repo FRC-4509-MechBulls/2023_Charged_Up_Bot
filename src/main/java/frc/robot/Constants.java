@@ -174,7 +174,7 @@ public final class Constants {
         public static final double[] holdingArmPos = {Units.inchesToMeters(0), Units.inchesToMeters(17)};//
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)};//
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5 + 2), Units.inchesToMeters(36.5  + 0.5)};//
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5 + 2), Units.inchesToMeters(36.5  + 0.5)};//26.3, 36.2
         public static final double[] placingConeArmPosThree = {Units.inchesToMeters(43.5), Units.inchesToMeters(48.5)};//
 
         public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(12)};//
