@@ -100,7 +100,7 @@ public final class Constants {
         public static final double stageOneMotorVoltsPerTorque = (12.0/stageOne12VStallTorque);
         public static final double stageOneRatio = 421.88;
         public static final double stageOneNumberOfMotors = 2;
-        public static final double stageOneEfficiency = 1.9;
+        public static final double stageOneEfficiency = 1.9 * .165;
         public static final double stageOneOutputVoltsPerTorque = stageOneMotorVoltsPerTorque * (1/stageOneRatio) * (1/stageOneNumberOfMotors) * (1/stageOneEfficiency);
         public static final double stageOneGrossSpringLength = 31;
         public static final double stageOneExcessSpringLength = 8.5;
@@ -120,9 +120,9 @@ public final class Constants {
         public static final double stageOnePeakCurrentTime = 250;
         public static final double stageOne_kP = 4;//1//4, 1 for testing
         public static final double stageOne_kI = 0.01;//0.02//0
-        public static final double stageOne_kD = 0; //undecided
+        public static final double stageOne_kD = 128; //undecided
         public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians(10);//
-        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(250);//
+        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(250);//250
         public static final double stageOneEncoderOffset = Units.degreesToRadians(291.9 + 90 - .145);//
 
         public static final double revEncoderCountsPerRotation = 2048;
@@ -140,7 +140,7 @@ public final class Constants {
         public static final double stageTwoMotorVoltsPerTorque = (12.0/stageTwo12VStallTorque);
         public static final double stageTwoRatio = 145.45;
         public static final double stageTwoNumberOfMotors = 2;
-        public static final double stageTwoEfficiency = 0.8;
+        public static final double stageTwoEfficiency = 0.8 * 1.05;
         public static final double stageTwoOutputVoltsPerTorque = stageTwoMotorVoltsPerTorque * (1/stageTwoRatio) * (1/stageTwoNumberOfMotors) * (1/stageTwoEfficiency);
         public static final double stageTwoGrossSpringLength = 56;
         public static final double stageTwoExcessSpringLength = 9;
@@ -157,17 +157,18 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-180+7.990375);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
-        public static final double stageTwo_kP = .6;//.005//0.5//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
-        public static final double stageTwo_kI = 0.001;//0.000001
+        public static final double stageTwo_kP = .9;//0.9
+        public static final double stageTwo_kI = 0.002;//0.002
         public static final double stageTwo_kIZone = 3;//3
-        public static final double stageTwo_kD = 4;//4
+        public static final double stageTwo_kD = 20;//20
+        public static final double stageTwo_kP_Alternate = 0.4;//0.4
         public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
-        public static final double stageTwoOutputRange = .4;//
+        public static final double stageTwoOutputRange = 0.7;//1.0
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;
 
-        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(12.375 + .125 + 1)};//
+        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(12.375 -.5)};//
         public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(22), Units.inchesToMeters(4.125)};//
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(12)};//
         public static final double[] holdingArmPos = {Units.inchesToMeters(0), Units.inchesToMeters(17)};//
@@ -176,7 +177,7 @@ public final class Constants {
         public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5 + 2), Units.inchesToMeters(36.5  + 0.5)};//
         public static final double[] placingConeArmPosThree = {Units.inchesToMeters(43.5), Units.inchesToMeters(48.5)};//
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)};//
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(12)};//
         public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(35.5), Units.inchesToMeters(35)};//
         public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)};//
 
