@@ -157,6 +157,8 @@ StateControllerSubsystem stateControllerSubsystem;
     else
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
 
+    SmartDashboard.putNumber("driveOutSpeed",Math.sqrt(Math.pow(xSpeed,2)+Math.pow(ySpeed,2)));
+
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
     simHeading+=turningSpeed * (lastSimUpdateLength) * Constants.SimulationConstants.turningSpeedMultiplier;

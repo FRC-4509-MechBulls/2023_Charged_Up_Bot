@@ -97,7 +97,7 @@ public class VisionSubsystem extends SubsystemBase {
             //sort targets by distance
             for(int i = 0; i<targetsSorted.size(); i++){
                 for(int j = i+1; j<targetsSorted.size(); j++){
-                    if(targetsSorted.get(i).getBestCameraToTarget().getTranslation().getDistance(new Translation3d()) > targetsSorted.get(j).getBestCameraToTarget().getTranslation().getDistance(new Translation3d())){
+                    if(targetsSorted.get(i).getBestCameraToTarget().getTranslation().getDistance(new Translation3d()) < targetsSorted.get(j).getBestCameraToTarget().getTranslation().getDistance(new Translation3d())){
                         PhotonTrackedTarget temp = targetsSorted.get(i);
                         targetsSorted.set(i, targetsSorted.get(j));
                         targetsSorted.set(j, temp);
@@ -117,13 +117,19 @@ public class VisionSubsystem extends SubsystemBase {
             Pose2d[] target2Poses = {target2Pose,target2PoseAlternative};
 
             double minSolvedBotDist = Double.MAX_VALUE;
+            double minSolvedBotAngleDist = Double.MAX_VALUE;
             Pose2d solvedBotPose = new Pose2d(1000,1000,Rotation2d.fromDegrees(0)); //something outlandish
             for(int i = 0; i<target1Poses.length; i++){
                 for(int j = 0; j<target2Poses.length; j++){
                     double dist = target1Poses[i].getTranslation().getDistance(target2Poses[j].getTranslation());
+                    double angDist = Math.abs(target1Poses[i].getRotation().getDegrees() - target2Poses[j].getRotation().getDegrees());
                         if(dist<minSolvedBotDist){
                             minSolvedBotDist = dist;
-                            solvedBotPose = new Pose2d((target1Poses[i].getX()+target2Poses[j].getX())/2, (target1Poses[i].getY()+target2Poses[j].getY())/2, Rotation2d.fromRadians((((target1Poses[i].getRotation().getRadians() + (4*Math.PI))%(2*Math.PI))+((target2Poses[j].getRotation().getRadians()+ (4*Math.PI))%(2*Math.PI)))/2));
+                            double avgX = (target1Poses[i].getX()+target2Poses[j].getX())/2;
+                            double avgY = (target1Poses[i].getY()+target2Poses[j].getY())/2;
+                            double avgRotationRad = (((target1Poses[i].getRotation().getRadians() + (4*Math.PI))%(2*Math.PI))+((target2Poses[j].getRotation().getRadians()+ (4*Math.PI))%(2*Math.PI)))/2;
+                            double avgRotationRad2 = target1Poses[i].getRotation().getRadians();
+                            solvedBotPose = new Pose2d(avgX, avgY, Rotation2d.fromRadians(avgRotationRad2));
                          //   SmartDashboard.putNumber("tag1Rotation",(target1Poses[i].getRotation().getRadians()));
                          //   SmartDashboard.putNumber("tag2Rotation",target2Poses[j].getRotation().getRadians());
                          //   SmartDashboard.putNumber("tagAvgRotation",(target1Poses[i].getRotation().getRadians()+target2Poses[j].getRotation().getRadians())/2);
