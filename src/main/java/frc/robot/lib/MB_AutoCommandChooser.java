@@ -336,10 +336,10 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.97*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1.5,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
 
         //go over charge station
-        DirectToPointCommand goOverChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.85*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),3,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
+        DirectToPointCommand goOverChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.35*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),5,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
 
         //go over charge station
-        DirectToPointCommand holdBehindChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.85*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1.5,-1,-1,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
+        DirectToPointCommand holdBehindChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.35*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1,-1,-1,posP,Constants.DriveConstants.turnPValue,0.1,0.1);
 
 
         //go back
