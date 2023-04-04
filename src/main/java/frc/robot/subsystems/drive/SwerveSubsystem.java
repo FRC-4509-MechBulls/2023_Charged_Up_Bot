@@ -157,6 +157,8 @@ StateControllerSubsystem stateControllerSubsystem;
     else
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
 
+    SmartDashboard.putNumber("driveOutSpeed",Math.sqrt(Math.pow(xSpeed,2)+Math.pow(ySpeed,2)));
+
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
     simHeading+=turningSpeed * (lastSimUpdateLength) * Constants.SimulationConstants.turningSpeedMultiplier;
@@ -236,7 +238,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(Units.inchesToMeters(14),Units.inchesToMeters(14),Units.degreesToRadians(15)));
+    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(Units.inchesToMeters(14),Units.inchesToMeters(14),Units.degreesToRadians(50)));
   }
   
   // Getters
@@ -458,6 +460,7 @@ public Pose2d getEstimatedPosition(){
   public void driveToPose(Pose2d pose, double posPa, double rotP){
     driveToPose(pose,posPa,rotP, DriveConstants.maxPowerOut, DriveConstants.maxTurningPowerOut);
   }
+
 
   double getAutoBalanceOut(double setpoint, double measurement, double p, double max){
     double out = -MB_Math.maxValueCutoff((setpoint - measurement)* p, max);

@@ -208,10 +208,17 @@ public final class Constants {
         public static final double stageOneInBetweenRetractingAngleRad = Units.degreesToRadians(95);
         public static final double stageTwoInBetweenRetractingAngleRad = Units.degreesToRadians(-70); //-90
 
+        public static final double bothArmsInBetweenPlacingThresholdRetractStg2 = Units.degreesToRadians(2); //previously 5*
+
         public static final double dontDoAvoidanceThreshold = 4; // inches?
 
 
         public static final double bothArmsInBetweenPlacingThreshold = Units.degreesToRadians(5);
+
+        public static final double stageTwoIntakingAngleThreshold = Units.degreesToRadians(30); //lower if it hits on the way to fallen cone
+
+        public static final double stageOneRetractingFromIntakingFallenThreshold = Units.degreesToRadians(30);
+
     }
 
 
@@ -376,8 +383,9 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final double MAX_AMBIGUITY = 0.01;
-        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7 - 1.25); //+ is forward // -4.5 //7
+        public static final double MAX_AMBIGUITY_TO_TRUST = 0.01;
+        public static final double MAX_AMBIGUITY_TO_NOT_THROW_OUT = 0.4;
+        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7); //+ is forward // -4.5 //7
         public static final double CAM_Y_OFFSET = Units.inchesToMeters(9.125);// + is left  //9.5 //9.125
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));

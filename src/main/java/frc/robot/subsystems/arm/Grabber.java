@@ -269,8 +269,8 @@ public class Grabber extends SubsystemBase {
         }else{
             setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
         }
-        boolean stageOneHit = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThreshold;
-        boolean stageTwoHit = Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThreshold;
+        boolean stageOneHit = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThresholdRetractStg2;
+        boolean stageTwoHit = Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThresholdRetractStg2;
         if(stageOneHit && stageTwoHit) firstStageHitBtPt = true;
 
       }
@@ -289,7 +289,7 @@ public class Grabber extends SubsystemBase {
         }else{
           setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
         }
-        if(Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThreshold) secondStageHitBtPt = true;
+        if(Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < stageTwoIntakingAngleThreshold) secondStageHitBtPt = true;
         lastArmMode = stateController.getArmMode();
         return;
       }
@@ -301,7 +301,7 @@ public class Grabber extends SubsystemBase {
         else{
           setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
         }
-        if(Math.abs(stageOneSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[0]) < bothArmsInBetweenPlacingThreshold) firstStageHitBtPt = true;
+        if(Math.abs(stageOneSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[0]) < stageOneRetractingFromIntakingFallenThreshold) firstStageHitBtPt = true;
         lastArmMode = stateController.getArmMode();
         return;
       }
