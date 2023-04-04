@@ -221,6 +221,17 @@ public final class Constants {
 
     }
 
+        public static final double AllowedSequencingErrorAngle = Units.degreesToRadians(1);
+        public static final double stageTwoL2ConePosition = Units.degreesToRadians(-103);
+        public static final double stageOneEFClearsL2Cube = Units.degreesToRadians(88);
+        public static final double stageTwoHoldingMaxExtension = Units.degreesToRadians(-140);
+        public static final double stageTwoArbitraryIntermediateConeAngle = Units.degreesToRadians(-75);
+        public static final double stageOneArbitraryIntermediateConeAngle = Units.degreesToRadians(64);
+        public static final double stageTwoArbitraryIntermediateCubeAngle = Units.degreesToRadians(-104);
+        public static final double stageOneArbitraryIntermediateCubeAngle = Units.degreesToRadians(68);
+        public static final double stageTwoClearsBumpersAngle = Units.degreesToRadians(-127);
+}
+
 
     public static final class ModuleConstants {
         //Physical
