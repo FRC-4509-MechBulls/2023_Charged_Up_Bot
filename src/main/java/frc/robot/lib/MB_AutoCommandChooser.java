@@ -317,7 +317,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         double standardPosTolerance = Units.inchesToMeters(2);
         double posP = 3;
 
-        double typicalMaxSpeed = 0.30;
+        double typicalMaxSpeed = 0.40;
         double typicalMaxRotationSpeed = 0.10;
 
 
@@ -336,10 +336,14 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.97*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1.5,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
 
         //go over charge station
-        DirectToPointCommand goOverChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-2.10*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),5,-1,-1,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
+        DirectToPointCommand goOverChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.85*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),3,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
+
+        //go over charge station
+        DirectToPointCommand holdBehindChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.85*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1.5,-1,-1,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
+
 
         //go back
-        DirectToPointCommand goOnChargeStation  = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.5*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),3,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
+        DirectToPointCommand goOnChargeStation  = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.3*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),3,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
 
         //do the dew
         AutoBalanceCommand autoBalanceCommand = new AutoBalanceCommand(swerveSubsystem,15);
@@ -348,7 +352,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
 
 
-        return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(goOverChargeStation.andThen(goOnChargeStation.andThen(autoBalanceCommand)))))))));
+        return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(goOverChargeStation.andThen(holdBehindChargeStation).andThen(goOnChargeStation.andThen(autoBalanceCommand)))))))));
     }
 
     public Command redRight_Debug_goToStartPos(boolean reverseForBlue){
