@@ -16,6 +16,10 @@ import frc.robot.lib.MB_Math;
 import frc.robot.subsystems.nav.EFNavSystem;
 import frc.robot.subsystems.nav.EFPathingTelemetrySub;
 import frc.robot.subsystems.state.StateControllerSubsystem;
+import frc.robot.subsystems.state.StateControllerSubsystem.AgnosticGrabberMode;
+import frc.robot.subsystems.state.StateControllerSubsystem.ItemFallen;
+import frc.robot.subsystems.state.StateControllerSubsystem.ItemType;
+import frc.robot.subsystems.state.StateControllerSubsystem.Level;
 
 import static frc.robot.Constants.ArmConstants;
 import static frc.robot.Constants.ArmConstants.*;
@@ -190,8 +194,6 @@ public class Grabber extends SubsystemBase {
                               stageOneAndStageTwoAndEFCGCoordinateRelativeToStageOnePivot,
                               stageOneVoltsPerTorque);
 
-    updateSetpointThetaPhiButMisleading(setpointXY);
-
     double[] stageOnePivotCoordinateRelativeToOrigin = ArmConstants.stageOnePivotCoordinate;
     double[] stageTwoPivotCoordinateRelativeToOrigin = calculateCoordinateSum(stageOnePivotCoordinateRelativeToOrigin, stageTwoPivotCoordinateRelativeToStageOnePivot);
     double[] eFPivotCoordinateRelativeToOrigin = calculateCoordinateSum(stageTwoPivotCoordinateRelativeToOrigin, eFPivotCoordinateRelativeToStageTwoPivotCoordinate);
@@ -200,121 +202,270 @@ public class Grabber extends SubsystemBase {
   }
 
   private void updateSetpointThetaPhiButMisleading(double[] setpointXY){
+    double stageOneAngle = stageOneSub.getAngle();
+    double stageTwoAngle = stageTwoSub.getAngle();
+    AgnosticGrabberMode armMode = stateController.getAgnosticGrabberMode();
+    ItemType itemType = stateController.getItemType();
+    Level level = stateController.getPlacingLevel();
+    ItemFallen itemFallen = stateController.getItemFallen();
 
     if(lastArmMode !=stateController.getArmMode()) {
-      firstStageHitBtPt = false; secondStageHitBtPt = false;}
+      firstStageHitBtPtOne = false;
+      firstStageHitBtPtTwo = false;
+      secondStageHitBtPtOne = false;
+      secondStageHitBtPtTwo = false;
+    }
+    lastArmMode = stateController.getArmMode();
 
-    //if distance to setpoint is less than threshold, set setpoint to current position
+    //if distance to setpoint is less than threshold, set setpoint to final setpoint
+    /*
     if(Math.hypot(setpointXY[0] - eFPosition[0], setpointXY[1] - eFPosition[1]) < dontDoAvoidanceThreshold){
       this.setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
       return;
     }
-
-
-    boolean placingNonL1 = stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING && stateController.getPlacingLevel() != StateControllerSubsystem.Level.POS1;
+    */
+    
+    boolean placingL2 = level == Level.POS2;
+    boolean placingcube = itemType == ItemType.CUBE;
+    boolean placingNonL1 = armMode == StateControllerSubsystem.AgnosticGrabberMode.PLACING && level != StateControllerSubsystem.Level.POS1;
     //boolean movingFromCube
     if(placingNonL1){
       //at this point you know that you are placing L2 or L3
-      if(!firstStageHitBtPt){
-        if(stageTwoSub.getAngle() > Units.degreesToRadians(-85))
-          setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,Units.degreesToRadians(-90)};
-        else
-          setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,stageTwoSub.getAngle()};
-        if(Math.abs(stageOneSub.getAngle() - stageOneInBetweenPlacingAngleRad)< bothArmsInBetweenPlacingThreshold)
-          firstStageHitBtPt = true;
-      }else{
-        if(Math.abs(stageTwoSub.getAngle() - stageTwoInBetweenPlacingAngleRad) < bothArmsInBetweenPlacingThreshold) secondStageHitBtPt = true;
-        if(secondStageHitBtPt)
-          setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
-        else
-          setpointThetaPhi = new double[]{stageOneInBetweenPlacingAngleRad,stageTwoInBetweenPlacingAngleRad};
+      if(stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.AllowedSequencingErrorAngle) {
+        firstStageHitBtPtOne = true;
       }
-      lastArmMode = stateController.getArmMode();
-      return;
+      if (!firstStageHitBtPtOne) {
+        setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, ArmConstants.stageTwoHoldingMaxExtension};
+        return;
+      }
+      //Cone
+      if (!placingcube) {
+        //L2Cone
+        if(placingL2) {
+          if (stageTwoAngle > setpointThetaPhi[1] - ArmConstants.AllowedSequencingErrorAngle) {
+            secondStageHitBtPtOne = true;
+          }
+          if (!secondStageHitBtPtOne) {
+            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
+            return;
+          }
+          else {
+            setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+            return;
+          }
+        }
+        //L3 Cone
+        else {
+            if (stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateConeAngle - ArmConstants.AllowedSequencingErrorAngle) {
+              secondStageHitBtPtOne = true;
+            }
+            if (secondStageHitBtPtOne && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.AllowedSequencingErrorAngle) {
+              secondStageHitBtPtTwo = true;
+            }
+            if (!secondStageHitBtPtOne) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
+              return;
+            }
+            else {
+              if(!secondStageHitBtPtTwo) {
+                setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngle, setpointThetaPhi[1]};
+                return;
+              }
+              else {
+                setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+                return;
+              }
+            }
+        }
+      }
+      //cube
+      else {
+        //L2 and L3 Cube
+          if (stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateCubeAngle - ArmConstants.AllowedSequencingErrorAngle) {
+            secondStageHitBtPtOne = true;
+          }
+          if (secondStageHitBtPtOne && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.AllowedSequencingErrorAngle) {
+            secondStageHitBtPtTwo = true;
+          }
+          if (!secondStageHitBtPtOne) {
+            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
+            return;
+          }
+          else {
+            if(!secondStageHitBtPtTwo) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateCubeAngle, setpointThetaPhi[1]};
+              return;
+            }
+            else {
+              setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+              return;
+            }
+      }
+      }  
     }
 
     boolean currentlyHolding = stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.HOLDING;
     boolean comingFromPlacing = (stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.PLACING || stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.POST_PLACING);
-    boolean comingFromL1 = stateController.getPlacingLevel()== StateControllerSubsystem.Level.POS1;
-    boolean comingFromL2 = stateController.getPlacingLevel()== StateControllerSubsystem.Level.POS2;
-    boolean comingFromL3 = stateController.getPlacingLevel()== StateControllerSubsystem.Level.POS3;
+    boolean comingFromL1 = level== StateControllerSubsystem.Level.POS1;
+    boolean comingFromL2 = level== StateControllerSubsystem.Level.POS2;
+    boolean comingFromL3 = level== StateControllerSubsystem.Level.POS3;
 
     SmartDashboard.putBoolean("currentlyHolding", currentlyHolding);
-    SmartDashboard.putBoolean("secondStageHitBtPt", secondStageHitBtPt);
-    SmartDashboard.putBoolean("firstStageHitBtPt", firstStageHitBtPt);
+    SmartDashboard.putBoolean("secondStageHitBtPtOne", secondStageHitBtPtOne);
+    SmartDashboard.putBoolean("firstStageHitBtPtOne", firstStageHitBtPtOne);
     if(currentlyHolding && comingFromPlacing && !comingFromL1){
       //coming to placing to holding
-
-      if(!secondStageHitBtPt){
-        boolean stageTwoReached,stageOneReached;
-        if(comingFromL3){
-          setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRadStepZeroL3, stageTwoInBetweenRetractingAngleRadStepZeroL3};
-          stageTwoReached = Math.abs(stageTwoSub.getAngle() - stageTwoInBetweenRetractingAngleRadStepZeroL3) < bothArmsInBetweenPlacingThreshold;
-          stageOneReached = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRadStepZeroL3) < bothArmsInBetweenPlacingThreshold;
-          if(stageOneReached && stageTwoReached)
-            secondStageHitBtPt = true;
+      //cone
+      if (!placingcube) {
+        //L3 cone
+        if (comingFromL3) {
+          if (stageOneAngle > ArmConstants.stageOneArbitraryIntermediateConeAngle - ArmConstants.AllowedSequencingErrorAngle) {
+            firstStageHitBtPtOne = true;
+          }
+          if (firstStageHitBtPtOne && stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.AllowedSequencingErrorAngle) {
+            firstStageHitBtPtTwo = true;
+          }
+          if (firstStageHitBtPtTwo && stageTwoAngle < ArmConstants.stageTwoHoldingMaxExtension + ArmConstants.AllowedSequencingErrorAngle) {
+            secondStageHitBtPtOne = true;
+          }
+          if (!firstStageHitBtPtOne) {
+            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, convertGrabberXYToThetaPhi(ArmConstants.placingConeArmPosThree)[1]};
+            return;
+          }
+          else if (!firstStageHitBtPtTwo) {
+            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, ArmConstants.stageTwoArbitraryIntermediateConeAngle};
+            return;
+          }
+          else if (!secondStageHitBtPtOne) {
+            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
+            return;
+          }
+          else {
+            setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+            return;
+          }
         }
-        else{
-          setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRadStepZeroL2, stageTwoInBetweenRetractingAngleRadStepZeroL2};
-            stageTwoReached = Math.abs(stageTwoSub.getAngle() - stageTwoInBetweenRetractingAngleRadStepZeroL2) < bothArmsInBetweenPlacingThreshold;
-            stageOneReached = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRadStepZeroL2) < bothArmsInBetweenPlacingThreshold;
+        //L2 cone
+        else {
+            if (stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.AllowedSequencingErrorAngle) {
+              firstStageHitBtPtOne = true;
+            }
+            if (firstStageHitBtPtOne && stageTwoAngle < ArmConstants.stageTwoHoldingMaxExtension + ArmConstants.AllowedSequencingErrorAngle) {
+              secondStageHitBtPtOne = true;
+            }
+            if (!firstStageHitBtPtOne) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, convertGrabberXYToThetaPhi(ArmConstants.placingConeArmPosTwo)[1]};
+              return;
+            }
+            else if (!secondStageHitBtPtOne) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
+              return;
+            }
+            else {
+              setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+              return;
+            }  
         }
-        if(stageOneReached && stageTwoReached)
-          secondStageHitBtPt = true;
-
-
-      }else{
-        if(!firstStageHitBtPt){
-            setpointThetaPhi = new double[]{stageOneInBetweenRetractingAngleRad, convertGrabberXYToThetaPhi(setpointXY)[1]};
-        }else{
-            setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
-        }
-        boolean stageOneHit = Math.abs(stageOneSub.getAngle() - stageOneInBetweenRetractingAngleRad) < bothArmsInBetweenPlacingThresholdRetractStg2;
-        boolean stageTwoHit = Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < bothArmsInBetweenPlacingThresholdRetractStg2;
-        if(stageOneHit && stageTwoHit) firstStageHitBtPt = true;
-
       }
-      lastArmMode = stateController.getArmMode();
-    return;
-    }
+      //cube
+      else {
+                //L3 cube
+                if (comingFromL3) {
+                  if (stageOneAngle > ArmConstants.stageOneArbitraryIntermediateCubeAngle - ArmConstants.AllowedSequencingErrorAngle) {
+                    firstStageHitBtPtOne = true;
+                  }
+                  if (firstStageHitBtPtOne && stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.AllowedSequencingErrorAngle) {
+                    firstStageHitBtPtTwo = true;
+                  }
+                  if (firstStageHitBtPtTwo && stageTwoAngle < ArmConstants.stageTwoHoldingMaxExtension + ArmConstants.AllowedSequencingErrorAngle) {
+                    secondStageHitBtPtOne = true;
+                  }
+                  if (!firstStageHitBtPtOne) {
+                    setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, convertGrabberXYToThetaPhi(ArmConstants.placingCubeArmPosThree)[1]};
+                    return;
+                  }
+                  else if (!firstStageHitBtPtTwo) {
+                    setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, ArmConstants.stageTwoArbitraryIntermediateCubeAngle};
+                    return;
+                  }
+                  else if (!secondStageHitBtPtOne) {
+                    setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
+                    return;
+                  }
+                  else {
+                    setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+                    return;
+                  }
+                } 
+                //L2 Cube
+                else {
+                  if (stageOneAngle > ArmConstants.stageOneArbitraryIntermediateCubeAngle - ArmConstants.AllowedSequencingErrorAngle) {
+                    firstStageHitBtPtOne = true;
+                  }
+                  if (firstStageHitBtPtOne && stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.AllowedSequencingErrorAngle) {
+                    firstStageHitBtPtTwo = true;
+                  }
+                  if (firstStageHitBtPtTwo && stageTwoAngle < ArmConstants.stageTwoHoldingMaxExtension + ArmConstants.AllowedSequencingErrorAngle) {
+                    secondStageHitBtPtOne = true;
+                  }
+                  if (!firstStageHitBtPtOne) {
+                    setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, convertGrabberXYToThetaPhi(ArmConstants.placingCubeArmPosTwo)[1]};
+                    return;
+                  }
+                  else if (!firstStageHitBtPtTwo) {
+                    setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, ArmConstants.stageTwoArbitraryIntermediateCubeAngle};
+                    return;
+                  }
+                  else if (!secondStageHitBtPtOne) {
+                    setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
+                    return;
+                  }
+                  else {
+                    setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+                    return;
+                  }
+                }
+              }
+      }
 
-    boolean currentlyIntaking = stateController.getAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.INTAKING;
+    boolean currentlyIntaking = armMode == StateControllerSubsystem.AgnosticGrabberMode.INTAKING;
     boolean comingFromIntaking = stateController.getPreviousAgnosticGrabberMode() == StateControllerSubsystem.AgnosticGrabberMode.INTAKING;
-    boolean itemIsFallen = stateController.getItemFallen() == StateControllerSubsystem.ItemFallen.FALLEN_CONE;
+    boolean itemIsFallen = itemFallen == StateControllerSubsystem.ItemFallen.FALLEN_CONE;
+    boolean itemIsCone = itemType == ItemType.CONE;
+    boolean itemisFallenCone = itemIsFallen && itemIsCone;
 
-
-      if(currentlyIntaking && itemIsFallen){
-        if(!secondStageHitBtPt){
-          setpointThetaPhi = new double[]{stageOneSub.getAngle(),convertGrabberXYToThetaPhi(setpointXY)[1]};
+      if(currentlyIntaking && itemisFallenCone){
+        if(stageTwoAngle > setpointThetaPhi[1] - ArmConstants.AllowedSequencingErrorAngle) {
+          secondStageHitBtPtOne = true;
+        }
+        if(!secondStageHitBtPtOne){
+          setpointThetaPhi = new double[]{convertGrabberXYToThetaPhi(ArmConstants.holdingArmPos)[0], setpointThetaPhi[1]};
+          return;
         }else{
-          setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+          setpointThetaPhi = new double[]{setpointThetaPhi[0], setpointThetaPhi[1]};
+          return;
         }
-        if(Math.abs(stageTwoSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[1]) < stageTwoIntakingAngleThreshold) secondStageHitBtPt = true;
-        lastArmMode = stateController.getArmMode();
-        return;
       }
 
-      if(comingFromIntaking && itemIsFallen){
+      if(comingFromIntaking && itemisFallenCone){
         //do the same as above but have second stage fire first
-        if(!firstStageHitBtPt){
-          setpointThetaPhi = new double[]{convertGrabberXYToThetaPhi(setpointXY)[0],stageTwoSub.getAngle()};}
-        else{
-          setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
+        if(stageOneAngle > setpointThetaPhi[0] - ArmConstants.AllowedSequencingErrorAngle) {
+          secondStageHitBtPtOne = true;
         }
-        if(Math.abs(stageOneSub.getAngle() - convertGrabberXYToThetaPhi(setpointXY)[0]) < stageOneRetractingFromIntakingFallenThreshold) firstStageHitBtPt = true;
-        lastArmMode = stateController.getArmMode();
-        return;
+        if(!secondStageHitBtPtOne){
+          setpointThetaPhi = new double[]{setpointThetaPhi[0], convertGrabberXYToThetaPhi(ArmConstants.intakingConesFallenArmPos)[1]};
+          return;
+        }else{
+          setpointThetaPhi = new double[]{setpointThetaPhi[0], setpointThetaPhi[1]};
+          return;
+        }
       }
-
-
-
-
-    setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
-
   }
 
-  private boolean firstStageHitBtPt = false;
-  private boolean secondStageHitBtPt = false;
+  private boolean firstStageHitBtPtOne = false;
+  private boolean firstStageHitBtPtTwo = false;
+  private boolean secondStageHitBtPtOne = false;
+  private boolean secondStageHitBtPtTwo = false;
   private ArmModes lastArmMode = ArmModes.HOLDING;
 
 
@@ -467,10 +618,12 @@ public class Grabber extends SubsystemBase {
     Pose2d nextNavPoint = eFNavSystem.getNextNavPoint();
     double[] navPointInInches = new double[]{Units.metersToInches(nextNavPoint.getX()), Units.metersToInches(nextNavPoint.getY())};
     setSetpointXY(navPointInInches);
+    setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
     //SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
     //SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
 
     calculateGrabberData();
+    updateSetpointThetaPhiButMisleading(setpointXY);
     updateGrabberData();
 
     double[] eFPositionButInMeters = new double[]{Units.inchesToMeters(eFPosition[0]),Units.inchesToMeters(eFPosition[1])};
