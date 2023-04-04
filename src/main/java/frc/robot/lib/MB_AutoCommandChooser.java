@@ -267,7 +267,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
       //  DirectToPointCommand pauseForIntake = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36) - 1.449 )*finalReverseX,Units.inchesToMeters(121.61) - 0.388,Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn);
 
         //drive to pickup
-        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 8))*finalReverseX,3.4 + Units.inchesToMeters(5),Rotation2d.fromDegrees(finalPickupAngle)),2.5,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
+        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,3.4 + Units.inchesToMeters(5),Rotation2d.fromDegrees(finalPickupAngle)),2.5,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
 
         //wait 1 second
        // SleepCommand waitAfterPickup = new SleepCommand(0);
@@ -277,7 +277,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
       //  DirectToPointCommand armToHoldingPause = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 8))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(finalPickupAngle)),0.5,-1,-1,2,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
 
         //back to intermediate 1
-        DirectToPointCommand postPickupSpin = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 8))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(postPickupAngle)),1,Units.inchesToMeters(8),3,2,inPlaceTurnP, slowerMaxSpeed, inPlaceTurnSpeedMax); //y was Units.inchesToMeters(121.61)
+        DirectToPointCommand postPickupSpin = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(postPickupAngle)),1,Units.inchesToMeters(8),3,2,inPlaceTurnP, slowerMaxSpeed, inPlaceTurnSpeedMax); //y was Units.inchesToMeters(121.61)
 
 
         DirectToPointCommand intermediate3 = new DirectToPointCommand(swerveSubsystem,new Pose2d((-4.7 + 0.2)*finalReverseX,3.3,Rotation2d.fromDegrees(180+ finalZeroAngle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,fasterMaxTurn);
