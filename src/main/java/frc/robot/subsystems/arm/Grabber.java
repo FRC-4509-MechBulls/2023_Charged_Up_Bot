@@ -221,8 +221,10 @@ public class Grabber extends SubsystemBase {
     if(lastArmMode != armMode) {
       firstStageHitBtPtOne = false;
       firstStageHitBtPtTwo = false;
+      firstStageHitBtPtThree = false;
       secondStageHitBtPtOne = false;
       secondStageHitBtPtTwo = false;
+      secondStageHitBtPtThree = false;
       System.out.println("changed arm modes");
       firstLoop = true;
     }
@@ -269,25 +271,30 @@ public class Grabber extends SubsystemBase {
         }
         //L3 Cone
         else {
-            if (stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateConeAngle - ArmConstants.allowedSequencingErrorAngle) {
+            if (stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateConeAngleOne - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtOne = true;
             }
-            if (secondStageHitBtPtOne && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
+            if (secondStageHitBtPtOne && stageTwoAngle > ArmConstants.stageTwoEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtTwo = true;
+            }
+            if (secondStageHitBtPtTwo && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
+              secondStageHitBtPtThree = true;
             }
             if (!secondStageHitBtPtOne) {
               setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
               return;
             }
+            else if(!secondStageHitBtPtTwo) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngleOne, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+              return;
+            }
+            else if(!secondStageHitBtPtThree) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL3Cone, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+              return;
+            }
             else {
-              if(!secondStageHitBtPtTwo) {
-                setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngle, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
-                return;
-              }
-              else {
-                setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
-                return;
-              }
+              setpointThetaPhi = new double[] {setpointThetaPhi[0], setpointThetaPhi[1]};
+              return;
             }
         }
       }
@@ -329,13 +336,16 @@ public class Grabber extends SubsystemBase {
       if (!placingcube) {
         //L3 cone
         if (comingFromL3) {
-          if (stageOneAngle > ArmConstants.stageOneArbitraryIntermediateConeAngle - ArmConstants.allowedSequencingErrorAngle) {
+          if (stageOneAngle > ArmConstants.stageOneEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
             firstStageHitBtPtOne = true;
           }
-          if (firstStageHitBtPtOne && stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.allowedSequencingErrorAngle) {
+          if (firstStageHitBtPtOne && stageOneAngle > ArmConstants.stageOneArbitraryIntermediateConeAngleOne - ArmConstants.allowedSequencingErrorAngle) {
             firstStageHitBtPtTwo = true;
           }
-          if (firstStageHitBtPtTwo && stageTwoAngle < ArmConstants.stageTwoHoldingMaxExtension + ArmConstants.allowedSequencingErrorAngle) {
+          if (firstStageHitBtPtTwo && stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.allowedSequencingErrorAngle) {
+            firstStageHitBtPtThree = true;
+          }
+          if (firstStageHitBtPtThree && stageTwoAngle < ArmConstants.stageTwoHoldingMaxExtension + ArmConstants.allowedSequencingErrorAngle) {
             secondStageHitBtPtOne = true;
           }
           if (!firstStageHitBtPtOne) {
@@ -343,7 +353,11 @@ public class Grabber extends SubsystemBase {
             return;
           }
           else if (!firstStageHitBtPtTwo) {
-            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoArbitraryIntermediateConeAngle};
+            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoEFClearsL3Cone};
+            return;
+          }
+          else if (!firstStageHitBtPtThree) {
+            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoArbitraryIntermediateConeAngleOne};
             return;
           }
           else if (!secondStageHitBtPtOne) {
@@ -451,11 +465,18 @@ public class Grabber extends SubsystemBase {
     SmartDashboard.putBoolean("firstStageHitBtPtOne", firstStageHitBtPtOne);
     */
       if(currentlyIntaking && itemisFallenCone){
-        if(stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
+        if(stageTwoAngle > ArmConstants.stageTwoClearsBumpersAngle - ArmConstants.allowedSequencingErrorAngle) {
           secondStageHitBtPtOne = true;
+        }
+        if(secondStageHitBtPtOne && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
+          secondStageHitBtPtTwo = true;
         }
         if(!secondStageHitBtPtOne){
           setpointThetaPhi = new double[]{convertGrabberXYToThetaPhi(new double[] {Units.metersToInches(ArmConstants.holdingArmPos[0]), Units.metersToInches(ArmConstants.holdingArmPos[1])})[0], setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+          return;
+        }
+        else if(!secondStageHitBtPtTwo){
+          setpointThetaPhi = new double[]{ArmConstants.stageOneClearsBumpersAngle, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
           return;
         }
         else {
@@ -465,17 +486,20 @@ public class Grabber extends SubsystemBase {
       }
 
       boolean comingFromIntaking = previousAgnosticGrabberMode == StateControllerSubsystem.AgnosticGrabberMode.INTAKING;
-      //SmartDashboard.putBoolean("comingfromintaking", comingFromIntaking);
+
       if(currentlyHolding && comingFromIntaking && itemisFallenCone){
-        //do the same as above but have second stage fire first
-        //SmartDashboard.putNumber("setpointTheta", Units.radiansToDegrees(setpointThetaPhi[0] - ArmConstants.allowedSequencingErrorAngle));
-        if(stageOneAngle > setpointThetaPhi[0] - ArmConstants.allowedSequencingErrorAngle) {
-          //SmartDashboard.putNumber("stageOneConditionalAngle", Units.radiansToDegrees(stageOneAngle));
+        if(stageOneAngle > ArmConstants.stageOneClearsBumpersAngle - ArmConstants.allowedSequencingErrorAngle) {
           firstStageHitBtPtOne = true;
-          //SmartDashboard.putBoolean("conditional", true);
+        }
+        if(firstStageHitBtPtOne && stageOneAngle > setpointThetaPhi[0] - ArmConstants.allowedSequencingErrorAngle) {
+          firstStageHitBtPtTwo = true;
         }
         if(!firstStageHitBtPtOne){
           setpointThetaPhi = new double[]{setpointThetaPhi[0] + ArmConstants.sequencingAddedAngle, convertGrabberXYToThetaPhi(new double[] {Units.metersToInches(ArmConstants.intakingConesFallenArmPos[0]), Units.metersToInches(ArmConstants.intakingConesFallenArmPos[1])})[1]};
+          return;
+        }
+        else if(!firstStageHitBtPtTwo){
+          setpointThetaPhi = new double[]{setpointThetaPhi[0] + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoClearsBumpersAngle};
           return;
         }
         else {
@@ -487,8 +511,10 @@ public class Grabber extends SubsystemBase {
 
   private boolean firstStageHitBtPtOne = false;
   private boolean firstStageHitBtPtTwo = false;
+  private boolean firstStageHitBtPtThree = false;
   private boolean secondStageHitBtPtOne = false;
   private boolean secondStageHitBtPtTwo = false;
+  private boolean secondStageHitBtPtThree = false;
   private ArmModes lastArmMode = ArmModes.HOLDING;
   private Level previousPlacingLevel = Level.POS1;
   private boolean firstLoop = false;

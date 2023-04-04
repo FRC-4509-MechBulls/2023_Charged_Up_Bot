@@ -217,14 +217,16 @@ public final class Constants {
 
         public static final double sequencingAddedAngle = Units.degreesToRadians(3);
         public static final double allowedSequencingErrorAngle = Units.degreesToRadians(1);
-        public static final double stageTwoL2ConePosition = Units.degreesToRadians(-103);
-        public static final double stageOneEFClearsL2Cube = Units.degreesToRadians(88);
+        public static final double stageOneEFClearsL2Cube = Units.degreesToRadians(85);
         public static final double stageTwoHoldingMaxExtension = Units.degreesToRadians(-140);
-        public static final double stageTwoArbitraryIntermediateConeAngle = Units.degreesToRadians(-75);
-        public static final double stageOneArbitraryIntermediateConeAngle = Units.degreesToRadians(64);
+        public static final double stageTwoArbitraryIntermediateConeAngleOne = Units.degreesToRadians(-80);
+        public static final double stageOneArbitraryIntermediateConeAngleOne = Units.degreesToRadians(67);
+        public static final double stageTwoEFClearsL3Cone = Units.degreesToRadians(-62);
+        public static final double stageOneEFClearsL3Cone = Units.degreesToRadians(56);
         public static final double stageTwoArbitraryIntermediateCubeAngle = Units.degreesToRadians(-104);
         public static final double stageOneArbitraryIntermediateCubeAngle = Units.degreesToRadians(68);
-        public static final double stageTwoClearsBumpersAngle = Units.degreesToRadians(-127);
+        public static final double stageTwoClearsBumpersAngle = Units.degreesToRadians(-165);
+        public static final double stageOneClearsBumpersAngle = Units.degreesToRadians(47);
 }
 
         public static final double AllowedSequencingErrorAngle = Units.degreesToRadians(1);
