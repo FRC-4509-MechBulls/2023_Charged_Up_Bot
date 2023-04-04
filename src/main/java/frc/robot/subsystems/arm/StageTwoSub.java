@@ -249,13 +249,13 @@ public class StageTwoSub extends SubsystemBase {
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
     
-    /*
+    
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
     pidController.setD(SmartDashboard.getNumber("stageTwoD", ArmConstants.stageTwo_kD), 0);
     double outputRange = SmartDashboard.getNumber("stageTwoRange", ArmConstants.stageTwoOutputRange);
     pidController.setOutputRange(-outputRange, outputRange, 0);
-    */
+    
 
     /*
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
