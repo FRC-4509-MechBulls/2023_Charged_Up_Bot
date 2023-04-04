@@ -21,7 +21,7 @@ public final class Constants {
 
 
     public static final class SimulationConstants{
-        public static final boolean simulationEnabled = false;
+        public static final boolean simulationEnabled = true;
         public static final double driveSpeedMultiplier = 1.5;
         public static final double turningSpeedMultiplier = 100;
         public static final double armStageOneSpeedMultiplier = 1.3;
@@ -215,7 +215,8 @@ public final class Constants {
 
         public static final double bothArmsInBetweenPlacingThreshold = Units.degreesToRadians(5);
 
-        public static final double AllowedSequencingErrorAngle = Units.degreesToRadians(1);
+        public static final double sequencingAddedAngle = Units.degreesToRadians(3);
+        public static final double allowedSequencingErrorAngle = Units.degreesToRadians(1);
         public static final double stageTwoL2ConePosition = Units.degreesToRadians(-103);
         public static final double stageOneEFClearsL2Cube = Units.degreesToRadians(88);
         public static final double stageTwoHoldingMaxExtension = Units.degreesToRadians(-140);
