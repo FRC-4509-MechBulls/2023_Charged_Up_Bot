@@ -215,12 +215,6 @@ public final class Constants {
 
         public static final double bothArmsInBetweenPlacingThreshold = Units.degreesToRadians(5);
 
-        public static final double stageTwoIntakingAngleThreshold = Units.degreesToRadians(30); //lower if it hits on the way to fallen cone
-
-        public static final double stageOneRetractingFromIntakingFallenThreshold = Units.degreesToRadians(30);
-
-    }
-
         public static final double AllowedSequencingErrorAngle = Units.degreesToRadians(1);
         public static final double stageTwoL2ConePosition = Units.degreesToRadians(-103);
         public static final double stageOneEFClearsL2Cube = Units.degreesToRadians(88);
