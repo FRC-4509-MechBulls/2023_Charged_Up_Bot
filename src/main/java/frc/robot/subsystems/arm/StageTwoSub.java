@@ -12,7 +12,6 @@ import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.REVLibError;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.util.Units;
@@ -57,6 +56,9 @@ public class StageTwoSub extends SubsystemBase {
     SmartDashboard.putNumber("stageTwoP", ArmConstants.stageTwo_kP);
     SmartDashboard.putNumber("stageTwoI", ArmConstants.stageTwo_kI);
     SmartDashboard.putNumber("stageTwoD", ArmConstants.stageTwo_kD);
+    SmartDashboard.putNumber("stageTwoRange", ArmConstants.stageTwoOutputRange);
+    SmartDashboard.putNumber("stageTwoEfficiencyMultiplier", 1);
+
     /*
     SmartDashboard.putNumber("stageTwoAllowedError", 0.2);
     SmartDashboard.putNumber("stageTwoAccel", .6);
@@ -104,17 +106,20 @@ public class StageTwoSub extends SubsystemBase {
     encoder.setPositionConversionFactor((2 * Math.PI) / encoderRatio);
     encoder.setVelocityConversionFactor(((2 * Math.PI) / encoderRatio) / 60);
     encoder.setInverted(true);
-    System.out.println(encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset));
+    encoder.setZeroOffset(ArmConstants.stageTwoEncoderOffset);
   }
   private void configMotorControllers() {
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180)));
+    configMotorStatusFrames();
+    if (armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180))) != REVLibError.kOk) {
+      try {Thread.sleep(1000);} catch (InterruptedException e) {}
+      System.out.println(armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180))));
+      try {Thread.sleep(1000);} catch (InterruptedException e) {}
+      System.out.println(armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180))));
+    }
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) (softLimitReverse + Units.degreesToRadians(180)));
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true);
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
     armMotorPrimary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 1000);
-    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 1000);
     System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20));
     if (armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20) != REVLibError.kOk) {
       System.out.println(armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20));
@@ -125,11 +130,6 @@ public class StageTwoSub extends SubsystemBase {
     armMotorSecondary.setIdleMode(CANSparkMax.IdleMode.kCoast);
     armMotorSecondary.enableVoltageCompensation(RobotConstants.ROBOT_NOMINAL_VOLTAGE);
     armMotorSecondary.follow(armMotorPrimary, true);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 1000);
-    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 1000);
     armMotorSecondary.setSecondaryCurrentLimit(secondaryCurrentLimit);
     armMotorSecondary.setSmartCurrentLimit(smartCurrentLimit);
   }
@@ -137,11 +137,9 @@ public class StageTwoSub extends SubsystemBase {
     pidController = armMotorPrimary.getPIDController();
     pidController.setFeedbackDevice(encoder);
     pidController.setP(ArmConstants.stageTwo_kP, 0);
-    if (pidController.setI(ArmConstants.stageTwo_kI, 0) != REVLibError.kOk) {
-      System.out.println(pidController.setI(ArmConstants.stageTwo_kI, 0));
-    }
+    pidController.setI(ArmConstants.stageTwo_kI, 0);
     pidController.setD(ArmConstants.stageTwo_kD, 0);
-    pidController.setOutputRange(-.4,.4, 0);
+    pidController.setOutputRange(-ArmConstants.stageTwoOutputRange, ArmConstants.stageTwoOutputRange, 0);
     pidController.setPositionPIDWrappingEnabled(false);
     /*
     pidController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
@@ -149,6 +147,25 @@ public class StageTwoSub extends SubsystemBase {
     pidController.setSmartMotionMaxVelocity(Units.degreesToRadians(130/.6) * 60, 0);
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRotations(0.2), 0);
     */
+  }
+  private void configMotorStatusFrames() {
+    //primary
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 5);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 15);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 15);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65521);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65519);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 15);
+    armMotorPrimary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 15);
+    //secondary
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 65521);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 65519);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 65497);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 65479);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus4, 65449);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 65447);
+    armMotorSecondary.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 65437);
+    
   }
   private void burnConfigs() {
     armMotorPrimary.burnFlash();
@@ -201,16 +218,17 @@ public class StageTwoSub extends SubsystemBase {
   private void setArmPosition(){
     SmartDashboard.putNumber("stageTwoSet", Units.radiansToDegrees(setpoint));
     double convertedSetpoint = setpoint + Units.degreesToRadians(180);
-    
+    /*
     if (angle > setpoint && lastAngle < setpoint || angle < setpoint && lastAngle > setpoint) {
       changedSides = true;
     }
     else changedSides = false;
-    if (angle > setpoint + Units.degreesToRadians(3) || angle < setpoint - Units.degreesToRadians(3) || changedSides == true) {
+    */
+    if (angle > setpoint + Units.degreesToRadians(ArmConstants.stageTwo_kIZone) || angle < setpoint - Units.degreesToRadians(ArmConstants.stageTwo_kIZone)) {
       pidController.setIAccum(0);
     }
-    lastAngle = angle;
-    pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kPosition, 0, AFF, ArbFFUnits.kVoltage);
+    //lastAngle = angle;
+    pidController.setReference(convertedSetpoint, CANSparkMax.ControlType.kPosition, 0, AFF * (1/SmartDashboard.getNumber("stageTwoEfficiencyMultiplier", 1)), ArbFFUnits.kVoltage);
   }
   private double getEncoderPosition() {
     return encoder.getPosition() - Units.degreesToRadians(180);
@@ -230,9 +248,15 @@ public class StageTwoSub extends SubsystemBase {
     calculateStageData();
     setArmPosition();
     SmartDashboard.putNumber("stageTwoAngle", Units.radiansToDegrees(angle));
+    
+    /*
     pidController.setP(SmartDashboard.getNumber("stageTwoP", ArmConstants.stageTwo_kP), 0);
     pidController.setI(SmartDashboard.getNumber("stageTwoI", ArmConstants.stageTwo_kI), 0);
     pidController.setD(SmartDashboard.getNumber("stageTwoD", ArmConstants.stageTwo_kD), 0);
+    double outputRange = SmartDashboard.getNumber("stageTwoRange", ArmConstants.stageTwoOutputRange);
+    pidController.setOutputRange(-outputRange, outputRange, 0);
+    */
+
     /*
     pidController.setSmartMotionAllowedClosedLoopError(Units.degreesToRadians(SmartDashboard.getNumber("stageTwoAllowedError", 0)), 0);
     pidController.setSmartMotionMaxAccel((Units.degreesToRadians(130/.6) * 60) / SmartDashboard.getNumber("stageTwoAccel", 0), 0);

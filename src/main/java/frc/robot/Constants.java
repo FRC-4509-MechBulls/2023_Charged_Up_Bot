@@ -87,20 +87,20 @@ public final class Constants {
         public static final double magEncoderCountsPerRotation = 4096;//4096
         public static final double radiansPerRotation = 2 * Math.PI;
         public static final double stageOneEncoderTicksToRadians =  (radiansPerRotation/magEncoderCountsPerRotation);
-        public static final double stageOneLimitSwitchLeadingAngle = Units.degreesToRadians(39.745231);
-        public static final double stageOneLimitSwitchTrailingAngle = Units.degreesToRadians(50.162); //50.162, 
+        //public static final double stageOneLimitSwitchLeadingAngle = Units.degreesToRadians(39.745231);
+        //public static final double stageOneLimitSwitchTrailingAngle = Units.degreesToRadians(50.162); //50.162, 
         public static final int stageOneTalonLeftID = 11;
         public static final int stageOneTalonRightID = 12;
         public static final double[] stageOneDefaultCGCoordinateRelativeToPivot = {6, 0};
         public static final double stageOneLength = 28.75;
         public static final double[] stageOnePivotCoordinate = {-4.864, 18.66};
         public static final double stageOneEncoderRatio = 1;//54.0/16
-        public static final double stageOneStartAngle = Units.degreesToRadians(52.7);//?
+        //public static final double stageOneStartAngle = Units.degreesToRadians(52.7);//?
         public static final double stageOne12VStallTorque = 21.3302973;
         public static final double stageOneMotorVoltsPerTorque = (12.0/stageOne12VStallTorque);
         public static final double stageOneRatio = 421.88;
         public static final double stageOneNumberOfMotors = 2;
-        public static final double stageOneEfficiency = 1.9;
+        public static final double stageOneEfficiency = 1.9 ;
         public static final double stageOneOutputVoltsPerTorque = stageOneMotorVoltsPerTorque * (1/stageOneRatio) * (1/stageOneNumberOfMotors) * (1/stageOneEfficiency);
         public static final double stageOneGrossSpringLength = 31;
         public static final double stageOneExcessSpringLength = 8.5;
@@ -121,11 +121,13 @@ public final class Constants {
         public static final double stageOne_kP = 4;//1//4, 1 for testing
         public static final double stageOne_kI = 0.01;//0.02//0
         public static final double stageOne_kD = 0; //undecided
-        public static final double stageOneEncoderOffset = Units.degreesToRadians(220.778125 + 0.5 + 3.85 - 6.23);//220.778125 - 180.0 //220.778125
+        public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians(10);//
+        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(250);//250
+        public static final double stageOneEncoderOffset = Units.degreesToRadians(291.9 + 90 - .145);//
 
         public static final double revEncoderCountsPerRotation = 2048;
-        public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
-        public static final double stageTwoLimitSwitchTrailingAngle = Units.degreesToRadians(-27.133);
+        //public static final double stageTwoLimitSwitchLeadingAngle = Units.degreesToRadians(-42.5); //-42.5
+        //public static final double stageTwoLimitSwitchTrailingAngle = Units.degreesToRadians(-27.133);
         public static final int stageTwoSparkLeftID = 1; 
         public static final int stageTwoSparkRightID = 2; 
         public static final double[] stageTwoDefaultCGCoordinateRelativeToPivot = {10.9, 0};
@@ -133,12 +135,12 @@ public final class Constants {
         public static final double[] stageTwoPivotCoordinate = {stageOnePivotCoordinate[0] + stageOneLength, stageOnePivotCoordinate[1]};
         public static final double stageTwoEncoderRatio = 1;//32.0/22
         public static final int stageTwoMPRatio = 5*5*4;
-        public static final double stageTwoStartAngle = Units.degreesToRadians(-90.0-Units.radiansToDegrees(stageOneStartAngle));
+        //public static final double stageTwoStartAngle = Units.degreesToRadians(-90.0-Units.radiansToDegrees(stageOneStartAngle));
         public static final double stageTwo12VStallTorque = 29.03044612;
         public static final double stageTwoMotorVoltsPerTorque = (12.0/stageTwo12VStallTorque);
         public static final double stageTwoRatio = 145.45;
         public static final double stageTwoNumberOfMotors = 2;
-        public static final double stageTwoEfficiency = 2.2;
+        public static final double stageTwoEfficiency = 0.8;
         public static final double stageTwoOutputVoltsPerTorque = stageTwoMotorVoltsPerTorque * (1/stageTwoRatio) * (1/stageTwoNumberOfMotors) * (1/stageTwoEfficiency);
         public static final double stageTwoGrossSpringLength = 56;
         public static final double stageTwoExcessSpringLength = 9;
@@ -155,28 +157,29 @@ public final class Constants {
         public static final double stageTwoSoftLimitReverse = Units.degreesToRadians(-180+7.990375);
         public static final int stageTwoSmartCurrentLimit = 40;
         public static final double stageTwoSecondaryCurrentLimit = 60;
-        public static final double stageTwo_kP = .6;//.005//0.5//1-2 seem fine, 2 has big inertial moment so I'll leave it at 1 for now, 0.5 for testing
-        public static final double stageTwo_kI = 0.001;//0.000001
-        public static final double stageTwo_kD = 4; //undecided
+        public static final double stageTwo_kP = .6;//0.9
+        public static final double stageTwo_kI = 0.001;//0.002
+        public static final double stageTwo_kIZone = 3;//3
+        public static final double stageTwo_kD = 4;//20
+        public static final double stageTwo_kP_Alternate = 0.4;//0.4
         public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
+        public static final double stageTwoOutputRange = 0.4;//1.0
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;
 
-        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(12.375 + .125 + 1)};//
+        public static final double[] intakingConesUprightArmPos = {Units.inchesToMeters(12), Units.inchesToMeters(12.375 -.5)};//
         public static final double[] intakingConesFallenArmPos = {Units.inchesToMeters(22), Units.inchesToMeters(4.125)};//
         public static final double[] intakingCubesArmPos = {Units.inchesToMeters(16), Units.inchesToMeters(12)};//
         public static final double[] holdingArmPos = {Units.inchesToMeters(0), Units.inchesToMeters(17)};//
 
         public static final double[] placingConeArmPosOne = {Units.inchesToMeters(8.168735), Units.inchesToMeters(13.98374)};//
-        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5), Units.inchesToMeters(36.5)};//
-        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(42 + 1.5), Units.inchesToMeters(41.5 + 7)};//
+        public static final double[] placingConeArmPosTwo = {Units.inchesToMeters(26.5 + 2), Units.inchesToMeters(36.5  + 0.5)};//26.3, 36.2
+        public static final double[] placingConeArmPosThree = {Units.inchesToMeters(43.5), Units.inchesToMeters(48.5)};//
 
-        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(14)};//
-        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(34.5 + 1), Units.inchesToMeters(35)};//
+        public static final double[] placingCubeArmPosOne = {Units.inchesToMeters(17), Units.inchesToMeters(12)};//
+        public static final double[] placingCubeArmPosTwo = {Units.inchesToMeters(35.5), Units.inchesToMeters(35)};//
         public static final double[] placingCubeArmPosThree = {Units.inchesToMeters(34), Units.inchesToMeters(37)};//
-
-
 
         public static final double[] postPlacingConeArmPosOne = {placingConeArmPosOne[0], placingConeArmPosOne[1] + Units.inchesToMeters(0)};
         public static final double[] postPlacingConeArmPosTwo = {placingConeArmPosTwo[0], placingConeArmPosTwo[1] + Units.inchesToMeters(4)};
@@ -188,11 +191,34 @@ public final class Constants {
 
         public static final double timeBeforePostPlacing = 0.1;
 
-
-
-
         public static final double angleToleranceToUpdateEF = 0.5;
         public static final double maxExtension = 56.5; //slightly lower than total length of arm = 57.5 inches
+
+        public static final double stageOneInBetweenPlacingAngleRad = Units.degreesToRadians(95);
+        public static final double stageTwoInBetweenPlacingAngleRad = Units.degreesToRadians(-70); //-90
+
+
+
+        public static final double stageTwoInBetweenRetractingAngleRadStepZeroL3 = Units.degreesToRadians(-20);
+        public static final double stageOneInBetweenRetractingAngleRadStepZeroL3 = Units.degreesToRadians(50);
+
+        public static final double stageOneInBetweenRetractingAngleRadStepZeroL2 = Units.degreesToRadians(95);
+        public static final double stageTwoInBetweenRetractingAngleRadStepZeroL2 = Units.degreesToRadians(-93);
+
+        public static final double stageOneInBetweenRetractingAngleRad = Units.degreesToRadians(95);
+        public static final double stageTwoInBetweenRetractingAngleRad = Units.degreesToRadians(-70); //-90
+
+        public static final double bothArmsInBetweenPlacingThresholdRetractStg2 = Units.degreesToRadians(2); //previously 5*
+
+        public static final double dontDoAvoidanceThreshold = 4; // inches?
+
+
+        public static final double bothArmsInBetweenPlacingThreshold = Units.degreesToRadians(5);
+
+        public static final double stageTwoIntakingAngleThreshold = Units.degreesToRadians(30); //lower if it hits on the way to fallen cone
+
+        public static final double stageOneRetractingFromIntakingFallenThreshold = Units.degreesToRadians(30);
+
     }
 
 
@@ -298,7 +324,7 @@ public final class Constants {
 
 
         public static final double posTolerance = Units.inchesToMeters(0.25);
-        public static final double rotationTolerance = 0.5; //adds half an inch with arm fully extended
+        public static final double rotationTolerance = 0.2; //adds half an inch with arm fully extended
 
         
         public static final double GYRO_Z_ERROR = 0.674; //.674
@@ -357,11 +383,14 @@ public final class Constants {
     }
 
     public static final class VisionConstants {
-        public static final double MAX_AMBIGUITY = 0.05;
-        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7); // -4.5 //7
-        public static final double CAM_Y_OFFSET = Units.inchesToMeters(9.125); //9.5 //9.125
+        public static final double MAX_AMBIGUITY_TO_TRUST = 0.01;
+        public static final double MAX_AMBIGUITY_TO_NOT_THROW_OUT = 0.4;
+        public static final double CAM_X_OFFSET = Units.inchesToMeters(-7); //+ is forward // -4.5 //7
+        public static final double CAM_Y_OFFSET = Units.inchesToMeters(9.125);// + is left  //9.5 //9.125
         public static final double camDirFromCenter = Math.atan2(CAM_Y_OFFSET, CAM_X_OFFSET);
         public static final double camDistFromCenter = Math.sqrt(Math.pow(CAM_X_OFFSET,2)+Math.pow(CAM_Y_OFFSET,2));
+
+        public static final double camHeading = Units.degreesToRadians(0);
 
     }
 

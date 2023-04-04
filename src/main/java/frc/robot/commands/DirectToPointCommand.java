@@ -30,6 +30,20 @@ public class DirectToPointCommand extends CommandBase {
 
     double posP = 0.2;
     double rotP = 0.2;
+    double maxSpeed = Constants.DriveConstants.maxPowerOut;
+    double maxRotSpeed = Constants.DriveConstants.maxTurningPowerOut;
+    public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance, double rotationTolerance, double posP, double rotP, double maxSpeed, double maxRotSpeed){
+        this(swerveSubsystem,desiredPose,timeout);
+        this.posTolerance = posTolerance;
+        this.rotationTolerance = rotationTolerance;
+        this.posP = posP;
+        this.rotP = rotP;
+        this.maxSpeed = maxSpeed;
+        this.maxRotSpeed = maxRotSpeed;
+    }
+
+
+
 
     public DirectToPointCommand(SwerveSubsystem swerveSubsystem, Pose2d desiredPose, double timeout, double posTolerance, double rotationTolerance, double posP, double rotP){
         this(swerveSubsystem,desiredPose,timeout);
@@ -64,7 +78,7 @@ public class DirectToPointCommand extends CommandBase {
             start();
             firstExecuteDone = true;
         }
-        swerveSubsystem.driveToPose(desiredPose,posP,rotP);
+        swerveSubsystem.driveToPose(desiredPose,posP,rotP,maxSpeed,maxRotSpeed);
     }
 
 

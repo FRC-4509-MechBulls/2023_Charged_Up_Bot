@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.sensors.PigeonIMU_ControlFrame;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.Pigeon2.AxisDirection;
 
@@ -91,7 +95,17 @@ StateControllerSubsystem stateControllerSubsystem;
     this.stateControllerSubsystem = stateControllerSubsystem;
     initialPose = new Pose2d();
     constructOdometry();
-
+ 
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 199, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 15, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 211, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 223, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 227, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 229, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 233, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 15, 1000));
+    System.out.print(gyro.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 241, 1000));
+    
     gyro.configFactoryDefault();
     gyro.configMountPose(AxisDirection.NegativeY, AxisDirection.PositiveZ);
     gyro.configAllSettings(Robot.ctreConfigs.gyro, 1000);
@@ -142,6 +156,8 @@ StateControllerSubsystem stateControllerSubsystem;
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, odometry.getEstimatedPosition().getRotation().rotateBy(invertFieldOrientedForOtherTeam));
     else
       chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+
+    SmartDashboard.putNumber("driveOutSpeed",Math.sqrt(Math.pow(xSpeed,2)+Math.pow(ySpeed,2)));
 
     SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
@@ -222,7 +238,7 @@ StateControllerSubsystem stateControllerSubsystem;
     odometry = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics, 
     getRotation2d(), 
     getPositions(), 
-    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(0.3, 0.3, 0.3));
+    initialPose, VecBuilder.fill(Units.inchesToMeters(0.25),Units.inchesToMeters(0.25), Units.degreesToRadians(0.3)), VecBuilder.fill(Units.inchesToMeters(14),Units.inchesToMeters(14),Units.degreesToRadians(50)));
   }
   
   // Getters
@@ -391,29 +407,9 @@ public Pose2d getEstimatedPosition(){
 
     // Vision stuff
 
-public void fieldTagSpotted(FieldTag fieldTag, Transform3d transform, double latency, double ambiguity){
-  if(ambiguity>Constants.VisionConstants.MAX_AMBIGUITY) return;
 
-  //1. calculate X and Y position of camera based on X and Y components of tag and create a pose from that
-    Rotation2d newRotation = new Rotation2d( ( Math.IEEEremainder((-transform.getRotation().getZ() - fieldTag.getPose().getRotation().getRadians()+4*Math.PI),2*Math.PI)));
-    double newY = 0-( transform.getY()* Math.cos(-newRotation.getRadians()) + transform.getX() * Math.cos(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getY();
-    double newX = 0- ( transform.getY()*Math.sin(-newRotation.getRadians()) + transform.getX() * Math.sin(Math.PI/2 - newRotation.getRadians())  ) + fieldTag.getPose().getX();
-    Pose2d newPose = new Pose2d(newX,newY, newRotation);
-
-  double camXOffset =Math.cos(newRotation.getRadians()+ Constants.VisionConstants.camDirFromCenter) * Constants.VisionConstants.camDistFromCenter;
-  double camYOffset =  Math.sin(newRotation.getRadians() + Constants.VisionConstants.camDirFromCenter)* Constants.VisionConstants.camDistFromCenter;
-newX-=camXOffset;
-newY-=camYOffset;
-
-  //  SmartDashboard.putNumber("new_x", newX);
-   // SmartDashboard.putNumber("new_y", newY);
-
-    //2. Pass vision measurement to odometry
-  //  SmartDashboard.putNumber("new rotation",newRotation.getDegrees());
-  //odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  odometry.addVisionMeasurement(new Pose2d(newX,newY,newRotation),Timer.getFPGATimestamp() - latency*(1.0/1000));
-  //  zeroHeading(newRotation.getDegrees());
-
+  public SwerveDrivePoseEstimator getOdometry() {
+    return odometry;
   }
 
   public double[] getDesiredSpeeds(Pose2d pose, double posP, double rotP){
@@ -464,6 +460,7 @@ newY-=camYOffset;
   public void driveToPose(Pose2d pose, double posPa, double rotP){
     driveToPose(pose,posPa,rotP, DriveConstants.maxPowerOut, DriveConstants.maxTurningPowerOut);
   }
+
 
   double getAutoBalanceOut(double setpoint, double measurement, double p, double max){
     double out = -MB_Math.maxValueCutoff((setpoint - measurement)* p, max);

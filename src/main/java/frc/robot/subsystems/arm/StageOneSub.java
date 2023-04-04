@@ -4,6 +4,10 @@
 
 package frc.robot.subsystems.arm;
 
+import java.lang.reflect.Method;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -49,17 +53,17 @@ public class StageOneSub extends SubsystemBase {
   /** Creates a new ArmStageOne. */
   public StageOneSub() {
     
-    SmartDashboard.putNumber("stageOneVelocity", 4);
-    SmartDashboard.putNumber("stageOneAccel", 0.15);
+    SmartDashboard.putNumber("stageOneVelocity", Units.radiansToDegrees(ArmConstants.stageOneMotionCruiseVelocity));
+    SmartDashboard.putNumber("stageOneAccel", Units.radiansToDegrees(ArmConstants.stageOneMotionMaxAcceleration));
     SmartDashboard.putNumber("stageOneP", ArmConstants.stageOne_kP);
     SmartDashboard.putNumber("stageOneI", ArmConstants.stageOne_kI);
     SmartDashboard.putNumber("stageOneD", ArmConstants.stageOne_kD);
+    SmartDashboard.putNumber("stageOneEfficiencyMultiplier", 1);
     
     instantiateConstants();
     instantiateMotorControllers();
     resetMotorControllers();
     configMotorControllers();
-    configEncoder();
   }
   //Config
   private void instantiateConstants() {
@@ -88,6 +92,7 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.configFactoryDefault(1000);
   }
   private void configMotorControllers() {
+    configMotorStatusFrames();
     //current limit
     armMotorPrimary.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, continuousCurrentLimit, peakCurrentLimit, peakCurrentTime), 1000);
     //soft limit
@@ -101,9 +106,13 @@ public class StageOneSub extends SubsystemBase {
     //PID
     armMotorPrimary.config_kP(0,ArmConstants.stageOne_kP,1000);
     armMotorPrimary.config_kI(0,ArmConstants.stageOne_kI,1000);
-    armMotorPrimary.config_IntegralZone(0, calculateEncoderFromOutput(Units.degreesToRadians(3)), 1000);
+    armMotorPrimary.config_IntegralZone(0, calculateEncoderFromOutput(Units.degreesToRadians(2)), 1000);
     armMotorPrimary.config_kD(0,ArmConstants.stageOne_kD,1000);
     armMotorPrimary.configClosedLoopPeriod(0, 1, 1000);
+    //motion magic
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(ArmConstants.stageOneMotionCruiseVelocity) * 10, 1000);
+    armMotorPrimary.configMotionAcceleration(calculateEncoderFromOutput(ArmConstants.stageOneMotionMaxAcceleration) * 10, 1000);
+    armMotorPrimary.configMotionSCurveStrength(1, 1000);   
     //voltage compensation
     armMotorPrimary.configVoltageCompSaturation(RobotConstants.ROBOT_NOMINAL_VOLTAGE, 1000);
     armMotorPrimary.enableVoltageCompensation(true);
@@ -118,15 +127,33 @@ public class StageOneSub extends SubsystemBase {
     armMotorSecondary.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, continuousCurrentLimit, peakCurrentLimit, peakCurrentTime), 1000);
     armMotorSecondary.configVoltageCompSaturation(RobotConstants.ROBOT_NOMINAL_VOLTAGE, 1000);
     armMotorSecondary.enableVoltageCompensation(true);
-    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 1000, 1000);
-    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 1000, 1000);
     armMotorSecondary.setNeutralMode(NeutralMode.Coast);
-    //motion magic
-    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians((40.0/4))) * 10, 1000);
-    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/15))) * 10)/.15, 1000);
-    armMotorPrimary.configMotionSCurveStrength(1, 1000);
   }
-  private void configEncoder() {
+  public void configMotorStatusFrames() {
+    //primary
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 5, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 15, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 199, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 211, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 223, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 227, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 229, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 233, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 239, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 241, 1000);
+    armMotorPrimary.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 251, 1000);
+    //secondary
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 197, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 199, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 211, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 223, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 227, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 229, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 233, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 239, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_21_FeedbackIntegrated, 241, 1000);
+    armMotorSecondary.setStatusFramePeriod(StatusFrameEnhanced.Status_Brushless_Current, 251, 1000);
   }
   //Getters
   public double getLength() {
@@ -193,17 +220,19 @@ public class StageOneSub extends SubsystemBase {
     output = output - ArmConstants.stageOneEncoderOffset;
     double encoder = calculateEncoderFromOutput(output);
 
-    armMotorPrimary.set(TalonSRXControlMode.MotionMagic, encoder, DemandType.ArbitraryFeedForward, (AFF/12));
+    armMotorPrimary.set(TalonSRXControlMode.MotionMagic, encoder, DemandType.ArbitraryFeedForward, (AFF/12) * (1/SmartDashboard.getNumber("stageOneEfficiencyMultiplier", 1)));
   }
   private double getEncoderPosition() {
     double encoder = armMotorPrimary.getSelectedSensorPosition();
     double output = calculateOutputFromEncoder(encoder);
+    
     if (output < Math.PI - ArmConstants.stageOneEncoderOffset) {
       output = output + ArmConstants.stageOneEncoderOffset;
     }
     else {
       output = -Math.PI + ((output + ArmConstants.stageOneEncoderOffset) - Math.PI);
     }
+    
     return output;
   }
   private double getEncoderVelocity() {
@@ -225,12 +254,13 @@ public class StageOneSub extends SubsystemBase {
     setArmPosition();
     SmartDashboard.putNumber("stageOneAngle", Units.radiansToDegrees(angle));
 
-    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians(40.0/SmartDashboard.getNumber("stageOneVelocity", 0))), 1000);
-    armMotorPrimary.configMotionAcceleration((calculateEncoderFromOutput(Units.degreesToRadians((40.0/15))) * 10)/SmartDashboard.getNumber("stageOneAccel", 0), 1000);
-    armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP), 1000);
-    armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI), 1000);
-    armMotorPrimary.config_kD(0, SmartDashboard.getNumber("stageOneD", ArmConstants.stageOne_kD), 1000);
-
+    /*
+    armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(Units.degreesToRadians(SmartDashboard.getNumber("stageOneVelocity", Units.radiansToDegrees(ArmConstants.stageOneMotionCruiseVelocity)))) * 10);
+    armMotorPrimary.configMotionAcceleration(calculateEncoderFromOutput(Units.degreesToRadians(SmartDashboard.getNumber("stageOneAccel", Units.radiansToDegrees(ArmConstants.stageOneMotionMaxAcceleration)))) * 10);
+    armMotorPrimary.config_kP(0, SmartDashboard.getNumber("stageOneP", ArmConstants.stageOne_kP));
+    armMotorPrimary.config_kI(0, SmartDashboard.getNumber("stageOneI", ArmConstants.stageOne_kI));
+    armMotorPrimary.config_kD(0, SmartDashboard.getNumber("stageOneD", ArmConstants.stageOne_kD));
+    */
     //SmartDashboard.putNumber("stageOneVelocity", velocity);
   }
 }

@@ -22,6 +22,15 @@ public class MB_Math {
        return ang2-ang1;
     }
 
+    //rotate a point around another point by angle degrees
+    public static double[] rotatePoint(double x, double y, double centerX, double centerY, double angle){
+        double[] out = new double[2];
+        double radAngle = Math.toRadians(angle);
+        out[0] = (x-centerX)*Math.cos(radAngle) - (y-centerY)*Math.sin(radAngle) + centerX;
+        out[1] = (x-centerX)*Math.sin(radAngle) + (y-centerY)*Math.cos(radAngle) + centerY;
+        return out;
+    }
+
 
 
     public static boolean isWithinDistanceOf(double point, double setpoint, double maxDistance) {

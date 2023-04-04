@@ -1,0 +1,10 @@
+@import "/edu/wpi/first/shuffleboard/api/material.css";
+@import "/edu/wpi/first/shuffleboard/api/base.css";
+@import "/edu/wpi/first/shuffleboard/app/dark.css";
+
+.root {
+	-swatch-100: #CC6600;
+	-swatch-200: #CC6600;
+	-swatch-500: #854200;
+	
+}
