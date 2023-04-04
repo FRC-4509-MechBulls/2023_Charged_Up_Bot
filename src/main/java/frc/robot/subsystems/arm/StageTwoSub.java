@@ -110,7 +110,12 @@ public class StageTwoSub extends SubsystemBase {
   }
   private void configMotorControllers() {
     configMotorStatusFrames();
-    armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180)));
+    if (armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180))) != REVLibError.kOk) {
+      try {Thread.sleep(1000);} catch (InterruptedException e) {}
+      System.out.println(armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180))));
+      try {Thread.sleep(1000);} catch (InterruptedException e) {}
+      System.out.println(armMotorPrimary.setSoftLimit(SoftLimitDirection.kForward, (float) (softLimitForward + Units.degreesToRadians(180))));
+    }
     armMotorPrimary.setSoftLimit(SoftLimitDirection.kReverse, (float) (softLimitReverse + Units.degreesToRadians(180)));
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kForward, true);
     armMotorPrimary.enableSoftLimit(SoftLimitDirection.kReverse, true);
