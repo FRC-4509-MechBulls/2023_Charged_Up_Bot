@@ -4,7 +4,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
@@ -16,6 +18,8 @@ import frc.robot.subsystems.arm.Grabber;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.nav.NavigationField;
 import frc.robot.subsystems.state.StateControllerSubsystem;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MB_AutoCommandChooser {
 
@@ -37,7 +41,7 @@ public class MB_AutoCommandChooser {
       //  autoChooser.addOption("r_c_justBalance",redBalancerCenter(false));
         autoChooser.addOption("r_c_placeAndBalance",redCenter_scoreLeaveAndBalance(false));
       //  autoChooser.addOption("r_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(false));
-        autoChooser.addOption("r_r_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(false));
+      //  autoChooser.addOption("r_r_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(false));
 
         autoChooser.addOption("r_L_doubleScore",redLeft_doubleScore(false));
 
@@ -46,7 +50,7 @@ public class MB_AutoCommandChooser {
         //autoChooser.addOption("b_c_justBalance",redBalancerCenter(true));
         autoChooser.addOption("b_c_placeAndBalance",redCenter_scoreLeaveAndBalance(true));
         //autoChooser.addOption("b_r_scoreLeaveIntakeScore_old", redRight_scoreLeaveIntakeScore_old(true));
-        autoChooser.addOption("b_L_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(true));
+       // autoChooser.addOption("b_L_scoreLeaveIntakeScore_new",redRight_scoreLeaveIntakeScore_untested(true));
 
         autoChooser.addOption("b_R_doubleScore",redLeft_doubleScore(true));
 
@@ -212,7 +216,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         int reverseX = 1;
         double zeroAngle = 0;
         double pickupAngle = 0;
-        double postPickupAngle = -15;
+        double postPickupAngle = 15+180;
         if(reverseForBlue){
             reverseX = -1;
             zeroAngle = 180;
@@ -229,9 +233,13 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         double fasterMaxTurn = 0.45;
 
         double slowerMaxSpeed = 0.1;
+        double secondPlaceMaxSpeed = 0.10;
         double slowerMaxTurn = 0.1;
 
-        double intakingMaxSpeed = 0.12;
+        double inPlaceTurnSpeedMax = 0.30;
+        double inPlaceTurnP = Constants.DriveConstants.turnPValue / 2.0;
+
+        double intakingMaxSpeed = 0.15;
 
 
 
@@ -247,7 +255,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         //retract arm
         Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
         //go to intermediate position
-        DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.844*finalReverseX,3.4,Rotation2d.fromDegrees(finalZeroAngle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,0.25,0.25);
+        DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.844*finalReverseX,3.4,Rotation2d.fromDegrees(45 + finalZeroAngle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,0.30,0.25);
         //intermediate two
         DirectToPointCommand intermediate2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-3.00*finalReverseX,3.4,Rotation2d.fromDegrees(finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,slowerMaxTurn);
         //set to intaking
@@ -259,7 +267,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
       //  DirectToPointCommand pauseForIntake = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36) - 1.449 )*finalReverseX,Units.inchesToMeters(121.61) - 0.388,Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn);
 
         //drive to pickup
-        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 12))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(finalPickupAngle)),2,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
+        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 8))*finalReverseX,3.4 + Units.inchesToMeters(5),Rotation2d.fromDegrees(finalPickupAngle)),2.5,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
 
         //wait 1 second
        // SleepCommand waitAfterPickup = new SleepCommand(0);
@@ -269,15 +277,15 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
       //  DirectToPointCommand armToHoldingPause = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 8))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(finalPickupAngle)),0.5,-1,-1,2,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
 
         //back to intermediate 1
-        DirectToPointCommand postPickupSpin = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 12))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(postPickupAngle)),1,Units.inchesToMeters(1),1,2,Constants.DriveConstants.turnPValue, slowerMaxSpeed, fasterMaxTurn); //y was Units.inchesToMeters(121.61)
+        DirectToPointCommand postPickupSpin = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 8))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(postPickupAngle)),1,Units.inchesToMeters(8),3,2,inPlaceTurnP, slowerMaxSpeed, inPlaceTurnSpeedMax); //y was Units.inchesToMeters(121.61)
 
 
-        DirectToPointCommand intermediate3 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-4.7*finalReverseX,3.3,Rotation2d.fromDegrees(180+ finalZeroAngle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,0.25);
+        DirectToPointCommand intermediate3 = new DirectToPointCommand(swerveSubsystem,new Pose2d((-4.7 + 0.2)*finalReverseX,3.3,Rotation2d.fromDegrees(180+ finalZeroAngle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,fasterMaxTurn);
 
         //place L3
         Command setToPlacingCone2 = new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3))).andThen(new InstantCommand(()->stateController.setAgArmToPlacing()));
         //align to place final cone
-        DirectToPointCommand navToAlignPlace = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.337*finalReverseX,3.546,Rotation2d.fromDegrees(180+finalZeroAngle)),3.5,-1,-1,posP,Constants.DriveConstants.turnPValue,slowerMaxSpeed,slowerMaxTurn);
+        DirectToPointCommand navToAlignPlace = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.337*finalReverseX,3.546,Rotation2d.fromDegrees(180+finalZeroAngle)),3,-1,-1,posP,Constants.DriveConstants.turnPValue,secondPlaceMaxSpeed,slowerMaxTurn);
         //sleep
        // SleepCommand sleepCommand3 = new SleepCommand(4);
      //   DirectToPointCommand sleepCommand3 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-6.337*finalReverseX,3.546,Rotation2d.fromDegrees(180+finalZeroAngle)),3,standardPosTolerance,2,0.5,Constants.DriveConstants.turnPValue,slowerMaxSpeed,slowerMaxTurn);
