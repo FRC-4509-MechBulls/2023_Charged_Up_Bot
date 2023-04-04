@@ -61,7 +61,7 @@ public class Grabber extends SubsystemBase {
     this.telemetrySub = telemetrySub;
     //SmartDashboard.putNumber("test_inX",1);
     //SmartDashboard.putNumber("test_inY",1);
-    SmartDashboard.putBoolean("conditional", false);
+    //SmartDashboard.putBoolean("conditional", false);
   }
   //random???
   /*
@@ -206,7 +206,7 @@ public class Grabber extends SubsystemBase {
 
   private void updateSetpointThetaPhiButMisleading(){
     double stageOneAngle = stageOneSub.getAngle();
-    SmartDashboard.putNumber("simstageOneAngle", Units.radiansToDegrees(stageOneAngle));
+    //SmartDashboard.putNumber("simstageOneAngle", Units.radiansToDegrees(stageOneAngle));
     double stageTwoAngle = stageTwoSub.getAngle();
     AgnosticGrabberMode agnosticGrabberMode = stateController.getAgnosticGrabberMode();
     ItemType itemType = stateController.getItemType();
@@ -226,7 +226,7 @@ public class Grabber extends SubsystemBase {
       System.out.println("changed arm modes");
       firstLoop = true;
     }
-    SmartDashboard.putString("armMode", armMode.toString());
+    //SmartDashboard.putString("armMode", armMode.toString());
     lastArmMode = armMode;
 
     //if distance to setpoint is less than threshold, set setpoint to final setpoint
@@ -241,7 +241,7 @@ public class Grabber extends SubsystemBase {
     boolean placingcube = itemType == ItemType.CUBE;
     boolean placingNonL1 = agnosticGrabberMode == StateControllerSubsystem.AgnosticGrabberMode.PLACING && level != StateControllerSubsystem.Level.POS1;
     //boolean movingFromCube
-    SmartDashboard.putBoolean("placingnonL1", placingNonL1);
+    //SmartDashboard.putBoolean("placingnonL1", placingNonL1);
     if(placingNonL1){
       //at this point you know that you are placing L2 or L3
       if(stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.allowedSequencingErrorAngle) {
@@ -443,12 +443,13 @@ public class Grabber extends SubsystemBase {
     boolean itemIsFallen = itemFallen == StateControllerSubsystem.ItemFallen.FALLEN_CONE;
     boolean itemIsCone = itemType == ItemType.CONE;
     boolean itemisFallenCone = itemIsFallen && itemIsCone;
+    /*
     SmartDashboard.putBoolean("itemisFallenCone", itemisFallenCone);
     SmartDashboard.putBoolean("currentlyIntaking", currentlyIntaking);
     SmartDashboard.putBoolean("currentlyHolding", currentlyHolding);
     SmartDashboard.putBoolean("secondStageHitBtPtOne", secondStageHitBtPtOne);
     SmartDashboard.putBoolean("firstStageHitBtPtOne", firstStageHitBtPtOne);
-
+    */
       if(currentlyIntaking && itemisFallenCone){
         if(stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
           secondStageHitBtPtOne = true;
@@ -464,14 +465,14 @@ public class Grabber extends SubsystemBase {
       }
 
       boolean comingFromIntaking = previousAgnosticGrabberMode == StateControllerSubsystem.AgnosticGrabberMode.INTAKING;
-      SmartDashboard.putBoolean("comingfromintaking", comingFromIntaking);
+      //SmartDashboard.putBoolean("comingfromintaking", comingFromIntaking);
       if(currentlyHolding && comingFromIntaking && itemisFallenCone){
         //do the same as above but have second stage fire first
-        SmartDashboard.putNumber("setpointTheta", Units.radiansToDegrees(setpointThetaPhi[0] - ArmConstants.allowedSequencingErrorAngle));
+        //SmartDashboard.putNumber("setpointTheta", Units.radiansToDegrees(setpointThetaPhi[0] - ArmConstants.allowedSequencingErrorAngle));
         if(stageOneAngle > setpointThetaPhi[0] - ArmConstants.allowedSequencingErrorAngle) {
-          SmartDashboard.putNumber("stageOneConditionalAngle", Units.radiansToDegrees(stageOneAngle));
+          //SmartDashboard.putNumber("stageOneConditionalAngle", Units.radiansToDegrees(stageOneAngle));
           firstStageHitBtPtOne = true;
-          SmartDashboard.putBoolean("conditional", true);
+          //SmartDashboard.putBoolean("conditional", true);
         }
         if(!firstStageHitBtPtOne){
           setpointThetaPhi = new double[]{setpointThetaPhi[0] + ArmConstants.sequencingAddedAngle, convertGrabberXYToThetaPhi(new double[] {Units.metersToInches(ArmConstants.intakingConesFallenArmPos[0]), Units.metersToInches(ArmConstants.intakingConesFallenArmPos[1])})[1]};
@@ -643,7 +644,7 @@ public class Grabber extends SubsystemBase {
     //SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
    // SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
     eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
-    
+
     Pose2d nextNavPoint = eFNavSystem.getNextNavPoint();
     double[] navPointInInches = new double[]{Units.metersToInches(nextNavPoint.getX()), Units.metersToInches(nextNavPoint.getY())};
     setSetpointXY(navPointInInches);
@@ -653,8 +654,8 @@ public class Grabber extends SubsystemBase {
 
     calculateGrabberData();
     updateSetpointThetaPhiButMisleading();
-    SmartDashboard.putNumber("Theta", Units.radiansToDegrees(setpointThetaPhi[0]));
-    SmartDashboard.putNumber("Phi", Units.radiansToDegrees(setpointThetaPhi[1]));
+    //SmartDashboard.putNumber("Theta", Units.radiansToDegrees(setpointThetaPhi[0]));
+    //SmartDashboard.putNumber("Phi", Units.radiansToDegrees(setpointThetaPhi[1]));
     updateGrabberData();
 
 
