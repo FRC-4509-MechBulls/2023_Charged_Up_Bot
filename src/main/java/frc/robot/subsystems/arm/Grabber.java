@@ -224,6 +224,7 @@ public class Grabber extends SubsystemBase {
       secondStageHitBtPtOne = false;
       secondStageHitBtPtTwo = false;
       System.out.println("changed arm modes");
+      firstLoop = true;
     }
     SmartDashboard.putString("armMode", armMode.toString());
     lastArmMode = armMode;
@@ -488,7 +489,8 @@ public class Grabber extends SubsystemBase {
   private boolean secondStageHitBtPtOne = false;
   private boolean secondStageHitBtPtTwo = false;
   private ArmModes lastArmMode = ArmModes.HOLDING;
-  Level previousPlacingLevel = Level.POS1;
+  private Level previousPlacingLevel = Level.POS1;
+  private boolean firstLoop = false;
 
   private double calculateAFF(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength, double armMass, double[] cGCoordinateRelativeToPivot, double voltsPerTorque) {
     double passiveTorque = calculateArmTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength, armMass, cGCoordinateRelativeToPivot);
@@ -636,6 +638,12 @@ public class Grabber extends SubsystemBase {
   @Override
   public void periodic() {
 
+    double[] eFPositionButInMeters = new double[]{Units.inchesToMeters(eFPosition[0]),Units.inchesToMeters(eFPosition[1])};
+    eFNavSystem.updatePivotPoint(eFPositionButInMeters);
+    //SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
+   // SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
+    eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
+    
     Pose2d nextNavPoint = eFNavSystem.getNextNavPoint();
     double[] navPointInInches = new double[]{Units.metersToInches(nextNavPoint.getX()), Units.metersToInches(nextNavPoint.getY())};
     setSetpointXY(navPointInInches);
@@ -645,15 +653,10 @@ public class Grabber extends SubsystemBase {
 
     calculateGrabberData();
     updateSetpointThetaPhiButMisleading();
-    SmartDashboard.putNumber("Theta", setpointThetaPhi[0]);
-    SmartDashboard.putNumber("Phi", setpointThetaPhi[1]);
+    SmartDashboard.putNumber("Theta", Units.radiansToDegrees(setpointThetaPhi[0]));
+    SmartDashboard.putNumber("Phi", Units.radiansToDegrees(setpointThetaPhi[1]));
     updateGrabberData();
 
-    double[] eFPositionButInMeters = new double[]{Units.inchesToMeters(eFPosition[0]),Units.inchesToMeters(eFPosition[1])};
-    eFNavSystem.updatePivotPoint(eFPositionButInMeters);
-    //SmartDashboard.putNumber("efPositionMeters_x",eFPositionButInMeters[0]);
-   // SmartDashboard.putNumber("efPositionMeters_y",eFPositionButInMeters[1]);
-    eFNavSystem.updateDesiredPose(getArmPositions(stateController.getArmMode()));
 
     setDesiredEFMode(stateController.getEFMode());
 
