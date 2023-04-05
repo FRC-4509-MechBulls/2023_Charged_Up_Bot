@@ -222,11 +222,13 @@ public class Grabber extends SubsystemBase {
       firstStageHitBtPtOne = false;
       firstStageHitBtPtTwo = false;
       firstStageHitBtPtThree = false;
+      firstStageHitBtPtFour = false;
       secondStageHitBtPtOne = false;
       secondStageHitBtPtTwo = false;
       secondStageHitBtPtThree = false;
-      System.out.println("changed arm modes");
-      firstLoop = true;
+      secondStageHitBtPtFour = false;
+      //System.out.println("changed arm modes");
+      blockHasntRun = true;
     }
     //SmartDashboard.putString("armMode", armMode.toString());
     lastArmMode = armMode;
@@ -273,23 +275,55 @@ public class Grabber extends SubsystemBase {
         else {
             if (stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateConeAngleOne - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtOne = true;
+              stageTwoSub.setLowerOutputRange();
             }
-            if (secondStageHitBtPtOne && stageTwoAngle > ArmConstants.stageTwoEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
+            if (secondStageHitBtPtOne && stageOneAngle < ArmConstants.stageOneArbitraryClearanceAngleOne) {
+              firstStageHitBtPtTwo = true;
+            }
+            if (secondStageHitBtPtOne && firstStageHitBtPtTwo && stageTwoAngle > ArmConstants.stageTwoEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtTwo = true;
             }
-            if (secondStageHitBtPtTwo && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
+            if (secondStageHitBtPtTwo && stageOneAngle < ArmConstants.stageOneEFClearsL3ConeClearanceAngle) {
+              firstStageHitBtPtThree = true;
+            }
+            if (secondStageHitBtPtTwo && firstStageHitBtPtThree && stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateConeAngleTwo - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtThree = true;
+            }
+            if (secondStageHitBtPtThree && stageOneAngle < ArmConstants.stageOneArbitraryClearanceAngleTwo) {
+              firstStageHitBtPtFour = true;
+            }
+            if (secondStageHitBtPtThree && firstStageHitBtPtFour && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
+              secondStageHitBtPtFour = true;
             }
             if (!secondStageHitBtPtOne) {
               setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
               return;
             }
             else if(!secondStageHitBtPtTwo) {
-              setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngleOne, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+              if(!firstStageHitBtPtTwo) {
+                setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngleOne, ArmConstants.stageTwoArbitraryClearanceAngleOne};
+              }
+              else {
+                setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngleOne, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+              }
               return;
             }
             else if(!secondStageHitBtPtThree) {
-              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL3Cone, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+              if(!firstStageHitBtPtThree) {
+                setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL3Cone, ArmConstants.stageTwoEFClearsL3ConeClearanceAngle};
+              }
+              else {
+                setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL3Cone, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+              }
+              return;
+            }
+            else if(!secondStageHitBtPtFour) {
+              if(!firstStageHitBtPtFour) {
+                setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngleTwo, ArmConstants.stageTwoArbitraryClearanceAngleTwo};
+              }
+              else {
+                setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryIntermediateConeAngleTwo, setpointThetaPhi[1] + ArmConstants.sequencingAddedAngle};
+              }
               return;
             }
             else {
@@ -336,31 +370,68 @@ public class Grabber extends SubsystemBase {
       if (!placingcube) {
         //L3 cone
         if (comingFromL3) {
-          if (stageOneAngle > ArmConstants.stageOneEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
-            firstStageHitBtPtOne = true;
+          if(blockHasntRun) {
+            blockHasntRun = false;
+            stageTwoSub.setNormalOutputRange();
           }
-          if (firstStageHitBtPtOne && stageOneAngle > ArmConstants.stageOneArbitraryIntermediateConeAngleOne - ArmConstants.allowedSequencingErrorAngle) {
+          if (stageOneAngle > ArmConstants.stageOneArbitraryIntermediateConeAngleTwo) {
+            firstStageHitBtPtOne = true;
+            stageOneSub.setLowerCruiseVelocity();
+          }
+          if (firstStageHitBtPtOne && stageTwoAngle < ArmConstants.stageTwoArbitraryClearanceAngleTwoReverse) {
+            secondStageHitBtPtOne = true;
+          }
+          if (secondStageHitBtPtOne && stageOneAngle > ArmConstants.stageOneEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
             firstStageHitBtPtTwo = true;
           }
-          if (firstStageHitBtPtTwo && stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.allowedSequencingErrorAngle) {
+          if (firstStageHitBtPtTwo && stageTwoAngle < ArmConstants.stageTwoEFClearsL3ConeClearanceAngleReverse) {
+            secondStageHitBtPtTwo = true;
+          }
+          if (secondStageHitBtPtTwo && stageOneAngle > ArmConstants.stageOneArbitraryIntermediateConeAngleOne - ArmConstants.allowedSequencingErrorAngle) {
             firstStageHitBtPtThree = true;
           }
+          if (firstStageHitBtPtThree && stageTwoAngle < ArmConstants.stageTwoArbitraryClearanceAngleOneReverse) {
+            secondStageHitBtPtThree = true;
+          }
+          if (secondStageHitBtPtThree && stageOneAngle > ArmConstants.stageOneEFClearsL2Cube - ArmConstants.allowedSequencingErrorAngle) {
+            firstStageHitBtPtFour = true;
+            stageOneSub.setNormalCruiseVelocity();
+          }
           if (firstStageHitBtPtThree && stageTwoAngle < ArmConstants.stageTwoHoldingMaxExtension + ArmConstants.allowedSequencingErrorAngle) {
-            secondStageHitBtPtOne = true;
+            secondStageHitBtPtFour = true;
           }
           if (!firstStageHitBtPtOne) {
             setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, convertGrabberXYToThetaPhi(new double[] {Units.metersToInches(ArmConstants.placingConeArmPosThree[0]), Units.metersToInches(ArmConstants.placingConeArmPosThree[1])})[1]};
             return;
           }
           else if (!firstStageHitBtPtTwo) {
-            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoEFClearsL3Cone};
+            if (!secondStageHitBtPtOne) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryClearanceAngleTwoReverse, ArmConstants.stageTwoArbitraryIntermediateConeAngleTwo};
+            }
+            else {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoArbitraryIntermediateConeAngleTwo};
+            }
             return;
           }
           else if (!firstStageHitBtPtThree) {
-            setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoArbitraryIntermediateConeAngleOne};
+            if (!secondStageHitBtPtTwo) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL3ConeClearanceAngleReverse, ArmConstants.stageTwoEFClearsL3Cone};
+            }
+            else {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoEFClearsL3Cone};
+            }
             return;
           }
-          else if (!secondStageHitBtPtOne) {
+          else if (!firstStageHitBtPtFour) {
+            if (!secondStageHitBtPtThree) {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneArbitraryClearanceAngleOneReverse, ArmConstants.stageTwoArbitraryIntermediateConeAngleOne};
+            }
+            else {
+              setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube + ArmConstants.sequencingAddedAngle, ArmConstants.stageTwoArbitraryIntermediateConeAngleOne};
+            }
+            return;
+          }
+          else if (!secondStageHitBtPtFour) {
             setpointThetaPhi = new double[] {ArmConstants.stageOneEFClearsL2Cube, setpointThetaPhi[1]};
             return;
           }
@@ -512,12 +583,14 @@ public class Grabber extends SubsystemBase {
   private boolean firstStageHitBtPtOne = false;
   private boolean firstStageHitBtPtTwo = false;
   private boolean firstStageHitBtPtThree = false;
+  private boolean firstStageHitBtPtFour = false;
   private boolean secondStageHitBtPtOne = false;
   private boolean secondStageHitBtPtTwo = false;
   private boolean secondStageHitBtPtThree = false;
+  private boolean secondStageHitBtPtFour = false;
   private ArmModes lastArmMode = ArmModes.HOLDING;
   private Level previousPlacingLevel = Level.POS1;
-  private boolean firstLoop = false;
+  private boolean blockHasntRun = false;
 
   private double calculateAFF(double armAngle, double[] defaultSpringStartCoordinateRelativeToPivot, double[] defaultSpringEndCoordinateRelativeToPivot, double springConstant, double restingSpringLength, double armMass, double[] cGCoordinateRelativeToPivot, double voltsPerTorque) {
     double passiveTorque = calculateArmTorque(armAngle, defaultSpringStartCoordinateRelativeToPivot, defaultSpringEndCoordinateRelativeToPivot, springConstant, restingSpringLength, armMass, cGCoordinateRelativeToPivot);

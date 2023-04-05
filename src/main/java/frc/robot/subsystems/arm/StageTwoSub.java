@@ -210,7 +210,16 @@ public class StageTwoSub extends SubsystemBase {
   public double getVelocity() {
     return velocity;
   }
+  public void setLowerOutputRange() {
+    setOutputRange(ArmConstants.stageTwoLowerOutputRange);
+  }
+  public void setNormalOutputRange() {
+    setOutputRange(ArmConstants.stageTwoOutputRange);
+  }
   //util
+  private void setOutputRange(double outputRange) {
+    pidController.setOutputRange(-outputRange, outputRange, 0);
+  }
   private void calculateStageData() {
     angle = getEncoderPosition();
     velocity = getEncoderVelocity();

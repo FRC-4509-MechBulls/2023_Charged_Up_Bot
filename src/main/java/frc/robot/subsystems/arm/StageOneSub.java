@@ -197,10 +197,19 @@ public class StageOneSub extends SubsystemBase {
   public void setSetpoint(double setpoint) {
     this.setpoint = setpoint;
   }
+  public void setLowerCruiseVelocity() {
+    setCruiseVelocity(ArmConstants.stageOneLowerMotionCruiseVelocity);
+  }
+  public void setNormalCruiseVelocity() {
+    setCruiseVelocity(ArmConstants.stageOneMotionCruiseVelocity);
+  }
   //Util
   public void calculateStageData() {
     angle = getEncoderPosition();
     velocity = getEncoderVelocity();
+  }
+  public void setCruiseVelocity(double cruiseVelocity) {
+    System.out.println(armMotorPrimary.configMotionCruiseVelocity(calculateEncoderFromOutput(cruiseVelocity) * 10, 1000));
   }
   public double calculateOutputFromEncoder(double encoder) {
     double radians = encoder * ArmConstants.stageOneEncoderTicksToRadians;

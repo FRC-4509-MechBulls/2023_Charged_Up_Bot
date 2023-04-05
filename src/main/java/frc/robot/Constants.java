@@ -21,7 +21,7 @@ public final class Constants {
 
 
     public static final class SimulationConstants{
-        public static final boolean simulationEnabled = false;
+        public static final boolean simulationEnabled = true;
         public static final double driveSpeedMultiplier = 1.5;
         public static final double turningSpeedMultiplier = 100;
         public static final double armStageOneSpeedMultiplier = 1.3;
@@ -121,8 +121,9 @@ public final class Constants {
         public static final double stageOne_kP = 4;//1//4, 1 for testing
         public static final double stageOne_kI = 0.01;//0.02//0
         public static final double stageOne_kD = 128; //undecided
-        public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians(.5);//.5
-        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(250);//250
+        public static final double stageOneMotionCruiseVelocity = Units.degreesToRadians(5.0);//.5
+        public static final double stageOneLowerMotionCruiseVelocity = Units.degreesToRadians(0.2);//.5
+        public static final double stageOneMotionMaxAcceleration = Units.degreesToRadians(500);//250
         public static final double stageOneEncoderOffset = Units.degreesToRadians(291.9 + 90 - .145);//
 
         public static final double revEncoderCountsPerRotation = 2048;
@@ -163,7 +164,8 @@ public final class Constants {
         public static final double stageTwo_kD = 20;//20
         public static final double stageTwo_kP_Alternate = 0.4;//0.4
         public static final double stageTwoEncoderOffset = Units.degreesToRadians(43.6);//180 - 43.6 //43.6 + 180
-        public static final double stageTwoOutputRange = 0.4;//1.0
+        public static final double stageTwoOutputRange = 0.7;//1.0
+        public static final double stageTwoLowerOutputRange = 0.2;//1.0
 
         public static final double[] eFCGCoordinateRelativeToPivot = {6.75, 0.75};
         public static final double eFMass = 12.7 *.9;
@@ -221,13 +223,27 @@ public final class Constants {
         public static final double stageTwoHoldingMaxExtension = Units.degreesToRadians(-140);
         public static final double stageTwoArbitraryIntermediateConeAngleOne = Units.degreesToRadians(-80);
         public static final double stageOneArbitraryIntermediateConeAngleOne = Units.degreesToRadians(67);
-        public static final double stageTwoEFClearsL3Cone = Units.degreesToRadians(-62);
-        public static final double stageOneEFClearsL3Cone = Units.degreesToRadians(56);
+        public static final double stageTwoEFClearsL3Cone = Units.degreesToRadians(-50);
+        public static final double stageOneEFClearsL3Cone = Units.degreesToRadians(57);
+        public static final double stageTwoArbitraryIntermediateConeAngleTwo = Units.degreesToRadians(-35);
+        public static final double stageOneArbitraryIntermediateConeAngleTwo = Units.degreesToRadians(49);
         public static final double stageTwoArbitraryIntermediateCubeAngle = Units.degreesToRadians(-104);
         public static final double stageOneArbitraryIntermediateCubeAngle = Units.degreesToRadians(68);
         public static final double stageTwoClearsBumpersAngle = Units.degreesToRadians(-165);
         public static final double stageOneClearsBumpersAngle = Units.degreesToRadians(47);
-    }
+        public static final double stageOneArbitraryClearanceAngleOne = Units.degreesToRadians(83);
+        public static final double stageTwoArbitraryClearanceAngleOne = Units.degreesToRadians(-56);
+        public static final double stageOneEFClearsL3ConeClearanceAngle = Units.degreesToRadians(71);
+        public static final double stageTwoEFClearsL3ConeClearanceAngle = Units.degreesToRadians(-50);
+        public static final double stageOneArbitraryClearanceAngleTwo = Units.degreesToRadians(59);
+        public static final double stageTwoArbitraryClearanceAngleTwo = Units.degreesToRadians(-35);
+        public static final double stageOneArbitraryClearanceAngleTwoReverse = Units.degreesToRadians(59);
+        public static final double stageTwoArbitraryClearanceAngleTwoReverse = Units.degreesToRadians(-13);
+        public static final double stageOneEFClearsL3ConeClearanceAngleReverse = Units.degreesToRadians(57);
+        public static final double stageTwoEFClearsL3ConeClearanceAngleReverse = Units.degreesToRadians(-29);
+        public static final double stageOneArbitraryClearanceAngleOneReverse = Units.degreesToRadians(67);
+        public static final double stageTwoArbitraryClearanceAngleOneReverse = Units.degreesToRadians(-56);
+}
 
 
     public static final class ModuleConstants {
