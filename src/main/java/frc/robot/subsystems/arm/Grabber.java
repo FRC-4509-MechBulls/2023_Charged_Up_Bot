@@ -280,19 +280,19 @@ public class Grabber extends SubsystemBase {
             if (secondStageHitBtPtOne && stageOneAngle < ArmConstants.stageOneArbitraryClearanceAngleOne) {
               firstStageHitBtPtTwo = true;
             }
-            if (secondStageHitBtPtOne && firstStageHitBtPtTwo && stageTwoAngle > ArmConstants.stageTwoEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
+            if (firstStageHitBtPtTwo && stageTwoAngle > ArmConstants.stageTwoEFClearsL3Cone - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtTwo = true;
             }
             if (secondStageHitBtPtTwo && stageOneAngle < ArmConstants.stageOneEFClearsL3ConeClearanceAngle) {
               firstStageHitBtPtThree = true;
             }
-            if (secondStageHitBtPtTwo && firstStageHitBtPtThree && stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateConeAngleTwo - ArmConstants.allowedSequencingErrorAngle) {
+            if (firstStageHitBtPtThree && stageTwoAngle > ArmConstants.stageTwoArbitraryIntermediateConeAngleTwo - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtThree = true;
             }
             if (secondStageHitBtPtThree && stageOneAngle < ArmConstants.stageOneArbitraryClearanceAngleTwo) {
               firstStageHitBtPtFour = true;
             }
-            if (secondStageHitBtPtThree && firstStageHitBtPtFour && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
+            if (firstStageHitBtPtFour && stageTwoAngle > setpointThetaPhi[1] - ArmConstants.allowedSequencingErrorAngle) {
               secondStageHitBtPtFour = true;
             }
             if (!secondStageHitBtPtOne) {
@@ -734,6 +734,7 @@ public class Grabber extends SubsystemBase {
     setEndEffectorMode(desiredEFMode);
   }
   double placeBeforePostTimestamp = -1;
+  double greatestY = 0;
 
   @Override
   public void periodic() {
@@ -750,6 +751,11 @@ public class Grabber extends SubsystemBase {
     setpointThetaPhi = convertGrabberXYToThetaPhi(setpointXY);
     //SmartDashboard.putNumber("nextNav_x",nextNavPoint.getX());
     //SmartDashboard.putNumber("nextNav_y",nextNavPoint.getY());
+
+    if (eFPosition[1] > greatestY) {
+      greatestY = eFPosition[1];
+      SmartDashboard.putNumber("greatestY", greatestY);
+    }
 
     calculateGrabberData();
     updateSetpointThetaPhiButMisleading();
