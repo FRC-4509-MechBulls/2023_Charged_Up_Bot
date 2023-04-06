@@ -8,12 +8,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
-import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.commands.DirectToPointCommand;
-import frc.robot.commands.NavToPointCommand;
-import frc.robot.commands.SleepCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.arm.Grabber;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.nav.NavigationField;
@@ -250,8 +248,11 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
         //initial pose
         Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.337*finalReverseX,2.428), Rotation2d.fromDegrees(180+finalZeroAngle))));
-        //set type to cone, then level to L3, then set to placing
+        //set type to cone, then level to L3, then set to placing\
         Command setToPlacingCone = new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3))).andThen(new InstantCommand(()->stateController.setAgArmToPlacing()));
+        //maxOutputController
+        Command maxOutputController = new StageTwoMaxOutputControllerCommand(grabber.getStageTwoSub(), -155, true);
+        Command setToPlacingWithOutputController = Commands.deadline(setToPlacingCone,maxOutputController);
         //wait 4 seconds
         SleepCommand sleepCommand = new SleepCommand(3); //replace with the arm angle being crossed >:P
         //eject cone
@@ -300,7 +301,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
 
      //   return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(intermediate2.andThen(setToIntakingCone.andThen(navToAlignPickup.andThen(pauseForIntake)).andThen(navToPickup.andThen(waitAfterPickup.andThen(turnAfterPickup).andThen(setToHoldCone).andThen(intermediate3.andThen(setToPlacingCone2.andThen(navToAlignPlace.andThen(sleepCommand3.andThen(place2)))))))))))))));
-        return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(intermediate2.andThen(setToIntakingCone.andThen(navToPickup.andThen(setToHoldCone.andThen(postPickupSpin.andThen(intermediate3.andThen(setToPlacingCone2.andThen(navToAlignPlace.andThen(place2)))))))))))))));
+        return setInitialPose.andThen(setToPlacingWithOutputController.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(intermediate2.andThen(setToIntakingCone.andThen(navToPickup.andThen(setToHoldCone.andThen(postPickupSpin.andThen(intermediate3.andThen(setToPlacingCone2.andThen(navToAlignPlace.andThen(place2)))))))))))))));
     }
 
     public Command redCenter_placeBalance(boolean reverseForBlue){ //red left center, blue right center
@@ -325,6 +326,12 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.337*finalReverseX,1.869), Rotation2d.fromDegrees(finalZeroAngle))));
         //set type to cone, then level to L3, then set to placing
         Command setToPlacingCone = new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3))).andThen(new InstantCommand(()->stateController.setAgArmToPlacing()));
+
+        //output controller
+        Command maxOutputController = new StageTwoMaxOutputControllerCommand(grabber.getStageTwoSub(), -155, true);
+        Command setToPlacingWithOutputController = Commands.deadline(setToPlacingCone,maxOutputController);
+
+
         //wait 4 seconds
         SleepCommand sleepCommand = new SleepCommand(3); //replace with the arm angle being crossed >:P
         //eject cone
@@ -352,7 +359,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
 
 
-        return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(goOverChargeStation.andThen(holdBehindChargeStation).andThen(goOnChargeStation.andThen(autoBalanceCommand)))))))));
+        return setInitialPose.andThen(setToPlacingWithOutputController.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(goOverChargeStation.andThen(holdBehindChargeStation).andThen(goOnChargeStation.andThen(autoBalanceCommand)))))))));
     }
 
     public Command redRight_Debug_goToStartPos(boolean reverseForBlue){
