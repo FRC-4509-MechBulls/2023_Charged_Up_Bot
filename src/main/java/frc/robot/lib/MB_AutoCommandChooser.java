@@ -317,7 +317,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         double standardPosTolerance = Units.inchesToMeters(2);
         double posP = 3;
 
-        double typicalMaxSpeed = 0.40;
+        double typicalMaxSpeed = 0.30;
         double typicalMaxRotationSpeed = 0.10;
 
 
@@ -334,7 +334,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
         //center before charge station
         DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.97*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1.5,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
-
+//-5.70*finalReverseX,1.25
         //go over charge station
         DirectToPointCommand goOverChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.35*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),5,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
 
