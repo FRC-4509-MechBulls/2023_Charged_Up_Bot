@@ -272,7 +272,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
       //  DirectToPointCommand pauseForIntake = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36) - 1.449 )*finalReverseX,Units.inchesToMeters(121.61) - 0.388,Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn);
 
         //drive to pickup
-        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,3.4 + Units.inchesToMeters(5),Rotation2d.fromDegrees(finalPickupAngle)),2.5,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
+        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,3.4 + Units.inchesToMeters(0),Rotation2d.fromDegrees(finalPickupAngle)),2.5,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
 
         //wait 1 second
        // SleepCommand waitAfterPickup = new SleepCommand(0);
