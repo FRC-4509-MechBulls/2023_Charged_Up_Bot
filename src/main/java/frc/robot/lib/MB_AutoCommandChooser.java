@@ -8,12 +8,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
-import frc.robot.commands.AutoBalanceCommand;
-import frc.robot.commands.DirectToPointCommand;
-import frc.robot.commands.NavToPointCommand;
-import frc.robot.commands.SleepCommand;
+import frc.robot.commands.*;
 import frc.robot.subsystems.arm.Grabber;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.subsystems.nav.NavigationField;
@@ -220,6 +218,8 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         double pickupAngle = 0;
         double postPickupAngle = 15+180;
 
+        double intakeYValue = Units.inchesToMeters(121.61-17.25);
+
         double intermediate1Angle = -45 + zeroAngle;
         if(reverseForBlue){
             reverseX = -1;
@@ -227,6 +227,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
             pickupAngle = 180-pickupAngle;
             postPickupAngle = 180-postPickupAngle;
             intermediate1Angle = 45 + zeroAngle;
+            intakeYValue = 3.4 + Units.inchesToMeters(5);
         }
         int finalReverseX = reverseX;
         double finalZeroAngle = zeroAngle;
@@ -250,8 +251,11 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
         //initial pose
         Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.337*finalReverseX,2.428), Rotation2d.fromDegrees(180+finalZeroAngle))));
-        //set type to cone, then level to L3, then set to placing
+        //set type to cone, then level to L3, then set to placing\
         Command setToPlacingCone = new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3))).andThen(new InstantCommand(()->stateController.setAgArmToPlacing()));
+        //maxOutputController
+        Command maxOutputController = new StageTwoMaxOutputControllerCommand(grabber.getStageTwoSub(), -155, true);
+        Command setToPlacingWithOutputController = Commands.deadline(setToPlacingCone,maxOutputController);
         //wait 4 seconds
         SleepCommand sleepCommand = new SleepCommand(3); //replace with the arm angle being crossed >:P
         //eject cone
@@ -260,9 +264,9 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         //retract arm
         Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
         //go to intermediate position
-        DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.844*finalReverseX,3.4,Rotation2d.fromDegrees(intermediate1Angle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,0.30,0.25);
+        DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.844*finalReverseX,Units.inchesToMeters(128.1),Rotation2d.fromDegrees(intermediate1Angle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,0.30,0.25);
         //intermediate two
-        DirectToPointCommand intermediate2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-3.00*finalReverseX,3.4,Rotation2d.fromDegrees(finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,slowerMaxTurn);
+        DirectToPointCommand intermediate2 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-3.00*finalReverseX,Units.inchesToMeters(128.1),Rotation2d.fromDegrees(finalZeroAngle)),3,standardPosTolerance,2,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,slowerMaxTurn); // y from cad
         //set to intaking
         Command setToIntakingCone = new InstantCommand(()->stateController.setAgnosticGrabberMode(StateControllerSubsystem.AgnosticGrabberMode.INTAKING)).andThen(new InstantCommand(()->stateController.setItemFallen(StateControllerSubsystem.ItemFallen.FALLEN_CONE)));
         //align to pickup
@@ -272,7 +276,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
       //  DirectToPointCommand pauseForIntake = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36) - 1.449 )*finalReverseX,Units.inchesToMeters(121.61) - 0.388,Rotation2d.fromDegrees(finalPickupAngle)),4,Units.inchesToMeters(1),2,0.5,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn);
 
         //drive to pickup
-        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,3.4 + Units.inchesToMeters(5),Rotation2d.fromDegrees(finalPickupAngle)),2.5,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
+        DirectToPointCommand navToPickup = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,intakeYValue,Rotation2d.fromDegrees(finalPickupAngle)),2.5,Units.inchesToMeters(4),5,3,Constants.DriveConstants.turnPValue, intakingMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
 
         //wait 1 second
        // SleepCommand waitAfterPickup = new SleepCommand(0);
@@ -282,10 +286,10 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
       //  DirectToPointCommand armToHoldingPause = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 8))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(finalPickupAngle)),0.5,-1,-1,2,Constants.DriveConstants.turnPValue, slowerMaxSpeed, slowerMaxTurn); //y was Units.inchesToMeters(121.61)
 
         //back to intermediate 1
-        DirectToPointCommand postPickupSpin = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,3.4 + Units.inchesToMeters(3),Rotation2d.fromDegrees(postPickupAngle)),1,Units.inchesToMeters(8),3,2,inPlaceTurnP, slowerMaxSpeed, inPlaceTurnSpeedMax); //y was Units.inchesToMeters(121.61)
+        DirectToPointCommand postPickupSpin = new DirectToPointCommand(swerveSubsystem,new Pose2d((Units.inchesToMeters(-47.36 + 10))*finalReverseX,intakeYValue,Rotation2d.fromDegrees(postPickupAngle)),1,Units.inchesToMeters(8),3,2,inPlaceTurnP, slowerMaxSpeed, inPlaceTurnSpeedMax); //y was Units.inchesToMeters(121.61)
 
 
-        DirectToPointCommand intermediate3 = new DirectToPointCommand(swerveSubsystem,new Pose2d((-4.7 + 0.2)*finalReverseX,3.3,Rotation2d.fromDegrees(180+ finalZeroAngle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,fasterMaxTurn);
+        DirectToPointCommand intermediate3 = new DirectToPointCommand(swerveSubsystem,new Pose2d((-4.7 + 0.2)*finalReverseX,Units.inchesToMeters(128.1),Rotation2d.fromDegrees(180+ finalZeroAngle)),4,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,fasterMaxSpeed,fasterMaxTurn);
 
         //place L3
         Command setToPlacingCone2 = new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3))).andThen(new InstantCommand(()->stateController.setAgArmToPlacing()));
@@ -300,7 +304,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
 
      //   return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(intermediate2.andThen(setToIntakingCone.andThen(navToAlignPickup.andThen(pauseForIntake)).andThen(navToPickup.andThen(waitAfterPickup.andThen(turnAfterPickup).andThen(setToHoldCone).andThen(intermediate3.andThen(setToPlacingCone2.andThen(navToAlignPlace.andThen(sleepCommand3.andThen(place2)))))))))))))));
-        return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(intermediate2.andThen(setToIntakingCone.andThen(navToPickup.andThen(setToHoldCone.andThen(postPickupSpin.andThen(intermediate3.andThen(setToPlacingCone2.andThen(navToAlignPlace.andThen(place2)))))))))))))));
+        return setInitialPose.andThen(setToPlacingWithOutputController.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(intermediate2.andThen(setToIntakingCone.andThen(navToPickup.andThen(setToHoldCone.andThen(postPickupSpin.andThen(intermediate3.andThen(setToPlacingCone2.andThen(navToAlignPlace.andThen(place2)))))))))))))));
     }
 
     public Command redCenter_placeBalance(boolean reverseForBlue){ //red left center, blue right center
@@ -317,7 +321,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         double standardPosTolerance = Units.inchesToMeters(2);
         double posP = 3;
 
-        double typicalMaxSpeed = 0.40;
+        double typicalMaxSpeed = 0.30;
         double typicalMaxRotationSpeed = 0.10;
 
 
@@ -325,6 +329,12 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         Command setInitialPose = new InstantCommand(()->swerveSubsystem.resetPose(new Pose2d(new Translation2d(-6.337*finalReverseX,1.869), Rotation2d.fromDegrees(finalZeroAngle))));
         //set type to cone, then level to L3, then set to placing
         Command setToPlacingCone = new InstantCommand(()->stateController.setItemType(StateControllerSubsystem.ItemType.CONE)).andThen(new InstantCommand(()->stateController.setPlacingLevel(StateControllerSubsystem.Level.POS3))).andThen(new InstantCommand(()->stateController.setAgArmToPlacing()));
+
+        //output controller
+        Command maxOutputController = new StageTwoMaxOutputControllerCommand(grabber.getStageTwoSub(), -155, true);
+        Command setToPlacingWithOutputController = Commands.deadline(setToPlacingCone,maxOutputController);
+
+
         //wait 4 seconds
         SleepCommand sleepCommand = new SleepCommand(3); //replace with the arm angle being crossed >:P
         //eject cone
@@ -334,12 +344,12 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
         Command retractArm = new InstantCommand(()->stateController.setAgArmToHolding());
         //center before charge station
         DirectToPointCommand intermediate1 = new DirectToPointCommand(swerveSubsystem,new Pose2d(-5.97*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1.5,standardPosTolerance,5,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
+//-5.70*finalReverseX,1.25
+        //go over charge station
+        DirectToPointCommand goOverChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.95*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),5,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
 
         //go over charge station
-        DirectToPointCommand goOverChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.35*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),5,Units.inchesToMeters(4),4,posP,Constants.DriveConstants.turnPValue,typicalMaxSpeed,typicalMaxRotationSpeed);
-
-        //go over charge station
-        DirectToPointCommand holdBehindChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.35*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1,-1,-1,posP,Constants.DriveConstants.turnPValue,0.1,0.1);
+        DirectToPointCommand holdBehindChargeStation = new DirectToPointCommand(swerveSubsystem,new Pose2d(-1.95*finalReverseX,1.31,Rotation2d.fromDegrees(finalZeroAngle)),1,-1,-1,posP,Constants.DriveConstants.turnPValue,0.1,0.1);
 
 
         //go back
@@ -352,7 +362,7 @@ public Command redCenter_scoreLeaveAndBalance(boolean reverseForBlue){
 
 
 
-        return setInitialPose.andThen(setToPlacingCone.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(goOverChargeStation.andThen(holdBehindChargeStation).andThen(goOnChargeStation.andThen(autoBalanceCommand)))))))));
+        return setInitialPose.andThen(setToPlacingWithOutputController.andThen(sleepCommand.andThen(place.andThen(sleepCommand2.andThen(retractArm.andThen(intermediate1.andThen(goOverChargeStation.andThen(holdBehindChargeStation).andThen(goOnChargeStation.andThen(autoBalanceCommand)))))))));
     }
 
     public Command redRight_Debug_goToStartPos(boolean reverseForBlue){

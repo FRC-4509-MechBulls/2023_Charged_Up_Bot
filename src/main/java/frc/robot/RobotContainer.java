@@ -95,6 +95,7 @@ public class RobotContainer {
 
 
     SmartDashboard.putData("Auto Chooser",autoChooser.getAutoChooser());
+      SmartDashboard.putBoolean("higherMaxOutput",false); //delete me after debugging
 
 
   }
