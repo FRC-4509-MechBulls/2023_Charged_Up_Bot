@@ -461,6 +461,13 @@ public class Grabber extends SubsystemBase {
   }
   double placeBeforePostTimestamp = -1;
 
+  public StageOneSub getStageOneSub(){
+    return stageOneSub;
+  }
+  public StageTwoSub getStageTwoSub(){
+    return stageTwoSub;
+  }
+
   @Override
   public void periodic() {
 
